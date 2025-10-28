@@ -180,11 +180,17 @@ This portfolio application will showcase expertise in six key areas:
 
 ---
 
-## Recommended Tech Stack
-- **Frontend**: Next.js 14+, React, TypeScript, Tailwind CSS
-- **Backend**: Next.js API routes (simple tasks) + FastAPI (Python, ML/CV/data processing)
-- **Database**: PostgreSQL with Prisma
-- **ML/CV**: Python (scikit-learn, TensorFlow/PyTorch, OpenCV, YOLO)
+## Current Tech Stack
+
+### Installed & Configured
+- **Frontend**: Next.js 16.0.0, React 19.2.0, TypeScript 5.9.3
+- **Styling**: Tailwind CSS 4.1.16, PostCSS 8.5.6, Autoprefixer 10.4.21
+- **Code Quality**: ESLint 9.38.0, eslint-config-next 16.0.0
+
+### Planned Additions
+- **Backend**: FastAPI (Python, for ML/CV/data processing)
+- **Database**: PostgreSQL with Prisma ORM
+- **ML/CV**: Python 3.11+, scikit-learn, TensorFlow/PyTorch, OpenCV, YOLO
 - **Data Viz**: Recharts or D3.js
 - **Deployment Phase 1**: Vercel (frontend) + Railway (backend/database)
 - **Deployment Phase 2**: AWS (EC2, RDS, S3, CloudFront, Route 53)

@@ -24,13 +24,16 @@
 
 **Decision**: ✅ DECIDED - Option A (Hybrid Approach)
 
-**Final Stack**:
-- Frontend: Next.js 14+ with TypeScript and Tailwind CSS
-- Backend: Next.js API routes (for simple backend tasks) + FastAPI (Python, for ML/CV/data processing)
-- Database: PostgreSQL with Prisma ORM
-- ML/CV: Python (scikit-learn, TensorFlow/PyTorch, OpenCV)
-- Data Visualization: Recharts or D3.js
-- Deployment: Vercel (frontend) + Railway/Render (backend)
+**Final Stack (Implemented)**:
+- Frontend: Next.js 16.0.0 with React 19.2.0
+- TypeScript: 5.9.3
+- Styling: Tailwind CSS 4.1.16 + PostCSS 8.5.6 + Autoprefixer 10.4.21
+- Code Quality: ESLint 9.38.0 + eslint-config-next 16.0.0
+- Backend (Planned): FastAPI (Python 3.11+, for ML/CV/data processing)
+- Database (Planned): PostgreSQL with Prisma ORM
+- ML/CV (Planned): Python (scikit-learn, TensorFlow/PyTorch, OpenCV, YOLO)
+- Data Visualization (Planned): Recharts or D3.js
+- Deployment: Vercel (frontend) + Railway (backend/database)
 
 **Rationale**: Hybrid approach leverages Next.js for excellent frontend DX and simple APIs, while FastAPI handles compute-intensive ML/CV operations. Best of both worlds.
 
