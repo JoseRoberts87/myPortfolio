@@ -37,5 +37,8 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint for monitoring"""
-    return {"status": "healthy"}
+    """
+    Health check endpoint for monitoring
+    Returns 200 OK to indicate the service is running
+    """
+    return {"status": "healthy", "service": "portfolio-api"}
