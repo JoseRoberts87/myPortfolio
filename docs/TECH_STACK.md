@@ -34,8 +34,14 @@ This document maintains the exact versions of all packages and technologies used
   - JIT (Just-In-Time) compiler
   - Custom theme configuration
   - Dark mode support via CSS variables
+  - ⚠️ v4 Breaking Changes: See `TAILWIND_V4_MIGRATION.md`
+
+- **@tailwindcss/postcss**: 4.1.16
+  - **Required for Tailwind CSS v4**
+  - Separate PostCSS plugin package (new in v4)
 
 - **PostCSS**: 8.5.6
+  - CSS transformation tool
   - Required for Tailwind CSS processing
 
 - **Autoprefixer**: 10.4.21

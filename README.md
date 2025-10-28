@@ -8,7 +8,8 @@ A comprehensive portfolio showcasing expertise across six key domains: Web Devel
 - **Next.js 16.0.0** - React framework with App Router (Turbopack)
 - **React 19.2.0** - Latest React with automatic JSX runtime
 - **TypeScript 5.9.3** - Type-safe development
-- **Tailwind CSS 4.1.16** - Utility-first styling
+- **Tailwind CSS 4.1.16** - Utility-first styling (⚠️ v4 breaking changes)
+- **@tailwindcss/postcss 4.1.16** - PostCSS plugin for Tailwind v4
 - **ESLint 9.38.0** - Code quality and linting
 
 ### Backend (Planned)

@@ -6,8 +6,10 @@
 - **Next.js 16.0.0** with App Router (Turbopack)
 - **React 19.2.0** with automatic JSX runtime
 - **TypeScript 5.9.3**
-- **Tailwind CSS 4.1.16** + PostCSS 8.5.6 + Autoprefixer 10.4.21
+- **Tailwind CSS 4.1.16** + **@tailwindcss/postcss 4.1.16** + PostCSS 8.5.6 + Autoprefixer 10.4.21
 - **ESLint 9.38.0** + eslint-config-next 16.0.0
+
+⚠️ **Note**: Tailwind CSS v4 has breaking changes. See `docs/TAILWIND_V4_MIGRATION.md` for details.
 
 ---
 
