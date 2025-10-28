@@ -54,9 +54,9 @@ Vercel automatically deploys:
 - [ ] Verify no console errors in browser DevTools
 
 ### Deployment URLs
-Once deployed, update this section with your URLs:
-- **Production**: `https://your-project.vercel.app`
-- **Preview**: `https://your-project-git-branch.vercel.app`
+- **Production**: https://portfolio-60sng8hin-joseroberts87s-projects.vercel.app
+- **Vercel Dashboard**: https://vercel.com/joseroberts87s-projects/portfolio
+- **Preview Deployments**: Automatically created for each PR and feature branch
 
 ### Troubleshooting
 
