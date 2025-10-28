@@ -14,7 +14,16 @@
       "Bash(pkill:*)",
       "Bash(npm test)",
       "WebFetch(domain:docs.railway.app)",
-      "WebFetch(domain:docs.railway.com)"
+      "WebFetch(domain:docs.railway.com)",
+      "Bash(export RAILWAY_TOKEN:*)",
+      "Bash(railway status:*)",
+      "Bash(railway link:*)",
+      "Bash(railway logs:*)",
+      "Bash(railway service:*)",
+      "Bash(cat:*)",
+      "Bash(railway list:*)",
+      "Bash(railway domain:*)",
+      "Bash(railway variables:*)"
     ],
     "deny": [],
     "ask": []
