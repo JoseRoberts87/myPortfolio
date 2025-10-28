@@ -8,7 +8,7 @@ from pathlib import Path
 # Add parent directory to path to import app modules
 sys.path.insert(0, str(Path(__file__).parent))
 
-from app.db.database import Base, engine
+from app.db.database import Base, get_engine
 from app.models.reddit_post import RedditPost  # Import all models
 import logging
 
@@ -21,6 +21,7 @@ def init_db():
     logger.info("Creating database tables...")
 
     try:
+        engine = get_engine()
         Base.metadata.create_all(bind=engine)
         logger.info("✓ Database tables created successfully!")
     except Exception as e:
