@@ -204,10 +204,23 @@ Edit `.env` to configure:
 - Activate virtual environment
 - Reinstall dependencies: `pip install -r requirements.txt`
 
+## Deployment
+
+### Railway Deployment
+
+See [DEPLOYMENT_RAILWAY.md](./DEPLOYMENT_RAILWAY.md) for detailed Railway deployment instructions.
+
+Quick steps:
+1. Create Railway project from GitHub
+2. Add PostgreSQL database
+3. Configure environment variables
+4. Set root directory to `backend`
+5. Deploy!
+
 ## Next Steps
 
 - [ ] Add sentiment analysis model
 - [ ] Implement scheduled pipeline runs
 - [ ] Add data validation
 - [ ] Create monitoring dashboard
-- [ ] Deploy to cloud (Railway/AWS)
+- [x] Deploy to Railway
