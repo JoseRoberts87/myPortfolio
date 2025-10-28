@@ -48,7 +48,7 @@ export default function Header() {
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-              aria-expanded="false"
+              aria-expanded={mobileMenuOpen}
             >
               <span className="sr-only">Open main menu</span>
               {/* Icon when menu is closed */}
