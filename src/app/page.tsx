@@ -1,43 +1,110 @@
 export default function Home() {
+  const expertiseAreas = [
+    {
+      id: 'web-dev',
+      title: 'Web Development',
+      description: 'Modern full-stack applications with Next.js, React, and TypeScript',
+      icon: '🌐',
+    },
+    {
+      id: 'data-pipelines',
+      title: 'Data Pipelines',
+      description: 'ETL and data processing with Python, FastAPI, and PostgreSQL',
+      icon: '⚙️',
+    },
+    {
+      id: 'analytics',
+      title: 'Data Analytics',
+      description: 'Interactive dashboards and data visualizations',
+      icon: '📊',
+    },
+    {
+      id: 'machine-learning',
+      title: 'Machine Learning',
+      description: 'NLP and sentiment analysis with modern ML frameworks',
+      icon: '🤖',
+    },
+    {
+      id: 'computer-vision',
+      title: 'Computer Vision',
+      description: 'Real-time object detection and image processing',
+      icon: '👁️',
+    },
+    {
+      id: 'cloud-devops',
+      title: 'Cloud & DevOps',
+      description: 'AWS infrastructure, Docker, and CI/CD pipelines',
+      icon: '☁️',
+    },
+  ];
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <div className="text-center space-y-6 p-8">
-        <h1 className="text-6xl font-bold text-white">
-          Portfolio
-        </h1>
-        <p className="text-2xl text-gray-300">
-          Showcasing expertise across multiple domains
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-12 max-w-4xl">
-          <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg hover:bg-white/20 transition-all">
-            <h3 className="text-xl font-semibold text-white mb-2">Web Development</h3>
-            <p className="text-gray-300 text-sm">Modern full-stack applications</p>
-          </div>
-          <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg hover:bg-white/20 transition-all">
-            <h3 className="text-xl font-semibold text-white mb-2">Data Pipelines</h3>
-            <p className="text-gray-300 text-sm">ETL and data processing</p>
-          </div>
-          <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg hover:bg-white/20 transition-all">
-            <h3 className="text-xl font-semibold text-white mb-2">Data Analytics</h3>
-            <p className="text-gray-300 text-sm">Interactive dashboards</p>
-          </div>
-          <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg hover:bg-white/20 transition-all">
-            <h3 className="text-xl font-semibold text-white mb-2">Machine Learning</h3>
-            <p className="text-gray-300 text-sm">NLP and sentiment analysis</p>
-          </div>
-          <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg hover:bg-white/20 transition-all">
-            <h3 className="text-xl font-semibold text-white mb-2">Computer Vision</h3>
-            <p className="text-gray-300 text-sm">Real-time object detection</p>
-          </div>
-          <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg hover:bg-white/20 transition-all">
-            <h3 className="text-xl font-semibold text-white mb-2">Cloud Infrastructure</h3>
-            <p className="text-gray-300 text-sm">AWS deployment & DevOps</p>
+    <>
+      {/* Hero Section */}
+      <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+        <div className="text-center space-y-6 p-8 max-w-5xl mx-auto">
+          <h1 className="text-6xl md:text-7xl font-bold text-white animate-fade-in">
+            Full-Stack Developer
+          </h1>
+          <p className="text-2xl md:text-3xl text-gray-300">
+            Showcasing expertise across multiple domains
+          </p>
+          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+            Building modern web applications, data pipelines, ML models, and cloud infrastructure
+          </p>
+          <div className="mt-8">
+            <a
+              href="#web-dev"
+              className="inline-block bg-purple-600 hover:bg-purple-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors"
+            >
+              Explore My Work
+            </a>
           </div>
         </div>
-        <p className="text-gray-400 mt-8 text-sm">
-          Built with Next.js, TypeScript, and Tailwind CSS
-        </p>
-      </div>
-    </div>
+      </section>
+
+      {/* Expertise Areas */}
+      <section className="bg-slate-800 py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-4xl font-bold text-white text-center mb-12">
+            Areas of Expertise
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {expertiseAreas.map((area) => (
+              <div
+                key={area.id}
+                id={area.id}
+                className="bg-slate-900 border border-slate-700 p-8 rounded-lg hover:border-purple-500 transition-all scroll-mt-24"
+              >
+                <div className="text-4xl mb-4">{area.icon}</div>
+                <h3 className="text-2xl font-semibold text-white mb-3">{area.title}</h3>
+                <p className="text-gray-400">{area.description}</p>
+                <div className="mt-6">
+                  <span className="text-purple-400 text-sm font-medium">Coming Soon</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="bg-gradient-to-r from-purple-900 to-slate-900 py-16">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-bold text-white mb-4">
+            Interested in working together?
+          </h2>
+          <p className="text-gray-300 mb-8">
+            Feel free to reach out to discuss projects, opportunities, or collaborations.
+          </p>
+          <a
+            href="#contact"
+            className="inline-block bg-white text-purple-900 font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors"
+          >
+            Get in Touch
+          </a>
+        </div>
+      </section>
+    </>
   );
 }
