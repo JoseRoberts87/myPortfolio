@@ -5,12 +5,12 @@ export default function Footer() {
 
   const footerLinks = {
     sections: [
-      { name: 'Web Development', href: '#web-dev' },
-      { name: 'Data Pipelines', href: '#data-pipelines' },
-      { name: 'Analytics', href: '#analytics' },
-      { name: 'Machine Learning', href: '#machine-learning' },
-      { name: 'Computer Vision', href: '#computer-vision' },
-      { name: 'Cloud & DevOps', href: '#cloud-devops' },
+      { name: 'Web Development', href: '/web-dev' },
+      { name: 'Data Pipelines', href: '/data-pipelines' },
+      { name: 'Analytics', href: '/analytics' },
+      { name: 'Machine Learning', href: '/machine-learning' },
+      { name: 'Computer Vision', href: '/computer-vision' },
+      { name: 'Cloud & DevOps', href: '/cloud-devops' },
     ],
     social: [
       { name: 'GitHub', href: 'https://github.com', icon: 'github' },
@@ -20,13 +20,13 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-slate-900 border-t border-slate-800">
+    <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand Section */}
           <div className="space-y-4">
-            <h3 className="text-2xl font-bold text-white">Portfolio</h3>
-            <p className="text-gray-400 text-sm">
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Portfolio</h3>
+            <p className="text-slate-600 dark:text-gray-400 text-sm">
               Showcasing expertise in web development, data engineering, machine learning, and cloud infrastructure.
             </p>
             <div className="flex space-x-4">
@@ -36,7 +36,7 @@ export default function Footer() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors"
                   aria-label={social.name}
                 >
                   {social.icon === 'github' && (
@@ -61,13 +61,13 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-white">Expertise Areas</h4>
+            <h4 className="text-lg font-semibold text-slate-900 dark:text-white">Expertise Areas</h4>
             <ul className="space-y-2">
               {footerLinks.sections.map((link) => (
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-gray-400 hover:text-white text-sm transition-colors"
+                    className="text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white text-sm transition-colors"
                   >
                     {link.name}
                   </Link>
@@ -78,26 +78,26 @@ export default function Footer() {
 
           {/* Resources */}
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-white">Resources</h4>
+            <h4 className="text-lg font-semibold text-slate-900 dark:text-white">Resources</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/docs" className="text-gray-400 hover:text-white text-sm transition-colors">
+                <Link href="/docs" className="text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white text-sm transition-colors">
                   Documentation
                 </Link>
               </li>
               <li>
-                <Link href="#contact" className="text-gray-400 hover:text-white text-sm transition-colors">
+                <Link href="#contact" className="text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white text-sm transition-colors">
                   Contact
                 </Link>
               </li>
               <li>
-                <Link href="#resume" className="text-gray-400 hover:text-white text-sm transition-colors">
+                <Link href="#resume" className="text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white text-sm transition-colors">
                   Resume
                 </Link>
               </li>
             </ul>
             <div className="pt-4">
-              <p className="text-gray-500 text-xs">
+              <p className="text-slate-500 dark:text-gray-500 text-xs">
                 Built with Next.js, React, TypeScript, and Tailwind CSS
               </p>
             </div>
@@ -105,8 +105,8 @@ export default function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="mt-8 pt-8 border-t border-slate-800">
-          <p className="text-center text-gray-500 text-sm">
+        <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-800">
+          <p className="text-center text-slate-500 dark:text-gray-500 text-sm">
             &copy; {currentYear} Portfolio. All rights reserved.
           </p>
         </div>

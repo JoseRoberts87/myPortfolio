@@ -105,12 +105,12 @@ describe('Footer Component', () => {
     render(<Footer />);
 
     const webDevLink = screen.getByRole('link', { name: 'Web Development' });
-    expect(webDevLink).toHaveClass('hover:text-white');
+    expect(webDevLink).toHaveClass('hover:text-slate-900', 'dark:hover:text-white');
   });
 
   it('uses consistent color scheme', () => {
     const { container } = render(<Footer />);
     const footer = container.querySelector('footer');
-    expect(footer).toHaveClass('bg-slate-900', 'border-t', 'border-slate-800');
+    expect(footer).toHaveClass('bg-white', 'dark:bg-slate-900', 'border-t', 'border-slate-200', 'dark:border-slate-800');
   });
 });
