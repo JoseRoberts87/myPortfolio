@@ -51,8 +51,10 @@ PIPELINE_SCHEDULE_MINUTES=60
 ## Step 5: Deploy
 
 Railway will automatically deploy when you complete the setup:
+- Railway uses Railpack (their modern builder) to analyze and build your app
 - Click "Deploy" in the top right to trigger a deployment
 - Or deployments happen automatically from GitHub pushes to main
+- Railpack automatically detects Python/FastAPI and handles dependencies
 
 ## Step 6: Verify Deployment
 

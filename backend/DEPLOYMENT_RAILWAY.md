@@ -67,12 +67,13 @@ Railway needs to know that the backend is in a subdirectory:
 1. Railway will automatically deploy when you push to main (or click "Deploy" in dashboard)
 2. Initial deployment may take 3-5 minutes
 3. Railway will:
+   - Use Railpack to analyze and build your Python app (zero configuration required)
    - Install Python dependencies from `requirements.txt`
    - Start the uvicorn server on the PORT environment variable
    - Perform healthcheck on `/health` endpoint (waits up to 5 minutes)
    - Route traffic to new deployment once healthcheck passes
 
-**Important:** Railway healthchecks verify new deployments are ready before switching traffic, ensuring zero-downtime deployments.
+**Important:** Railway uses Railpack, their modern builder that automatically detects Python/FastAPI and generates optimized container images. Healthchecks verify new deployments are ready before switching traffic, ensuring zero-downtime deployments.
 
 ## Step 6: Verify Deployment
 
