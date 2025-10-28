@@ -54,19 +54,25 @@ PIPELINE_SCHEDULE_MINUTES=60
 
 Railway needs to know that the backend is in a subdirectory:
 
-1. Go to your service settings
-2. Under "Build & Deploy" settings
-3. Set **Root Directory** to: `backend`
-4. Save changes
+1. Click on your service in the project canvas
+2. Go to the "Settings" tab
+3. Scroll down to find "Root Directory"
+4. Set **Root Directory** to: `backend`
+5. Click "Save"
+
+**Note:** This tells Railway to only pull files from the `/backend` directory when creating deployments, which speeds up builds and reduces deployment size.
 
 ## Step 5: Deploy
 
-1. Railway will automatically deploy when you push to main
+1. Railway will automatically deploy when you push to main (or click "Deploy" in dashboard)
 2. Initial deployment may take 3-5 minutes
 3. Railway will:
-   - Install Python dependencies
-   - Initialize the database
-   - Start the uvicorn server
+   - Install Python dependencies from `requirements.txt`
+   - Start the uvicorn server on the PORT environment variable
+   - Perform healthcheck on `/health` endpoint (waits up to 5 minutes)
+   - Route traffic to new deployment once healthcheck passes
+
+**Important:** Railway healthchecks verify new deployments are ready before switching traffic, ensuring zero-downtime deployments.
 
 ## Step 6: Verify Deployment
 
@@ -116,14 +122,22 @@ NEXT_PUBLIC_API_URL=https://your-app.railway.app
 ## Common Issues
 
 ### Build Fails
-- Check that `Root Directory` is set to `backend`
+- Check that `Root Directory` is set to `backend` in service settings
 - Verify all dependencies are in `requirements.txt`
 - Check build logs for specific errors
+- Ensure `railway.toml` is in the correct location (`/backend/railway.toml`)
+
+### Healthcheck Fails
+- Verify `/health` endpoint returns HTTP 200
+- Check that app listens on the `$PORT` environment variable (Railway injects this)
+- Increase timeout if app takes longer to start (default: 300 seconds)
+- Healthchecks come from `healthcheck.railway.app` - ensure not blocked
 
 ### Database Connection Errors
-- Verify `DATABASE_URL` is set correctly
+- Verify `DATABASE_URL` is set correctly (should be auto-set by Railway)
 - Ensure PostgreSQL service is running
 - Check if database tables are initialized
+- Run the pipeline endpoint to initialize tables
 
 ### CORS Errors
 - Add your frontend URL to `CORS_ORIGINS`
