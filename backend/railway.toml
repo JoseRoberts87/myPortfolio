@@ -8,7 +8,5 @@ healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
-
 # Initialize database tables before starting the app
-[[deploy.preDeployCommands]]
-command = "python init_db.py"
+preDeployCommand = "python init_db.py"
