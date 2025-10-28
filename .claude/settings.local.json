@@ -17,7 +17,6 @@
       "WebFetch(domain:docs.railway.com)",
       "Bash(export RAILWAY_TOKEN:*)",
       "Bash(railway status:*)",
-      "Bash(RAILWAY_TOKEN=076fb8a3-2b9e-463a-801b-118375ef6de1 railway link:*)",
       "Bash(railway link:*)",
       "Bash(railway logs:*)",
       "Bash(railway service:*)",
