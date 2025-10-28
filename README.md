@@ -114,6 +114,10 @@ portfolio/
 Detailed planning documentation is available in the `/docs` folder:
 - [PROJECT_PLAN.md](./docs/PROJECT_PLAN.md) - Complete project plan with execution phases
 - [DECISIONS.md](./docs/DECISIONS.md) - Architecture and technology decisions
+- [GIT_WORKFLOW.md](./docs/GIT_WORKFLOW.md) - Git branching strategy and workflow
+- [TECH_STACK.md](./docs/TECH_STACK.md) - Comprehensive version reference
+- [PACKAGE_REFERENCES.md](./docs/PACKAGE_REFERENCES.md) - Official documentation links
+- [TAILWIND_V4_MIGRATION.md](./docs/TAILWIND_V4_MIGRATION.md) - Tailwind v4 migration guide
 
 ## License
 

@@ -11,6 +11,24 @@
 
 ⚠️ **Note**: Tailwind CSS v4 has breaking changes. See `docs/TAILWIND_V4_MIGRATION.md` for details.
 
+## Development Workflow
+
+**Branching Strategy**: See `docs/GIT_WORKFLOW.md` for complete details.
+
+### Quick Reference
+1. **Create branch** from main: `git checkout -b feature/<feature-name>`
+2. **Implement & commit** changes with descriptive messages
+3. **Push to GitHub**: `git push -u origin feature/<feature-name>`
+4. **Wait for PR creation** - User will create and review PR
+5. **Address feedback** - Make changes in same branch and push
+6. **After merge** - Pull main and delete local branch
+
+**Branch Types**:
+- `feature/<name>` - New features
+- `bugfix/<name>` - Bug fixes
+- `refactor/<name>` - Code refactoring
+- `docs/<name>` - Documentation updates
+
 ---
 
 ## Phase 1: Project Setup & Web Development Foundation
