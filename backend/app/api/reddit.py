@@ -9,6 +9,8 @@ from app.db import get_db
 from app.models.reddit_post import RedditPost
 from app.schemas.reddit import RedditPostResponse, RedditPostList
 from app.services.reddit_service import RedditService
+from app.services.cache_service import cached
+from app.core.config import settings
 import logging
 
 logger = logging.getLogger(__name__)
@@ -16,6 +18,7 @@ router = APIRouter()
 
 
 @router.get("/posts", response_model=RedditPostList)
+@cached(prefix="reddit_posts", ttl=settings.CACHE_REDDIT_TTL)
 async def get_reddit_posts(
     subreddit: Optional[str] = None,
     sentiment: Optional[str] = Query(None, regex="^(positive|negative|neutral)$"),
@@ -65,6 +68,7 @@ async def get_reddit_posts(
 
 
 @router.get("/posts/{post_id}", response_model=RedditPostResponse)
+@cached(prefix="reddit_post", ttl=settings.CACHE_REDDIT_TTL)
 async def get_reddit_post(post_id: str, db: Session = Depends(get_db)):
     """
     Get a specific Reddit post by ID
@@ -85,6 +89,7 @@ async def get_reddit_post(post_id: str, db: Session = Depends(get_db)):
 
 
 @router.get("/subreddits")
+@cached(prefix="reddit_subreddits", ttl=settings.CACHE_REDDIT_TTL)
 async def get_subreddits(db: Session = Depends(get_db)):
     """
     Get list of all subreddits in database

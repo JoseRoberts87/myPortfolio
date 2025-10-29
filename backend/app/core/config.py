@@ -29,6 +29,17 @@ class Settings(BaseSettings):
     REDDIT_POST_LIMIT: int = 100
     PIPELINE_SCHEDULE_MINUTES: int = 60
 
+    # Redis Cache Configuration
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
+    REDIS_DB: int = 0
+    REDIS_PASSWORD: str = ""
+    CACHE_ENABLED: bool = True
+    CACHE_DEFAULT_TTL: int = 300  # 5 minutes
+    CACHE_ANALYTICS_TTL: int = 600  # 10 minutes
+    CACHE_STATS_TTL: int = 300  # 5 minutes
+    CACHE_REDDIT_TTL: int = 180  # 3 minutes
+
     model_config = SettingsConfigDict(
         env_file=".env",
         case_sensitive=True

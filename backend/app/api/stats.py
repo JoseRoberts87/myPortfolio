@@ -7,6 +7,8 @@ from sqlalchemy import func
 from app.db import get_db
 from app.models.reddit_post import RedditPost
 from app.schemas.reddit import PipelineStats
+from app.services.cache_service import cached
+from app.core.config import settings
 import logging
 
 logger = logging.getLogger(__name__)
@@ -14,6 +16,7 @@ router = APIRouter()
 
 
 @router.get("/overview", response_model=PipelineStats)
+@cached(prefix="stats_overview", ttl=settings.CACHE_STATS_TTL)
 async def get_statistics_overview(db: Session = Depends(get_db)):
     """
     Get overall statistics for the data pipeline
@@ -68,6 +71,7 @@ async def get_statistics_overview(db: Session = Depends(get_db)):
 
 
 @router.get("/subreddit/{subreddit_name}")
+@cached(prefix="stats_subreddit", ttl=settings.CACHE_STATS_TTL)
 async def get_subreddit_stats(subreddit_name: str, db: Session = Depends(get_db)):
     """
     Get statistics for a specific subreddit
