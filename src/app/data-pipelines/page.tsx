@@ -97,7 +97,7 @@ export default function DataPipelinesPage() {
             <div className="text-center py-8 text-gray-400">Loading status...</div>
           ) : error ? (
             <div className="text-center py-8">
-              <Badge variant="danger" size="lg" className="mb-4">
+              <Badge variant="error" size="lg" className="mb-4">
                 Error
               </Badge>
               <p className="text-red-400">{error}</p>
@@ -191,7 +191,7 @@ export default function DataPipelinesPage() {
                     </div>
 
                     <a
-                      href={post.url}
+                      href={post.url || '#'}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-xl font-semibold hover:text-blue-400 transition-colors block mb-2"
