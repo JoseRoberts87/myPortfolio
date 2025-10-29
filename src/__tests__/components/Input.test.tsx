@@ -59,4 +59,67 @@ describe('Input Component', () => {
     render(<Input ref={ref} />);
     expect(ref.current).toBeInstanceOf(HTMLInputElement);
   });
+
+  it('should render label when label prop is provided', () => {
+    render(<Input label="Username" />);
+    expect(screen.getByText('Username')).toBeInTheDocument();
+  });
+
+  it('should not render label when label prop is not provided', () => {
+    const { container } = render(<Input />);
+    const label = container.querySelector('label');
+    expect(label).not.toBeInTheDocument();
+  });
+
+  it('should render error message when error prop is provided', () => {
+    render(<Input error="This field is required" />);
+    expect(screen.getByText('This field is required')).toBeInTheDocument();
+  });
+
+  it('should apply error border color when error prop is provided', () => {
+    render(<Input error="Error message" />);
+    const input = screen.getByRole('textbox');
+    expect(input).toHaveClass('border-red-500');
+  });
+
+  it('should not apply error styles when error prop is not provided', () => {
+    render(<Input />);
+    const input = screen.getByRole('textbox');
+    expect(input).not.toHaveClass('border-red-500');
+    expect(input).toHaveClass('border-slate-700');
+  });
+
+  it('should render helper text when helperText prop is provided', () => {
+    render(<Input helperText="Enter your email address" />);
+    expect(screen.getByText('Enter your email address')).toBeInTheDocument();
+  });
+
+  it('should not render helper text when error is present', () => {
+    render(<Input helperText="Helper text" error="Error message" />);
+    expect(screen.queryByText('Helper text')).not.toBeInTheDocument();
+    expect(screen.getByText('Error message')).toBeInTheDocument();
+  });
+
+  it('should apply full width when fullWidth prop is true', () => {
+    const { container } = render(<Input fullWidth />);
+    const wrapper = container.firstChild;
+    expect(wrapper).toHaveClass('w-full');
+    const input = screen.getByRole('textbox');
+    expect(input).toHaveClass('w-full');
+  });
+
+  it('should not apply full width by default', () => {
+    const { container } = render(<Input />);
+    const wrapper = container.firstChild;
+    expect(wrapper).not.toHaveClass('w-full');
+  });
+
+  it('should render with label, error, and fullWidth together', () => {
+    const { container } = render(
+      <Input label="Email" error="Invalid email" fullWidth />
+    );
+    expect(screen.getByText('Email')).toBeInTheDocument();
+    expect(screen.getByText('Invalid email')).toBeInTheDocument();
+    expect(container.firstChild).toHaveClass('w-full');
+  });
 });
