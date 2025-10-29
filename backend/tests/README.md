@@ -8,12 +8,19 @@ This directory contains automated tests for the Portfolio Data Pipeline backend 
 
 ```
 tests/
-├── api/                        # API endpoint tests
-│   └── test_simple_endpoints.py  # Health checks and API validation
-├── models/                     # Database model tests
-│   └── test_reddit_post.py       # RedditPost model tests
-├── services/                   # Service layer tests (future)
-└── conftest.py                 # Shared pytest fixtures
+├── api/                           # API endpoint tests
+│   └── test_simple_endpoints.py     # Health checks and API validation
+├── core/                          # Configuration tests
+│   └── test_config.py               # Application settings tests
+├── db/                            # Database tests
+│   └── test_database.py             # Database configuration tests
+├── models/                        # Database model tests
+│   └── test_reddit_post.py          # RedditPost model tests
+├── schemas/                       # Pydantic schema tests
+│   └── test_reddit_schemas.py       # Reddit schema validation tests
+├── services/                      # Service layer tests
+│   └── test_sentiment_service.py    # Sentiment analysis tests
+└── conftest.py                    # Shared pytest fixtures
 ```
 
 ## Running Tests
@@ -77,7 +84,7 @@ def test_endpoint(client):
 ## Coverage
 
 Current coverage target: 40%
-Current coverage achieved: 53%
+Current coverage achieved: 58% (57.62%)
 
 View HTML coverage report:
 ```bash
@@ -95,10 +102,13 @@ open htmlcov/index.html
 
 ## Test Coverage Status
 
-**Working Tests:**
+**Working Tests (52 total):**
 - ✅ Health check endpoints (4 tests)
-- ✅ API structure validation (2 tests)
-- ✅ RedditPost model tests (4 tests)
+- ✅ Configuration/Settings (13 tests)
+- ✅ Database configuration (8 tests)
+- ✅ RedditPost model (4 tests)
+- ✅ Pydantic schemas (11 tests)
+- ✅ Sentiment analysis service (12 tests)
 
 **Future Improvements:**
 - [ ] Database integration tests (requires test database isolation)
