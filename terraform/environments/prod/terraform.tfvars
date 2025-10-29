@@ -1,0 +1,45 @@
+# Production Environment Configuration
+
+environment = "prod"
+aws_region  = "us-east-1"
+
+# VPC Configuration
+vpc_cidr             = "10.1.0.0/16"
+availability_zones   = ["us-east-1a", "us-east-1b"]
+public_subnet_cidrs  = ["10.1.1.0/24", "10.1.2.0/24"]
+private_subnet_cidrs = ["10.1.10.0/24", "10.1.11.0/24"]
+
+# Domain Configuration
+domain_name = "therpiproject.com"
+
+# Database Configuration
+db_name           = "portfolio_prod"
+db_username       = "portfolio_admin"
+# db_password should be set via environment variable or AWS Secrets Manager
+db_instance_class = "db.t4g.small"
+db_allocated_storage = 50
+
+# Redis Configuration
+redis_node_type      = "cache.t4g.small"
+redis_num_cache_nodes = 1
+
+# ECS Configuration - Production scale
+backend_cpu     = 512  # 0.5 vCPU
+backend_memory  = 1024 # 1 GB
+frontend_cpu    = 512  # 0.5 vCPU
+frontend_memory = 1024 # 1 GB
+
+backend_desired_count  = 2
+frontend_desired_count = 2
+
+# Application Environment Variables
+environment_variables = {
+  backend = {
+    LOG_LEVEL = "INFO"
+    LOG_FORMAT = "json"
+    ENVIRONMENT = "production"
+  }
+  frontend = {
+    NODE_ENV = "production"
+  }
+}

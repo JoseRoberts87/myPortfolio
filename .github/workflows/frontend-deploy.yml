@@ -1,0 +1,166 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'next.config.ts'
+      - 'Dockerfile'
+      - '.github/workflows/frontend-deploy.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY_PREFIX: portfolio
+
+jobs:
+  test:
+    name: Test Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Run type check
+        run: npx tsc --noEmit
+
+      - name: Build application
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8000
+        run: npm run build
+
+  build-and-deploy:
+    name: Build and Deploy to ${{ github.event.inputs.environment || 'dev' }}
+    needs: test
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set environment
+        id: set-env
+        run: |
+          if [ "${{ github.event.inputs.environment }}" == "" ]; then
+            echo "ENVIRONMENT=dev" >> $GITHUB_OUTPUT
+            echo "DOMAIN=dev.therpiproject.com" >> $GITHUB_OUTPUT
+          else
+            echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+            if [ "${{ github.event.inputs.environment }}" == "prod" ]; then
+              echo "DOMAIN=therpiproject.com" >> $GITHUB_OUTPUT
+            else
+              echo "DOMAIN=dev.therpiproject.com" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ENVIRONMENT: ${{ steps.set-env.outputs.ENVIRONMENT }}
+          IMAGE_TAG: ${{ github.sha }}
+          NEXT_PUBLIC_API_URL: https://${{ steps.set-env.outputs.DOMAIN }}/api
+        run: |
+          ECR_REPOSITORY="${{ env.ECR_REPOSITORY_PREFIX }}-${ENVIRONMENT}-frontend"
+
+          # Build Docker image with build args
+          docker build \
+            --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+          # Push to ECR
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Update ECS task definition
+        id: task-def
+        env:
+          ENVIRONMENT: ${{ steps.set-env.outputs.ENVIRONMENT }}
+        run: |
+          CLUSTER_NAME="${{ env.ECR_REPOSITORY_PREFIX }}-${ENVIRONMENT}-cluster"
+          SERVICE_NAME="${{ env.ECR_REPOSITORY_PREFIX }}-${ENVIRONMENT}-frontend-service"
+
+          # Get current task definition
+          TASK_DEFINITION=$(aws ecs describe-task-definition \
+            --task-definition "${{ env.ECR_REPOSITORY_PREFIX }}-${ENVIRONMENT}-frontend" \
+            --query 'taskDefinition' \
+            --output json)
+
+          # Update image in task definition
+          NEW_TASK_DEF=$(echo $TASK_DEFINITION | jq --arg IMAGE "${{ steps.build-image.outputs.image }}" \
+            '.containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)')
+
+          # Register new task definition
+          NEW_TASK_INFO=$(aws ecs register-task-definition --cli-input-json "$NEW_TASK_DEF")
+          NEW_REVISION=$(echo $NEW_TASK_INFO | jq -r '.taskDefinition.revision')
+
+          echo "revision=$NEW_REVISION" >> $GITHUB_OUTPUT
+          echo "cluster=$CLUSTER_NAME" >> $GITHUB_OUTPUT
+          echo "service=$SERVICE_NAME" >> $GITHUB_OUTPUT
+
+      - name: Deploy to ECS
+        run: |
+          aws ecs update-service \
+            --cluster ${{ steps.task-def.outputs.cluster }} \
+            --service ${{ steps.task-def.outputs.service }} \
+            --task-definition ${{ env.ECR_REPOSITORY_PREFIX }}-${{ steps.set-env.outputs.ENVIRONMENT }}-frontend:${{ steps.task-def.outputs.revision }} \
+            --force-new-deployment
+
+      - name: Wait for service stability
+        run: |
+          aws ecs wait services-stable \
+            --cluster ${{ steps.task-def.outputs.cluster }} \
+            --services ${{ steps.task-def.outputs.service }}
+
+      - name: Deployment notification
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Frontend deployment to ${{ steps.set-env.outputs.ENVIRONMENT }} succeeded!"
+            echo "🌐 Application URL: https://${{ steps.set-env.outputs.DOMAIN }}"
+          else
+            echo "❌ Frontend deployment to ${{ steps.set-env.outputs.ENVIRONMENT }} failed!"
+          fi

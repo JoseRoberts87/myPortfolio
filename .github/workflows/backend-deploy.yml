@@ -1,0 +1,149 @@
+name: Backend CI/CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-deploy.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY_PREFIX: portfolio
+
+jobs:
+  test:
+    name: Test Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        working-directory: ./backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov pytest-asyncio
+
+      - name: Run tests
+        working-directory: ./backend
+        run: |
+          pytest --cov=app --cov-report=term-missing
+
+  build-and-deploy:
+    name: Build and Deploy to ${{ github.event.inputs.environment || 'dev' }}
+    needs: test
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set environment
+        id: set-env
+        run: |
+          if [ "${{ github.event.inputs.environment }}" == "" ]; then
+            echo "ENVIRONMENT=dev" >> $GITHUB_OUTPUT
+          else
+            echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ENVIRONMENT: ${{ steps.set-env.outputs.ENVIRONMENT }}
+          IMAGE_TAG: ${{ github.sha }}
+        working-directory: ./backend
+        run: |
+          ECR_REPOSITORY="${{ env.ECR_REPOSITORY_PREFIX }}-${ENVIRONMENT}-backend"
+
+          # Build Docker image
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+          # Push to ECR
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Update ECS task definition
+        id: task-def
+        env:
+          ENVIRONMENT: ${{ steps.set-env.outputs.ENVIRONMENT }}
+        run: |
+          CLUSTER_NAME="${{ env.ECR_REPOSITORY_PREFIX }}-${ENVIRONMENT}-cluster"
+          SERVICE_NAME="${{ env.ECR_REPOSITORY_PREFIX }}-${ENVIRONMENT}-backend-service"
+
+          # Get current task definition
+          TASK_DEFINITION=$(aws ecs describe-task-definition \
+            --task-definition "${{ env.ECR_REPOSITORY_PREFIX }}-${ENVIRONMENT}-backend" \
+            --query 'taskDefinition' \
+            --output json)
+
+          # Update image in task definition
+          NEW_TASK_DEF=$(echo $TASK_DEFINITION | jq --arg IMAGE "${{ steps.build-image.outputs.image }}" \
+            '.containerDefinitions[0].image = $IMAGE | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)')
+
+          # Register new task definition
+          NEW_TASK_INFO=$(aws ecs register-task-definition --cli-input-json "$NEW_TASK_DEF")
+          NEW_REVISION=$(echo $NEW_TASK_INFO | jq -r '.taskDefinition.revision')
+
+          echo "revision=$NEW_REVISION" >> $GITHUB_OUTPUT
+          echo "cluster=$CLUSTER_NAME" >> $GITHUB_OUTPUT
+          echo "service=$SERVICE_NAME" >> $GITHUB_OUTPUT
+
+      - name: Deploy to ECS
+        run: |
+          aws ecs update-service \
+            --cluster ${{ steps.task-def.outputs.cluster }} \
+            --service ${{ steps.task-def.outputs.service }} \
+            --task-definition ${{ env.ECR_REPOSITORY_PREFIX }}-${{ steps.set-env.outputs.ENVIRONMENT }}-backend:${{ steps.task-def.outputs.revision }} \
+            --force-new-deployment
+
+      - name: Wait for service stability
+        run: |
+          aws ecs wait services-stable \
+            --cluster ${{ steps.task-def.outputs.cluster }} \
+            --services ${{ steps.task-def.outputs.service }}
+
+      - name: Deployment notification
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Backend deployment to ${{ steps.set-env.outputs.ENVIRONMENT }} succeeded!"
+          else
+            echo "❌ Backend deployment to ${{ steps.set-env.outputs.ENVIRONMENT }} failed!"
+          fi
