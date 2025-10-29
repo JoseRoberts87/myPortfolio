@@ -11,10 +11,11 @@ export default function DataPipelinesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [runningPipeline, setRunningPipeline] = useState(false);
+  const [sentimentFilter, setSentimentFilter] = useState<'positive' | 'negative' | 'neutral' | null>(null);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [sentimentFilter]);
 
   async function loadData() {
     try {
@@ -22,7 +23,11 @@ export default function DataPipelinesPage() {
       setError(null);
 
       const [postsData, statusData] = await Promise.all([
-        getRedditPosts({ page: 1, page_size: 10 }),
+        getRedditPosts({
+          page: 1,
+          page_size: 10,
+          sentiment: sentimentFilter || undefined
+        }),
         getPipelineStatus(),
       ]);
 
@@ -64,6 +69,19 @@ export default function DataPipelinesPage() {
     } catch {
       return dateString;
     }
+  }
+
+  function getSentimentBadgeVariant(sentiment: string | null): 'success' | 'warning' | 'error' {
+    if (sentiment === 'positive') return 'success';
+    if (sentiment === 'negative') return 'error';
+    return 'warning';
+  }
+
+  function getSentimentEmoji(sentiment: string | null): string {
+    if (sentiment === 'positive') return '😊';
+    if (sentiment === 'negative') return '😞';
+    if (sentiment === 'neutral') return '😐';
+    return '';
   }
 
   return (
@@ -133,6 +151,62 @@ export default function DataPipelinesPage() {
             </div>
           ) : null}
 
+          {/* Sentiment Distribution */}
+          {status?.sentiment_stats && status.sentiment_stats.analyzed > 0 && (
+            <div className="mt-6 pt-6 border-t border-gray-700">
+              <h3 className="text-sm font-semibold text-gray-400 mb-3">Sentiment Analysis</h3>
+              <div className="space-y-3">
+                {/* Positive */}
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm text-gray-300">😊 Positive</span>
+                    <span className="text-sm font-semibold text-green-400">
+                      {status.sentiment_stats.positive} ({Math.round((status.sentiment_stats.positive / status.sentiment_stats.analyzed) * 100)}%)
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-700 rounded-full h-2">
+                    <div
+                      className="bg-green-500 h-2 rounded-full transition-all"
+                      style={{ width: `${(status.sentiment_stats.positive / status.sentiment_stats.analyzed) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+
+                {/* Neutral */}
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm text-gray-300">😐 Neutral</span>
+                    <span className="text-sm font-semibold text-yellow-400">
+                      {status.sentiment_stats.neutral} ({Math.round((status.sentiment_stats.neutral / status.sentiment_stats.analyzed) * 100)}%)
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-700 rounded-full h-2">
+                    <div
+                      className="bg-yellow-500 h-2 rounded-full transition-all"
+                      style={{ width: `${(status.sentiment_stats.neutral / status.sentiment_stats.analyzed) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+
+                {/* Negative */}
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm text-gray-300">😞 Negative</span>
+                    <span className="text-sm font-semibold text-red-400">
+                      {status.sentiment_stats.negative} ({Math.round((status.sentiment_stats.negative / status.sentiment_stats.analyzed) * 100)}%)
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-700 rounded-full h-2">
+                    <div
+                      className="bg-red-500 h-2 rounded-full transition-all"
+                      style={{ width: `${(status.sentiment_stats.negative / status.sentiment_stats.analyzed) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {status && status.configured_subreddits.length > 0 && (
             <div className="mt-6 pt-6 border-t border-gray-700">
               <h3 className="text-sm font-semibold text-gray-400 mb-3">Configured Subreddits</h3>
@@ -150,7 +224,54 @@ export default function DataPipelinesPage() {
 
       {/* Recent Posts Section */}
       <Section padding="lg" background="subtle">
-        <h2 className="text-3xl font-bold mb-8">Recent Posts</h2>
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-3xl font-bold">Recent Posts</h2>
+
+          {/* Sentiment Filter */}
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-400">Filter by sentiment:</span>
+            <button
+              onClick={() => setSentimentFilter(null)}
+              className={`px-3 py-1 rounded-lg transition-colors ${
+                sentimentFilter === null
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
+            >
+              All
+            </button>
+            <button
+              onClick={() => setSentimentFilter('positive')}
+              className={`px-3 py-1 rounded-lg transition-colors ${
+                sentimentFilter === 'positive'
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
+            >
+              Positive
+            </button>
+            <button
+              onClick={() => setSentimentFilter('neutral')}
+              className={`px-3 py-1 rounded-lg transition-colors ${
+                sentimentFilter === 'neutral'
+                  ? 'bg-gray-500 text-white'
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
+            >
+              Neutral
+            </button>
+            <button
+              onClick={() => setSentimentFilter('negative')}
+              className={`px-3 py-1 rounded-lg transition-colors ${
+                sentimentFilter === 'negative'
+                  ? 'bg-red-600 text-white'
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
+            >
+              Negative
+            </button>
+          </div>
+        </div>
 
         {loading && posts.length === 0 ? (
           <div className="text-center py-12 text-gray-400">Loading posts...</div>
@@ -183,6 +304,16 @@ export default function DataPipelinesPage() {
                       <Badge variant="primary" size="sm">
                         r/{post.subreddit}
                       </Badge>
+                      {post.sentiment_label && (
+                        <Badge
+                          variant={getSentimentBadgeVariant(post.sentiment_label)}
+                          size="sm"
+                          className="cursor-help"
+                          title={post.sentiment_score !== null ? `Sentiment Score: ${post.sentiment_score.toFixed(3)}` : undefined}
+                        >
+                          {getSentimentEmoji(post.sentiment_label)} {post.sentiment_label}
+                        </Badge>
+                      )}
                       <span className="text-sm text-gray-400">by u/{post.author || '[deleted]'}</span>
                       <span className="text-sm text-gray-500">•</span>
                       <span className="text-sm text-gray-400">

@@ -17,6 +17,7 @@ router = APIRouter()
 @router.get("/posts", response_model=RedditPostList)
 async def get_reddit_posts(
     subreddit: Optional[str] = None,
+    sentiment: Optional[str] = Query(None, regex="^(positive|negative|neutral)$"),
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=100),
     db: Session = Depends(get_db)
@@ -26,6 +27,7 @@ async def get_reddit_posts(
 
     Args:
         subreddit: Filter by subreddit (optional)
+        sentiment: Filter by sentiment (positive, negative, neutral) (optional)
         page: Page number (default: 1)
         page_size: Number of posts per page (default: 50, max: 100)
         db: Database session
@@ -39,6 +41,9 @@ async def get_reddit_posts(
 
         if subreddit:
             query = query.filter(RedditPost.subreddit == subreddit)
+
+        if sentiment:
+            query = query.filter(RedditPost.sentiment_label == sentiment)
 
         # Get total count
         total = query.count()

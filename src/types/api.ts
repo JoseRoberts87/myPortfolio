@@ -36,6 +36,12 @@ export interface PipelineStatus {
   total_subreddits: number;
   latest_post_date: string | null;
   configured_subreddits: string[];
+  sentiment_stats?: {
+    positive: number;
+    negative: number;
+    neutral: number;
+    analyzed: number;
+  };
 }
 
 export interface ApiResponse<T> {
