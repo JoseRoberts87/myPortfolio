@@ -4,17 +4,23 @@
  */
 
 export interface RedditPost {
-  id: number;
-  post_id: string;
+  id: string;  // Reddit post ID (primary key)
   title: string;
-  author: string;
+  author: string | null;
   subreddit: string;
-  created_at: string;
+  content: string | null;  // Post text (selftext)
+  url: string | null;
   score: number;
-  url: string;
   num_comments: number;
-  selftext: string | null;
-  fetched_at: string;
+  upvote_ratio: number | null;
+  created_utc: string;  // Post creation time
+  retrieved_at: string;  // Time we fetched it
+  is_self: boolean;
+  is_video: boolean;
+  over_18: boolean;
+  sentiment_score: number | null;
+  sentiment_label: string | null;
+  sentiment_analyzed_at: string | null;
 }
 
 export interface RedditPostsResponse {

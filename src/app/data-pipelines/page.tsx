@@ -53,13 +53,17 @@ export default function DataPipelinesPage() {
   }
 
   function formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } catch {
+      return dateString;
+    }
   }
 
   return (
@@ -179,10 +183,10 @@ export default function DataPipelinesPage() {
                       <Badge variant="primary" size="sm">
                         r/{post.subreddit}
                       </Badge>
-                      <span className="text-sm text-gray-400">by u/{post.author}</span>
+                      <span className="text-sm text-gray-400">by u/{post.author || '[deleted]'}</span>
                       <span className="text-sm text-gray-500">•</span>
                       <span className="text-sm text-gray-400">
-                        {formatDate(post.created_at)}
+                        {formatDate(post.created_utc)}
                       </span>
                     </div>
 
@@ -195,9 +199,9 @@ export default function DataPipelinesPage() {
                       {post.title}
                     </a>
 
-                    {post.selftext && (
+                    {post.content && (
                       <p className="text-gray-400 line-clamp-2 mb-3">
-                        {post.selftext}
+                        {post.content}
                       </p>
                     )}
 
