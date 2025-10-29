@@ -3,6 +3,7 @@ Reddit API Endpoints
 """
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from typing import Optional
 from app.db import get_db
 from app.models.reddit_post import RedditPost
@@ -97,7 +98,7 @@ async def get_subreddits(db: Session = Depends(get_db)):
     try:
         result = db.query(
             RedditPost.subreddit,
-            db.func.count(RedditPost.id).label('post_count')
+            func.count(RedditPost.id).label('post_count')
         ).group_by(RedditPost.subreddit).all()
 
         return [
