@@ -8,6 +8,7 @@ from app.db import get_db
 from app.models.reddit_post import RedditPost
 from app.services.reddit_service import RedditService
 from app.services.sentiment_service import SentimentService
+from app.services.cache_service import cache_service
 from app.core.config import settings
 import logging
 
@@ -116,6 +117,13 @@ async def _execute_pipeline(time_filter: str = "day"):
                 stored_count += 1
 
         db.commit()
+
+        # Invalidate cache after successful data update
+        logger.info("Invalidating cache after pipeline execution...")
+        cache_service.delete_pattern("cache:reddit_*")
+        cache_service.delete_pattern("cache:stats_*")
+        cache_service.delete_pattern("cache:analytics_*")
+        logger.info("Cache invalidated successfully")
 
         logger.info(f"Pipeline completed. Stored: {stored_count}, Updated: {updated_count}, Sentiment analyzed: {sentiment_analyzed_count}")
 

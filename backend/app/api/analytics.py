@@ -8,6 +8,8 @@ from sqlalchemy import func, cast, Date
 from datetime import datetime, timedelta
 from app.db import get_db
 from app.models.reddit_post import RedditPost
+from app.services.cache_service import cached
+from app.core.config import settings
 import logging
 
 logger = logging.getLogger(__name__)
@@ -15,6 +17,7 @@ router = APIRouter()
 
 
 @router.get("/overview")
+@cached(prefix="analytics_overview", ttl=settings.CACHE_ANALYTICS_TTL)
 async def get_analytics_overview(
     days: int = 30,
     db: Session = Depends(get_db)
