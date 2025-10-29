@@ -3,12 +3,31 @@ FastAPI Application - Portfolio Data Pipeline
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from sqlalchemy.exc import SQLAlchemyError
 from contextlib import asynccontextmanager
 from app.core.config import settings
+from app.core.logging_config import setup_logging, get_logger
+from app.core.exceptions import BaseAPIException
+from app.middleware.error_handlers import (
+    custom_exception_handler,
+    validation_exception_handler,
+    http_exception_handler,
+    database_exception_handler,
+    general_exception_handler,
+)
+from app.middleware.logging_middleware import RequestLoggingMiddleware
 from app.api import api_router
-import logging
 
-logger = logging.getLogger(__name__)
+# Initialize logging
+setup_logging(
+    log_level=settings.LOG_LEVEL,
+    log_format=settings.LOG_FORMAT,
+    log_file=settings.LOG_FILE if settings.LOG_TO_FILE else None,
+)
+
+logger = get_logger(__name__)
 
 
 @asynccontextmanager
@@ -54,8 +73,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Add request logging middleware
+app.add_middleware(RequestLoggingMiddleware)
+
+# Register exception handlers
+app.add_exception_handler(BaseAPIException, custom_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(StarletteHTTPException, http_exception_handler)
+app.add_exception_handler(SQLAlchemyError, database_exception_handler)
+app.add_exception_handler(Exception, general_exception_handler)
+
 # Include API router
 app.include_router(api_router, prefix=settings.API_V1_PREFIX)
+
+logger.info(f"Application initialized: {settings.PROJECT_NAME}")
 
 
 @app.get("/")

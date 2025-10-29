@@ -40,6 +40,12 @@ class Settings(BaseSettings):
     CACHE_STATS_TTL: int = 300  # 5 minutes
     CACHE_REDDIT_TTL: int = 180  # 3 minutes
 
+    # Logging Configuration
+    LOG_LEVEL: str = "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+    LOG_FORMAT: str = "colored"  # colored, json, simple
+    LOG_FILE: str = ""  # Path to log file (empty = no file logging)
+    LOG_TO_FILE: bool = False  # Enable file logging
+
     model_config = SettingsConfigDict(
         env_file=".env",
         case_sensitive=True

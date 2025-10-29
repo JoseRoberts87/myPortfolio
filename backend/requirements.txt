@@ -39,3 +39,6 @@ pytest-asyncio==0.24.0
 # Caching
 redis==5.2.1
 hiredis==3.0.0
+
+# System Monitoring
+psutil==6.1.0
