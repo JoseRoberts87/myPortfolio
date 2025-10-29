@@ -53,8 +53,9 @@ async def _execute_pipeline(time_filter: str = "day"):
     Args:
         time_filter: Time filter for Reddit posts
     """
-    from app.db import SessionLocal
+    from app.db import get_session_local
 
+    SessionLocal = get_session_local()
     db = SessionLocal()
 
     try:
