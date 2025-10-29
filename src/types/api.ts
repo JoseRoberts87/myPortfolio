@@ -53,3 +53,46 @@ export interface HealthStatus {
   status: string;
   service: string;
 }
+
+// Analytics types
+export interface PostVolumeData {
+  date: string;
+  count: number;
+}
+
+export interface SentimentTrendData {
+  date: string;
+  positive: number;
+  negative: number;
+  neutral: number;
+}
+
+export interface SubredditData {
+  subreddit: string;
+  post_count: number;
+  avg_score: number;
+  avg_comments: number;
+}
+
+export interface SubredditSentimentData {
+  subreddit: string;
+  positive: number;
+  negative: number;
+  neutral: number;
+}
+
+export interface EngagementMetrics {
+  avg_score: number;
+  max_score: number;
+  avg_comments: number;
+  max_comments: number;
+  avg_upvote_ratio: number;
+}
+
+export interface AnalyticsOverview {
+  post_volume: PostVolumeData[];
+  sentiment_trends: SentimentTrendData[];
+  top_subreddits: SubredditData[];
+  sentiment_by_subreddit: SubredditSentimentData[];
+  engagement_metrics: EngagementMetrics | null;
+}

@@ -3,7 +3,7 @@
  * Functions for interacting with the FastAPI backend
  */
 
-import type { RedditPostsResponse, PipelineStatus, HealthStatus } from '@/types/api';
+import type { RedditPostsResponse, PipelineStatus, HealthStatus, AnalyticsOverview } from '@/types/api';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 const API_V1 = `${API_URL}/api/v1`;
@@ -94,4 +94,11 @@ export async function runPipeline(timeFilter: 'day' | 'week' | 'month' | 'year' 
   message: string;
 }> {
   return fetchApi(`/pipeline/run?time_filter=${timeFilter}`, { method: 'POST' });
+}
+
+/**
+ * Get analytics overview data
+ */
+export async function getAnalyticsOverview(days: number = 30): Promise<AnalyticsOverview> {
+  return fetchApi<AnalyticsOverview>(`/analytics/overview?days=${days}`);
 }
