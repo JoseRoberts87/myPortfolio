@@ -8,14 +8,12 @@ This directory contains automated tests for the Portfolio Data Pipeline backend 
 
 ```
 tests/
-├── api/              # API endpoint tests
-│   ├── test_health.py     # Health check endpoints
-│   ├── test_reddit.py     # Reddit API endpoints
-│   └── test_analytics.py  # Analytics endpoints
-├── models/           # Database model tests
-│   └── test_reddit_post.py
-├── services/         # Service layer tests (future)
-└── conftest.py       # Shared pytest fixtures
+├── api/                        # API endpoint tests
+│   └── test_simple_endpoints.py  # Health checks and API validation
+├── models/                     # Database model tests
+│   └── test_reddit_post.py       # RedditPost model tests
+├── services/                   # Service layer tests (future)
+└── conftest.py                 # Shared pytest fixtures
 ```
 
 ## Running Tests
@@ -79,6 +77,7 @@ def test_endpoint(client):
 ## Coverage
 
 Current coverage target: 40%
+Current coverage achieved: 53%
 
 View HTML coverage report:
 ```bash
@@ -94,10 +93,23 @@ open htmlcov/index.html
 4. **Fixtures**: Use fixtures for common setup code
 5. **Edge Cases**: Test both happy paths and error conditions
 
-## Future Improvements
+## Test Coverage Status
 
-- [ ] Integration tests with full database
+**Working Tests:**
+- ✅ Health check endpoints (4 tests)
+- ✅ API structure validation (2 tests)
+- ✅ RedditPost model tests (4 tests)
+
+**Future Improvements:**
+- [ ] Database integration tests (requires test database isolation)
+- [ ] Reddit API endpoint tests with mocked database
+- [ ] Analytics endpoint tests with mocked database
 - [ ] Service layer unit tests
 - [ ] Mock external API calls (Reddit API)
 - [ ] Performance/load testing
 - [ ] CI/CD integration
+
+**Note:** Full API integration tests are planned for future implementation. Current tests focus on:
+- Application structure and health
+- Model behavior and validation
+- API route existence and parameter validation
