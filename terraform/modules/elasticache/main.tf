@@ -25,8 +25,8 @@ resource "aws_elasticache_parameter_group" "redis" {
 
 # ElastiCache Replication Group (Redis)
 resource "aws_elasticache_replication_group" "redis" {
-  replication_group_id       = "${var.project_name}-${var.environment}-redis"
-  replication_group_description = "Redis cache for ${var.project_name} ${var.environment}"
+  replication_group_id = "${var.project_name}-${var.environment}-redis"
+  description          = "Redis cache for ${var.project_name} ${var.environment}"
 
   engine               = "redis"
   engine_version       = "7.1"
