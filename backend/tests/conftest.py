@@ -3,8 +3,9 @@ Test Configuration and Fixtures
 Provides shared fixtures for all tests
 """
 import pytest
+from unittest.mock import Mock, MagicMock, patch
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 from fastapi.testclient import TestClient
 from datetime import datetime, timedelta
 
@@ -156,3 +157,38 @@ def sample_posts_different_dates(test_db):
 
     test_db.commit()
     return posts
+
+
+@pytest.fixture
+def mock_db_session():
+    """Create a mock database session for testing"""
+    mock_session = MagicMock(spec=Session)
+    return mock_session
+
+
+@pytest.fixture
+def mock_reddit_api():
+    """Mock Reddit API responses"""
+    mock = Mock()
+    mock.user.me.return_value.name = "test_user"
+
+    # Mock submission (post) object
+    mock_submission = Mock()
+    mock_submission.id = "test123"
+    mock_submission.title = "Test Post"
+    mock_submission.author.name = "test_author"
+    mock_submission.subreddit.display_name = "Python"
+    mock_submission.selftext = "Test content"
+    mock_submission.url = "https://reddit.com/test"
+    mock_submission.score = 100
+    mock_submission.num_comments = 50
+    mock_submission.upvote_ratio = 0.95
+    mock_submission.created_utc = datetime.utcnow().timestamp()
+    mock_submission.is_self = True
+    mock_submission.is_video = False
+    mock_submission.over_18 = False
+
+    mock.subreddit.return_value.hot.return_value = [mock_submission]
+    mock.subreddit.return_value.new.return_value = [mock_submission]
+
+    return mock

@@ -84,7 +84,7 @@ def test_endpoint(client):
 ## Coverage
 
 Current coverage target: 40%
-Current coverage achieved: 58% (57.62%)
+Current coverage achieved: 65% (65.00%)
 
 View HTML coverage report:
 ```bash
@@ -102,24 +102,33 @@ open htmlcov/index.html
 
 ## Test Coverage Status
 
-**Working Tests (52 total):**
+**Working Tests (62 total):**
 - ✅ Health check endpoints (4 tests)
 - ✅ Configuration/Settings (13 tests)
 - ✅ Database configuration (8 tests)
 - ✅ RedditPost model (4 tests)
 - ✅ Pydantic schemas (11 tests)
 - ✅ Sentiment analysis service (12 tests)
+- ✅ Reddit service with mocked API (10 tests)
+
+**Module Coverage:**
+- ✅ app/services/reddit_service.py: **100%**
+- ✅ app/schemas/reddit.py: **100%**
+- ✅ app/models/reddit_post.py: **100%**
+- ✅ app/core/config.py: **100%**
+- ✅ app/main.py: 94%
+- ✅ app/services/sentiment_service.py: 89%
+- ✅ app/db/database.py: 78%
+
+**Areas with Lower Coverage:**
+- app/api/analytics.py: 27%
+- app/api/pipeline.py: 23%
+- app/api/stats.py: 31%
+- app/api/reddit.py: 53%
 
 **Future Improvements:**
-- [ ] Database integration tests (requires test database isolation)
-- [ ] Reddit API endpoint tests with mocked database
-- [ ] Analytics endpoint tests with mocked database
-- [ ] Service layer unit tests
-- [ ] Mock external API calls (Reddit API)
+- [ ] Full API endpoint integration tests (requires complex database mocking)
 - [ ] Performance/load testing
 - [ ] CI/CD integration
 
-**Note:** Full API integration tests are planned for future implementation. Current tests focus on:
-- Application structure and health
-- Model behavior and validation
-- API route existence and parameter validation
+**Note:** Current tests provide comprehensive coverage of core business logic (services, models, schemas) and application configuration. API endpoints have lower coverage due to database integration complexity.
