@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     REDDIT_USER_AGENT: str
 
     # CORS (comma-separated string that will be split)
-    CORS_ORIGINS: str = "http://localhost:3000,https://portfolio-60sng8hin-joseroberts87s-projects.vercel.app"
+    CORS_ORIGINS: str = "http://localhost:3000,https://portfolio-60sng8hin-joseroberts87s-projects.vercel.app,https://www.therpiproject.com,https://therpiproject.com"
 
     # Pipeline Configuration
     REDDIT_SUBREDDITS: str = "python,javascript,machinelearning,datascience"
