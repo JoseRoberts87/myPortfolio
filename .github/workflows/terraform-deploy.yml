@@ -61,8 +61,6 @@ jobs:
         id: plan
         env:
           TF_VAR_environment: ${{ github.event.inputs.environment }}
-          TF_VAR_db_username: ${{ secrets.DB_USERNAME }}
-          TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
         run: |
           terraform plan \
             -var-file=environments/${{ github.event.inputs.environment }}/terraform.tfvars \
@@ -72,8 +70,6 @@ jobs:
         if: github.event.inputs.action == 'apply'
         env:
           TF_VAR_environment: ${{ github.event.inputs.environment }}
-          TF_VAR_db_username: ${{ secrets.DB_USERNAME }}
-          TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
         run: |
           terraform apply -auto-approve tfplan
 
@@ -81,8 +77,6 @@ jobs:
         if: github.event.inputs.action == 'destroy'
         env:
           TF_VAR_environment: ${{ github.event.inputs.environment }}
-          TF_VAR_db_username: ${{ secrets.DB_USERNAME }}
-          TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
         run: |
           terraform destroy \
             -var-file=environments/${{ github.event.inputs.environment }}/terraform.tfvars \

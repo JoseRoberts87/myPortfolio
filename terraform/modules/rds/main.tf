@@ -1,3 +1,11 @@
+# Generate random password for RDS
+resource "random_password" "db_password" {
+  length  = 32
+  special = true
+  # Exclude characters that might cause issues in connection strings
+  override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+
 # DB Subnet Group
 resource "aws_db_subnet_group" "main" {
   name       = "${var.project_name}-${var.environment}-db-subnet-group"
@@ -46,7 +54,7 @@ resource "aws_db_instance" "postgres" {
 
   db_name  = var.db_name
   username = var.db_username
-  password = var.db_password
+  password = random_password.db_password.result
 
   db_subnet_group_name   = aws_db_subnet_group.main.name
   vpc_security_group_ids = [var.db_security_group_id]

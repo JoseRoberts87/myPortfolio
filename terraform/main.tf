@@ -6,11 +6,18 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.5"
+    }
   }
 
   backend "s3" {
     # Backend configuration should be provided via backend config file
     # Example: terraform init -backend-config=environments/prod/backend.hcl
+    bucket = "tf-backend-rpiproject"
+    key    = "terraform.tfstate"
+    region = "us-east-1"
   }
 }
 
@@ -65,8 +72,6 @@ module "rds" {
   private_subnet_ids     = module.vpc.private_subnet_ids
   db_security_group_id   = module.security_groups.db_security_group_id
   db_name                = var.db_name
-  db_username            = var.db_username
-  db_password            = var.db_password
   db_instance_class      = var.db_instance_class
   db_allocated_storage   = var.db_allocated_storage
 }
@@ -125,8 +130,8 @@ module "ecs" {
   # Database connection
   db_host     = module.rds.db_endpoint
   db_name     = var.db_name
-  db_username = var.db_username
-  db_password = var.db_password
+  db_username = module.rds.db_username
+  db_password = module.rds.db_password
 
   # Redis connection
   redis_host = module.elasticache.redis_endpoint
@@ -144,6 +149,9 @@ module "ecs" {
 
   backend_desired_count  = var.backend_desired_count
   frontend_desired_count = var.frontend_desired_count
+
+  # Domain name
+  domain_name = var.domain_name
 
   # Environment-specific variables
   environment_variables = var.environment_variables
