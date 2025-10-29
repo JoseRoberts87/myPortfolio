@@ -48,12 +48,14 @@ export async function getHealth(): Promise<HealthStatus> {
  */
 export async function getRedditPosts(params?: {
   subreddit?: string;
+  sentiment?: 'positive' | 'negative' | 'neutral';
   page?: number;
   page_size?: number;
 }): Promise<RedditPostsResponse> {
   const queryParams = new URLSearchParams();
 
   if (params?.subreddit) queryParams.append('subreddit', params.subreddit);
+  if (params?.sentiment) queryParams.append('sentiment', params.sentiment);
   if (params?.page) queryParams.append('page', params.page.toString());
   if (params?.page_size) queryParams.append('page_size', params.page_size.toString());
 

@@ -3,9 +3,11 @@ Data Pipeline API Endpoints
 """
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
+from datetime import datetime
 from app.db import get_db
 from app.models.reddit_post import RedditPost
 from app.services.reddit_service import RedditService
+from app.services.sentiment_service import SentimentService
 from app.core.config import settings
 import logging
 
@@ -70,11 +72,18 @@ async def _execute_pipeline(time_filter: str = "day"):
             time_filter=time_filter
         )
 
-        # Store posts in database
+        # Store posts in database with sentiment analysis
         stored_count = 0
         updated_count = 0
+        sentiment_analyzed_count = 0
 
         for post_data in posts:
+            # Perform sentiment analysis
+            sentiment_score, sentiment_label = SentimentService.analyze_reddit_post(
+                title=post_data.title,
+                content=post_data.content
+            )
+
             # Check if post already exists
             existing_post = db.query(RedditPost).filter(
                 RedditPost.id == post_data.id
@@ -84,16 +93,31 @@ async def _execute_pipeline(time_filter: str = "day"):
                 # Update existing post
                 for key, value in post_data.model_dump().items():
                     setattr(existing_post, key, value)
+
+                # Update sentiment data
+                if sentiment_score is not None:
+                    existing_post.sentiment_score = sentiment_score
+                    existing_post.sentiment_label = sentiment_label
+                    existing_post.sentiment_analyzed_at = datetime.utcnow()
+                    sentiment_analyzed_count += 1
+
                 updated_count += 1
             else:
-                # Create new post
+                # Create new post with sentiment data
                 new_post = RedditPost(**post_data.model_dump())
+
+                if sentiment_score is not None:
+                    new_post.sentiment_score = sentiment_score
+                    new_post.sentiment_label = sentiment_label
+                    new_post.sentiment_analyzed_at = datetime.utcnow()
+                    sentiment_analyzed_count += 1
+
                 db.add(new_post)
                 stored_count += 1
 
         db.commit()
 
-        logger.info(f"Pipeline completed. Stored: {stored_count}, Updated: {updated_count}")
+        logger.info(f"Pipeline completed. Stored: {stored_count}, Updated: {updated_count}, Sentiment analyzed: {sentiment_analyzed_count}")
 
     except Exception as e:
         logger.error(f"Pipeline execution failed: {str(e)}")
@@ -120,12 +144,29 @@ async def get_pipeline_status(db: Session = Depends(get_db)):
             RedditPost.created_utc.desc()
         ).first()
 
+        # Get sentiment statistics
+        positive_count = db.query(RedditPost).filter(
+            RedditPost.sentiment_label == "positive"
+        ).count()
+        negative_count = db.query(RedditPost).filter(
+            RedditPost.sentiment_label == "negative"
+        ).count()
+        neutral_count = db.query(RedditPost).filter(
+            RedditPost.sentiment_label == "neutral"
+        ).count()
+
         return {
             "status": "active",
             "total_posts": total_posts,
             "total_subreddits": subreddits,
             "latest_post_date": latest_post.created_utc if latest_post else None,
-            "configured_subreddits": settings.REDDIT_SUBREDDITS.split(',')
+            "configured_subreddits": settings.REDDIT_SUBREDDITS.split(','),
+            "sentiment_stats": {
+                "positive": positive_count,
+                "negative": negative_count,
+                "neutral": neutral_count,
+                "analyzed": positive_count + negative_count + neutral_count
+            }
         }
     except Exception as e:
         logger.error(f"Error fetching pipeline status: {str(e)}")
