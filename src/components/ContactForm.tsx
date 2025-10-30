@@ -17,6 +17,8 @@ interface FormErrors {
   email?: string;
   subject?: string;
   message?: string;
+  company?: string;
+  phone?: string;
 }
 
 export default function ContactForm() {
@@ -42,6 +44,8 @@ export default function ContactForm() {
       newErrors.name = 'Name is required';
     } else if (formData.name.trim().length < 2) {
       newErrors.name = 'Name must be at least 2 characters';
+    } else if (formData.name.trim().length > 100) {
+      newErrors.name = 'Name must be less than 100 characters';
     }
 
     // Email validation
@@ -56,6 +60,8 @@ export default function ContactForm() {
       newErrors.subject = 'Subject is required';
     } else if (formData.subject.trim().length < 3) {
       newErrors.subject = 'Subject must be at least 3 characters';
+    } else if (formData.subject.trim().length > 200) {
+      newErrors.subject = 'Subject must be less than 200 characters';
     }
 
     // Message validation
@@ -63,6 +69,17 @@ export default function ContactForm() {
       newErrors.message = 'Message is required';
     } else if (formData.message.trim().length < 10) {
       newErrors.message = 'Message must be at least 10 characters';
+    } else if (formData.message.trim().length > 5000) {
+      newErrors.message = 'Message must be less than 5000 characters';
+    }
+
+    // Optional field validation (only if provided)
+    if (formData.company && formData.company.trim().length > 100) {
+      newErrors.company = 'Company name must be less than 100 characters';
+    }
+
+    if (formData.phone && formData.phone.trim().length > 20) {
+      newErrors.phone = 'Phone number must be less than 20 characters';
     }
 
     setErrors(newErrors);
@@ -89,8 +106,9 @@ export default function ContactForm() {
     setSubmitStatus('idle');
 
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
-      const response = await fetch(`${API_URL}/contact`, {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const API_V1 = `${API_URL}/api/v1`;
+      const response = await fetch(`${API_V1}/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -164,6 +182,7 @@ export default function ContactForm() {
               name="name"
               value={formData.name}
               onChange={handleChange}
+              maxLength={100}
               className={`w-full px-4 py-3 bg-gray-800 border ${
                 errors.name ? 'border-red-500' : 'border-gray-700'
               } rounded-lg focus:outline-none focus:border-primary-500 transition-colors`}
@@ -206,9 +225,15 @@ export default function ContactForm() {
               name="company"
               value={formData.company}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-primary-500 transition-colors"
+              maxLength={100}
+              className={`w-full px-4 py-3 bg-gray-800 border ${
+                errors.company ? 'border-red-500' : 'border-gray-700'
+              } rounded-lg focus:outline-none focus:border-primary-500 transition-colors`}
               placeholder="Acme Inc."
             />
+            {errors.company && (
+              <p className="mt-1 text-sm text-red-500">{errors.company}</p>
+            )}
           </div>
 
           {/* Phone (Optional) */}
@@ -222,9 +247,15 @@ export default function ContactForm() {
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-primary-500 transition-colors"
+              maxLength={20}
+              className={`w-full px-4 py-3 bg-gray-800 border ${
+                errors.phone ? 'border-red-500' : 'border-gray-700'
+              } rounded-lg focus:outline-none focus:border-primary-500 transition-colors`}
               placeholder="+1 (555) 123-4567"
             />
+            {errors.phone && (
+              <p className="mt-1 text-sm text-red-500">{errors.phone}</p>
+            )}
           </div>
         </div>
 
@@ -239,6 +270,7 @@ export default function ContactForm() {
             name="subject"
             value={formData.subject}
             onChange={handleChange}
+            maxLength={200}
             className={`w-full px-4 py-3 bg-gray-800 border ${
               errors.subject ? 'border-red-500' : 'border-gray-700'
             } rounded-lg focus:outline-none focus:border-primary-500 transition-colors`}
@@ -260,6 +292,7 @@ export default function ContactForm() {
             value={formData.message}
             onChange={handleChange}
             rows={6}
+            maxLength={5000}
             className={`w-full px-4 py-3 bg-gray-800 border ${
               errors.message ? 'border-red-500' : 'border-gray-700'
             } rounded-lg focus:outline-none focus:border-primary-500 transition-colors resize-vertical`}
