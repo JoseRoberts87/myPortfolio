@@ -56,12 +56,32 @@ export default function Home() {
           <p className="text-lg text-gray-400 max-w-2xl mx-auto">
             Building modern web applications, data pipelines, ML models, and cloud infrastructure
           </p>
-          <div className="mt-8">
+          <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
             <a
               href="#web-dev"
               className="inline-block bg-purple-600 hover:bg-purple-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors"
             >
               Explore My Work
+            </a>
+            <a
+              href="/Jose-Roberts-Resume.pdf"
+              download="Jose-Roberts-Resume.pdf"
+              className="inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-purple-900 font-semibold px-8 py-3 rounded-lg transition-colors"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                />
+              </svg>
+              Download Resume
             </a>
           </div>
         </div>
