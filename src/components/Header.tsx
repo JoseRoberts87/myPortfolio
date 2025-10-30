@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import ThemeToggle from './ThemeToggle';
+import ResumeDownloadButton from './ResumeDownloadButton';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -41,6 +42,7 @@ export default function Header() {
                 </Link>
               ))}
             </div>
+            <ResumeDownloadButton variant="primary" size="sm" />
             <ThemeToggle />
           </div>
 
@@ -94,6 +96,9 @@ export default function Header() {
               {item.name}
             </Link>
           ))}
+          <div className="px-3 py-2">
+            <ResumeDownloadButton variant="primary" size="md" className="w-full" />
+          </div>
         </div>
       </div>
     </header>

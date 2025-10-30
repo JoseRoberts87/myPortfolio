@@ -1,3 +1,5 @@
+import ResumeDownloadButton from '@/components/ResumeDownloadButton';
+
 export default function Home() {
   const expertiseAreas = [
     {
@@ -52,13 +54,14 @@ export default function Home() {
           <p className="text-lg text-gray-400 max-w-2xl mx-auto">
             Building modern web applications, data pipelines, ML models, and cloud infrastructure
           </p>
-          <div className="mt-8">
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
               href="#web-dev"
               className="inline-block bg-purple-600 hover:bg-purple-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors"
             >
               Explore My Work
             </a>
+            <ResumeDownloadButton variant="outline" size="lg" />
           </div>
         </div>
       </section>
@@ -97,12 +100,15 @@ export default function Home() {
           <p className="text-gray-300 mb-8">
             Feel free to reach out to discuss projects, opportunities, or collaborations.
           </p>
-          <a
-            href="#contact"
-            className="inline-block bg-white text-purple-900 font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            Get in Touch
-          </a>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a
+              href="#contact"
+              className="inline-block bg-white text-purple-900 font-semibold px-8 py-3 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              Get in Touch
+            </a>
+            <ResumeDownloadButton variant="secondary" size="lg" />
+          </div>
         </div>
       </section>
     </>
