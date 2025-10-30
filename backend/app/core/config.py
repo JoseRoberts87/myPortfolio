@@ -46,10 +46,18 @@ class Settings(BaseSettings):
     LOG_FILE: str = ""  # Path to log file (empty = no file logging)
     LOG_TO_FILE: bool = False  # Enable file logging
 
-    # Gmail SMTP Configuration
+    # Email Configuration
+    EMAIL_SERVICE: str = "resend"  # Options: "gmail", "resend"
+    CONTACT_EMAIL_ENABLED: bool = False  # Enable/disable email notifications
+
+    # Gmail SMTP Configuration (if using EMAIL_SERVICE=gmail)
     GMAIL_USER: str = ""  # Your Gmail address
     GMAIL_APP_PASSWORD: str = ""  # Gmail App-Specific Password
-    CONTACT_EMAIL_ENABLED: bool = False  # Enable/disable email notifications
+
+    # Resend API Configuration (if using EMAIL_SERVICE=resend - recommended)
+    RESEND_API_KEY: str = ""  # Get from https://resend.com/
+    RESEND_FROM_EMAIL: str = "onboarding@resend.dev"  # Sender email
+    RESEND_TO_EMAIL: str = ""  # Where to receive notifications
 
     model_config = SettingsConfigDict(
         env_file=".env",

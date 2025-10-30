@@ -8,7 +8,6 @@ from datetime import datetime
 from app.schemas.contact import ContactMessageCreate, ContactMessageResponse
 from app.core.logging_config import get_logger
 from app.core.config import settings
-from app.services.email_service import email_service
 import uuid
 
 logger = get_logger(__name__)
@@ -68,19 +67,35 @@ async def submit_contact_form(
         # Send email notification if enabled
         if settings.CONTACT_EMAIL_ENABLED:
             try:
-                email_sent = await email_service.send_contact_notification(
-                    name=contact_data.name,
-                    email=contact_data.email,
-                    subject=contact_data.subject,
-                    message=contact_data.message,
-                    company=contact_data.company,
-                    phone=contact_data.phone,
-                    message_id=message_id,
-                )
-                if email_sent:
-                    logger.info(f"Email notification sent for message {message_id}")
+                # Select email service based on configuration
+                if settings.EMAIL_SERVICE == "gmail":
+                    from app.services.email_service import email_service
+                    service = email_service
+                elif settings.EMAIL_SERVICE == "resend":
+                    from app.services.resend_email_service import resend_email_service
+                    service = resend_email_service
                 else:
-                    logger.warning(f"Email notification failed for message {message_id}")
+                    logger.error(f"Unknown email service: {settings.EMAIL_SERVICE}")
+                    service = None
+
+                if service:
+                    email_sent = await service.send_contact_notification(
+                        name=contact_data.name,
+                        email=contact_data.email,
+                        subject=contact_data.subject,
+                        message=contact_data.message,
+                        company=contact_data.company,
+                        phone=contact_data.phone,
+                        message_id=message_id,
+                    )
+                    if email_sent:
+                        logger.info(
+                            f"Email notification sent via {settings.EMAIL_SERVICE} for message {message_id}"
+                        )
+                    else:
+                        logger.warning(
+                            f"Email notification failed via {settings.EMAIL_SERVICE} for message {message_id}"
+                        )
             except Exception as email_error:
                 # Don't fail the request if email fails, just log it
                 logger.error(
