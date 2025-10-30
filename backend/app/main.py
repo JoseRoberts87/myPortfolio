@@ -33,22 +33,23 @@ logger = get_logger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan - runs on startup and shutdown"""
-    # Startup: Initialize database
-    logger.info("Starting up - initializing database...")
+    # Startup: Verify database connection
+    logger.info("Starting up - verifying database connection...")
     try:
-        from app.db.database import Base, get_engine
-        from app.models.reddit_post import RedditPost  # Import models to register them
+        from app.db.database import get_engine
+        from sqlalchemy import inspect
 
         engine = get_engine()
-        Base.metadata.create_all(bind=engine)
 
-        # Verify tables were created
-        from sqlalchemy import inspect
-        inspector = inspect(engine)
-        tables = inspector.get_table_names()
-        logger.info(f"✓ Database initialized successfully! Tables: {tables}")
+        # Test database connection and list tables
+        with engine.connect() as conn:
+            inspector = inspect(engine)
+            tables = inspector.get_table_names()
+            logger.info(f"✓ Database connection successful! Tables: {tables}")
+            logger.info("Note: Database schema is managed by Alembic migrations")
     except Exception as e:
-        logger.error(f"✗ Error initializing database: {str(e)}")
+        logger.error(f"✗ Error connecting to database: {str(e)}")
+        logger.warning("Application will start but database operations may fail")
         # Don't raise - let the app start anyway, database endpoints will fail gracefully
 
     yield  # Application runs
