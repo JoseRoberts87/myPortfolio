@@ -52,7 +52,7 @@
 - [x] Implement responsive design across all breakpoints
 - [x] Add smooth scrolling behavior
 - [x] Configure Jest and React Testing Library
-- [x] Write comprehensive unit tests (163 tests, 100% passing)
+- [x] Write comprehensive unit tests (200 tests, 100% passing)
 - [x] Fix accessibility bug (aria-expanded attribute)
 - [x] Add routing structure for showcase sections
 - [x] Create reusable UI component library
@@ -138,7 +138,8 @@ _Phase 1 complete! All planned tasks finished._
 - [x] Create CLAUDE.md documentation for AI assistants
 
 ### Medium Priority
-- [ ] Create timeline/experience section
+- [x] Create timeline/experience section
+- [x] Add profile image to hero section
 - [ ] Build project case studies pages
 - [ ] Add LinkedIn integration
 - [ ] Create about me page
