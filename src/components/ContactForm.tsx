@@ -89,8 +89,9 @@ export default function ContactForm() {
     setSubmitStatus('idle');
 
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
-      const response = await fetch(`${API_URL}/contact`, {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const API_V1 = `${API_URL}/api/v1`;
+      const response = await fetch(`${API_V1}/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
