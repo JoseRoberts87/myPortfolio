@@ -53,7 +53,7 @@ EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:${PORT:-8000}/api/v1/health || exit 1
+    CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
 
 # Run migrations and start the application
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
