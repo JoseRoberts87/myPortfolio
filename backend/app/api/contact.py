@@ -2,10 +2,13 @@
 Contact Form API Endpoints
 Handles contact form submissions
 """
-from fastapi import APIRouter, status, Request, HTTPException
+from fastapi import APIRouter, status, Request, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from datetime import datetime
+from sqlalchemy.orm import Session
 from app.schemas.contact import ContactMessageCreate, ContactMessageResponse
+from app.models.contact_message import ContactMessage
+from app.db.database import get_db
 from app.core.logging_config import get_logger
 from app.core.config import settings
 import uuid
@@ -24,7 +27,8 @@ router = APIRouter()
 )
 async def submit_contact_form(
     contact_data: ContactMessageCreate,
-    request: Request
+    request: Request,
+    db: Session = Depends(get_db)
 ) -> ContactMessageResponse:
     """
     Submit a contact form message
@@ -61,8 +65,30 @@ async def submit_contact_form(
             }
         )
 
-        # TODO: Save to database (will implement with database model)
-        # For now, we'll just log and return success
+        # Save to database
+        email_status = "pending"
+        try:
+            db_message = ContactMessage(
+                message_id=message_id,
+                name=contact_data.name,
+                email=contact_data.email,
+                subject=contact_data.subject,
+                message=contact_data.message,
+                company=contact_data.company,
+                phone=contact_data.phone,
+                ip_address=client_host,
+                user_agent=user_agent,
+                status="pending",
+                email_sent="pending"
+            )
+            db.add(db_message)
+            db.commit()
+            db.refresh(db_message)
+            logger.info(f"Contact message saved to database with ID {db_message.id}")
+        except Exception as db_error:
+            logger.error(f"Failed to save contact message to database: {str(db_error)}")
+            db.rollback()
+            # Don't fail the request if database save fails, continue with email
 
         # Send email notification if enabled
         if settings.CONTACT_EMAIL_ENABLED:
@@ -89,19 +115,38 @@ async def submit_contact_form(
                         message_id=message_id,
                     )
                     if email_sent:
+                        email_status = "sent"
                         logger.info(
                             f"Email notification sent via {settings.EMAIL_SERVICE} for message {message_id}"
                         )
                     else:
+                        email_status = "failed"
                         logger.warning(
                             f"Email notification failed via {settings.EMAIL_SERVICE} for message {message_id}"
                         )
+
+                    # Update database with email status
+                    try:
+                        db_message.email_sent = email_status
+                        db_message.email_sent_at = datetime.utcnow() if email_status == "sent" else None
+                        db.commit()
+                    except Exception as update_error:
+                        logger.error(f"Failed to update email status in database: {str(update_error)}")
+                        db.rollback()
             except Exception as email_error:
                 # Don't fail the request if email fails, just log it
+                email_status = "failed"
                 logger.error(
                     f"Email notification error: {str(email_error)}",
                     extra={"message_id": message_id, "error": str(email_error)}
                 )
+                # Update database with failed status
+                try:
+                    db_message.email_sent = "failed"
+                    db.commit()
+                except Exception as update_error:
+                    logger.error(f"Failed to update email failed status: {str(update_error)}")
+                    db.rollback()
 
         return ContactMessageResponse(
             success=True,

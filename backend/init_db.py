@@ -11,6 +11,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from app.db.database import Base, get_engine
 from app.models.reddit_post import RedditPost  # Import all models
+from app.models.contact_message import ContactMessage  # Import contact message model
 import logging
 
 logging.basicConfig(level=logging.INFO)
