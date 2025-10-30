@@ -1,3 +1,5 @@
+import Timeline from '@/components/Timeline';
+
 export default function Home() {
   const expertiseAreas = [
     {
@@ -87,6 +89,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Timeline */}
+      <Timeline />
 
       {/* CTA Section */}
       <section className="bg-gradient-to-r from-purple-900 to-slate-900 py-16">
