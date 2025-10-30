@@ -90,7 +90,7 @@ export default function Home() {
                 <a
                   href="/Jose-Roberts-Resume.pdf"
                   download="Jose-Roberts-Resume.pdf"
-                  className="inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-purple-900 font-semibold px-8 py-3 rounded-lg transition-colors"
+                  className="inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-slate-900 font-semibold px-8 py-3 rounded-lg transition-colors shadow-lg"
                 >
                   <svg
                     className="w-5 h-5"
