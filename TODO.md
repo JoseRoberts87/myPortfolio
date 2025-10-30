@@ -131,7 +131,7 @@ _Phase 1 complete! All planned tasks finished._
 
 ### High Priority
 - [x] Create skills matrix/radar chart visualization
-- [ ] Add resume download functionality (PDF)
+- [x] Add resume download functionality (PDF)
 - [ ] Implement GitHub integration (repos, contributions)
 - [x] Build contact form with validation
 - [x] Add form submission backend
