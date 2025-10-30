@@ -1,3 +1,5 @@
+import ContactForm from '@/components/ContactForm';
+
 export default function Home() {
   const expertiseAreas = [
     {
@@ -85,6 +87,13 @@ export default function Home() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="py-20 bg-slate-900">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <ContactForm />
         </div>
       </section>
 
