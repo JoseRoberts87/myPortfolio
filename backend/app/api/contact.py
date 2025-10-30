@@ -52,10 +52,10 @@ async def submit_contact_form(
             f"Contact form submission received",
             extra={
                 "message_id": message_id,
-                "name": contact_data.name,
-                "email": contact_data.email,
-                "subject": contact_data.subject,
-                "company": contact_data.company,
+                "contact_name": contact_data.name,
+                "contact_email": contact_data.email,
+                "contact_subject": contact_data.subject,
+                "contact_company": contact_data.company,
                 "ip_address": client_host,
                 "user_agent": user_agent,
             }
