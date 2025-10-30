@@ -61,3 +61,14 @@ env/
 ENV/
 .venv
 *.egg-info/
+.coverage
+htmlcov/
+
+# Terraform
+terraform/.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# Railway
+.railway/
