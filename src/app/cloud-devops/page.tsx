@@ -32,7 +32,7 @@ export default function CloudDevOpsPage() {
           </div>
 
           {/* Architecture Diagram */}
-          <div className="bg-white dark:bg-gray-900 rounded-lg p-6 mb-8">
+          <div className="bg-white rounded-lg p-6 mb-8 border border-gray-200 dark:border-gray-700">
             <img
               src="/images/aws-architecture.svg"
               alt="AWS Infrastructure Architecture"
