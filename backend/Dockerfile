@@ -39,12 +39,8 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 # Copy application code
 COPY . .
 
-# Copy entrypoint script
-COPY docker-entrypoint.sh /app/docker-entrypoint.sh
-
 # Create non-root user and set permissions
 RUN useradd -m -u 1000 appuser && \
-    chmod +x /app/docker-entrypoint.sh && \
     chown -R appuser:appuser /app
 USER appuser
 
@@ -56,4 +52,11 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
 
 # Run migrations and start the application
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+CMD alembic upgrade head && \
+    gunicorn app.main:app \
+    --workers 2 \
+    --worker-class uvicorn.workers.UvicornWorker \
+    --bind 0.0.0.0:${PORT:-8000} \
+    --access-logfile - \
+    --error-logfile - \
+    --log-level info
