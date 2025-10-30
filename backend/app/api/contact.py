@@ -7,6 +7,8 @@ from fastapi.responses import JSONResponse
 from datetime import datetime
 from app.schemas.contact import ContactMessageCreate, ContactMessageResponse
 from app.core.logging_config import get_logger
+from app.core.config import settings
+from app.services.email_service import email_service
 import uuid
 
 logger = get_logger(__name__)
@@ -63,8 +65,28 @@ async def submit_contact_form(
         # TODO: Save to database (will implement with database model)
         # For now, we'll just log and return success
 
-        # TODO: Send email notification (optional - can be implemented with AWS SES)
-        # await send_email_notification(contact_data, message_id)
+        # Send email notification if enabled
+        if settings.CONTACT_EMAIL_ENABLED:
+            try:
+                email_sent = await email_service.send_contact_notification(
+                    name=contact_data.name,
+                    email=contact_data.email,
+                    subject=contact_data.subject,
+                    message=contact_data.message,
+                    company=contact_data.company,
+                    phone=contact_data.phone,
+                    message_id=message_id,
+                )
+                if email_sent:
+                    logger.info(f"Email notification sent for message {message_id}")
+                else:
+                    logger.warning(f"Email notification failed for message {message_id}")
+            except Exception as email_error:
+                # Don't fail the request if email fails, just log it
+                logger.error(
+                    f"Email notification error: {str(email_error)}",
+                    extra={"message_id": message_id, "error": str(email_error)}
+                )
 
         return ContactMessageResponse(
             success=True,

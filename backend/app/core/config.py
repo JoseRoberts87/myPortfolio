@@ -46,6 +46,11 @@ class Settings(BaseSettings):
     LOG_FILE: str = ""  # Path to log file (empty = no file logging)
     LOG_TO_FILE: bool = False  # Enable file logging
 
+    # Gmail SMTP Configuration
+    GMAIL_USER: str = ""  # Your Gmail address
+    GMAIL_APP_PASSWORD: str = ""  # Gmail App-Specific Password
+    CONTACT_EMAIL_ENABLED: bool = False  # Enable/disable email notifications
+
     model_config = SettingsConfigDict(
         env_file=".env",
         case_sensitive=True
