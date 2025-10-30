@@ -39,8 +39,12 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 # Copy application code
 COPY . .
 
-# Create non-root user
+# Copy entrypoint script
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+
+# Create non-root user and set permissions
 RUN useradd -m -u 1000 appuser && \
+    chmod +x /app/docker-entrypoint.sh && \
     chown -R appuser:appuser /app
 USER appuser
 
@@ -49,13 +53,7 @@ EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:8000/api/v1/health || exit 1
+    CMD curl -f http://localhost:${PORT:-8000}/api/v1/health || exit 1
 
-# Run the application with gunicorn
-CMD ["gunicorn", "app.main:app", \
-     "--workers", "2", \
-     "--worker-class", "uvicorn.workers.UvicornWorker", \
-     "--bind", "0.0.0.0:8000", \
-     "--access-logfile", "-", \
-     "--error-logfile", "-", \
-     "--log-level", "info"]
+# Run migrations and start the application
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
