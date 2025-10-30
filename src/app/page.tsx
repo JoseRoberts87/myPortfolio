@@ -1,6 +1,8 @@
 import ContactForm from '@/components/ContactForm';
 import SkillsMatrix from '@/components/SkillsMatrix';
 import ResumeDownload from '@/components/ResumeDownload';
+import Timeline from '@/components/Timeline';
+import Image from 'next/image';
 
 export default function Home() {
   const expertiseAreas = [
@@ -46,43 +48,67 @@ export default function Home() {
     <>
       {/* Hero Section */}
       <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        <div className="text-center space-y-6 p-8 max-w-5xl mx-auto">
-          <h1 className="text-6xl md:text-7xl font-bold text-white animate-fade-in">
-            Full-Stack Developer
-          </h1>
-          <p className="text-2xl md:text-3xl text-gray-300">
-            Showcasing expertise across multiple domains
-          </p>
-          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-            Building modern web applications, data pipelines, ML models, and cloud infrastructure
-          </p>
-          <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a
-              href="#web-dev"
-              className="inline-block bg-purple-600 hover:bg-purple-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors"
-            >
-              Explore My Work
-            </a>
-            <a
-              href="/Jose-Roberts-Resume.pdf"
-              download="Jose-Roberts-Resume.pdf"
-              className="inline-flex items-center gap-2 bg-white hover:bg-gray-100 text-purple-900 font-semibold px-8 py-3 rounded-lg transition-colors"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                />
-              </svg>
-              Download Resume
-            </a>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left side - Profile Image */}
+            <div className="flex justify-center lg:justify-end">
+              <div className="relative">
+                <div className="absolute -inset-4 bg-gradient-to-r from-purple-600 to-purple-400 rounded-full blur-2xl opacity-30"></div>
+                <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-purple-500/50 shadow-2xl">
+                  <Image
+                    src="/profile-photo.png"
+                    alt="Jose Roberts - Full-Stack Developer"
+                    fill
+                    className="object-cover"
+                    priority
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Right side - Content */}
+            <div className="text-center lg:text-left space-y-6">
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white animate-fade-in">
+                Jose Roberts
+              </h1>
+              <h2 className="text-3xl md:text-4xl font-semibold text-purple-400">
+                Full-Stack Developer
+              </h2>
+              <p className="text-xl md:text-2xl text-gray-300">
+                Showcasing expertise across multiple domains
+              </p>
+              <p className="text-lg text-gray-400 max-w-2xl">
+                Building modern web applications, data pipelines, ML models, and cloud infrastructure
+              </p>
+              <div className="mt-8 flex flex-col sm:flex-row gap-4 lg:justify-start justify-center">
+                <a
+                  href="#web-dev"
+                  className="inline-block bg-purple-600 hover:bg-purple-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors"
+                >
+                  Explore My Work
+                </a>
+                <a
+                  href="/Jose-Roberts-Resume.pdf"
+                  download="Jose-Roberts-Resume.pdf"
+                  className="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-100 text-purple-900 font-semibold px-8 py-3 rounded-lg transition-colors"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                    />
+                  </svg>
+                  Download Resume
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -119,8 +145,15 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Timeline Section */}
+      <section id="timeline" className="py-20 bg-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Timeline />
+        </div>
+      </section>
+
       {/* Resume Download Section */}
-      <section id="resume" className="py-20 bg-slate-800">
+      <section id="resume" className="py-20 bg-slate-900">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <ResumeDownload />
         </div>
