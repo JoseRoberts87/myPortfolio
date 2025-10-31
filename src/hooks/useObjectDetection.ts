@@ -97,7 +97,10 @@ export function useObjectDetection() {
   // Detect objects in video element
   const detectObjects = useCallback(
     async (videoElement: HTMLVideoElement) => {
-      if (!model || !isDetecting) return;
+      if (!model) {
+        console.log('Model not available');
+        return;
+      }
 
       try {
         const predictions = await model.detect(videoElement);
@@ -107,6 +110,10 @@ export function useObjectDetection() {
           score: pred.score,
           bbox: pred.bbox,
         }));
+
+        if (frameCountRef.current % 30 === 0 && detections.length > 0) {
+          console.log('Detections:', detections.length, detections);
+        }
 
         setStats((prev) => ({
           ...prev,
@@ -119,7 +126,7 @@ export function useObjectDetection() {
         console.error('Detection error:', error);
       }
     },
-    [model, isDetecting]
+    [model]
   );
 
   // Start continuous detection
@@ -130,12 +137,15 @@ export function useObjectDetection() {
         return;
       }
 
+      console.log('Starting detection...');
       setIsDetecting(true);
 
       // Run detection at ~30fps
       detectionIntervalRef.current = window.setInterval(() => {
         detectObjects(videoElement);
       }, 33); // ~30fps
+
+      console.log('Detection interval started');
     },
     [model, detectObjects]
   );
