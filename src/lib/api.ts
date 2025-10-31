@@ -102,3 +102,49 @@ export async function runPipeline(timeFilter: 'day' | 'week' | 'month' | 'year' 
 export async function getAnalyticsOverview(days: number = 30): Promise<AnalyticsOverview> {
   return fetchApi<AnalyticsOverview>(`/analytics/overview?days=${days}`);
 }
+
+/**
+ * Detect objects in an image using YOLO
+ */
+export async function detectObjectsInImage(
+  file: File,
+  options?: {
+    confidence?: number;
+    returnAnnotated?: boolean;
+  }
+): Promise<{
+  detections: Array<{
+    class_name: string;
+    confidence: number;
+    bbox: number[];
+  }>;
+  image_width: number;
+  image_height: number;
+  annotated_image?: string;
+}> {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const params = new URLSearchParams();
+  if (options?.confidence !== undefined) {
+    params.append('confidence', options.confidence.toString());
+  }
+  if (options?.returnAnnotated !== undefined) {
+    params.append('return_annotated', options.returnAnnotated.toString());
+  }
+
+  const queryString = params.toString();
+  const url = `${API_V1}/computer-vision/detect/image${queryString ? `?${queryString}` : ''}`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+    throw new Error(errorData.detail || `HTTP ${response.status}: ${response.statusText}`);
+  }
+
+  return await response.json();
+}

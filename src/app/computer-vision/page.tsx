@@ -1,4 +1,9 @@
+'use client';
+
 import { Section, Card, Badge } from '@/components/ui';
+import ObjectDetector from '@/components/ComputerVision/ObjectDetector';
+import ModelInfo from '@/components/ComputerVision/ModelInfo';
+import ImageUploadDetector from '@/components/ComputerVision/ImageUploadDetector';
 
 export default function ComputerVisionPage() {
   return (
@@ -9,60 +14,88 @@ export default function ComputerVisionPage() {
             Computer Vision
           </h1>
           <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-            Real-time object detection using webcam or video files with bounding box visualization.
+            Real-time object detection using webcam with bounding box visualization powered by TensorFlow.js.
           </p>
         </div>
       </Section>
 
+      {/* Main Object Detector */}
       <Section padding="lg">
-        <Card variant="elevated" padding="lg">
-          <div className="text-center py-12">
-            <Badge variant="warning" size="lg" className="mb-4">
-              Coming Soon
-            </Badge>
-            <h2 className="text-2xl font-semibold mb-4">Real-time Object Detection</h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
-              This section will feature a real-time object detection system using YOLO or TensorFlow.js,
-              with webcam integration, bounding box visualization, confidence scores, and FPS monitoring
-              for live video processing.
-            </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-2">
-              <Badge variant="primary">TensorFlow.js</Badge>
-              <Badge variant="primary">YOLO</Badge>
-              <Badge variant="primary">WebRTC</Badge>
-              <Badge variant="primary">Canvas API</Badge>
-              <Badge variant="primary">Real-time Processing</Badge>
-            </div>
-          </div>
-        </Card>
+        <ObjectDetector />
       </Section>
 
+      {/* Model Information */}
       <Section padding="lg" background="subtle">
-        <h2 className="text-3xl font-bold mb-8">Planned Features</h2>
+        <ModelInfo />
+      </Section>
+
+      {/* YOLO Image Upload Detector */}
+      <Section padding="lg">
+        <ImageUploadDetector />
+      </Section>
+
+      {/* Technology Stack */}
+      <Section padding="lg">
+        <h2 className="text-3xl font-bold mb-8">Technology Stack</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card variant="bordered">
-            <h3 className="text-xl font-semibold mb-3">Webcam Integration</h3>
-            <p className="text-gray-400">
-              Live webcam feed processing with real-time object detection and classification.
+            <h3 className="text-xl font-semibold mb-3">TensorFlow.js</h3>
+            <p className="text-gray-400 mb-4">
+              Machine learning library that runs in the browser, enabling real-time inference without server calls.
             </p>
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="primary">TensorFlow.js</Badge>
+              <Badge variant="primary">COCO-SSD</Badge>
+              <Badge variant="primary">WebGL</Badge>
+            </div>
           </Card>
+
           <Card variant="bordered">
-            <h3 className="text-xl font-semibold mb-3">Bounding Boxes</h3>
-            <p className="text-gray-400">
-              Visual bounding boxes around detected objects with labels and confidence scores.
+            <h3 className="text-xl font-semibold mb-3">WebRTC & Canvas</h3>
+            <p className="text-gray-400 mb-4">
+              Browser APIs for camera access and real-time graphics rendering for bounding box visualization.
             </p>
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="primary">WebRTC</Badge>
+              <Badge variant="primary">Canvas API</Badge>
+              <Badge variant="primary">MediaDevices</Badge>
+            </div>
           </Card>
+
           <Card variant="bordered">
-            <h3 className="text-xl font-semibold mb-3">Video Upload</h3>
-            <p className="text-gray-400">
-              Process uploaded video files with frame-by-frame object detection and analysis.
+            <h3 className="text-xl font-semibold mb-3">React Hooks</h3>
+            <p className="text-gray-400 mb-4">
+              Custom hooks for managing camera state, model loading, and detection lifecycle with performance optimization.
             </p>
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="primary">React 19</Badge>
+              <Badge variant="primary">TypeScript</Badge>
+              <Badge variant="primary">Custom Hooks</Badge>
+            </div>
           </Card>
+
           <Card variant="bordered">
-            <h3 className="text-xl font-semibold mb-3">Performance Monitoring</h3>
-            <p className="text-gray-400">
-              Real-time FPS counter and performance metrics with model selection options.
+            <h3 className="text-xl font-semibold mb-3">Performance</h3>
+            <p className="text-gray-400 mb-4">
+              Real-time FPS monitoring, confidence threshold filtering, and optimized rendering for smooth detection.
             </p>
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="primary">~30 FPS</Badge>
+              <Badge variant="primary">Client-side</Badge>
+              <Badge variant="primary">No Server</Badge>
+            </div>
+          </Card>
+
+          <Card variant="bordered">
+            <h3 className="text-xl font-semibold mb-3">YOLOv8 (Server-Side)</h3>
+            <p className="text-gray-400 mb-4">
+              Advanced object detection using YOLOv8 on the backend for higher accuracy and more robust detection.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="primary">YOLOv8</Badge>
+              <Badge variant="primary">Python</Badge>
+              <Badge variant="primary">FastAPI</Badge>
+            </div>
           </Card>
         </div>
       </Section>
