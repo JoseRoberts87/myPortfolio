@@ -11,36 +11,42 @@ export default function Home() {
       title: 'Web Development',
       description: 'Modern full-stack applications with Next.js, React, and TypeScript',
       icon: '🌐',
+      link: '#skills',
     },
     {
       id: 'data-pipelines',
       title: 'Data Pipelines',
       description: 'ETL and data processing with Python, FastAPI, and PostgreSQL',
       icon: '⚙️',
+      link: '#skills',
     },
     {
       id: 'analytics',
       title: 'Data Analytics',
       description: 'Interactive dashboards and data visualizations',
       icon: '📊',
+      link: '#skills',
     },
     {
       id: 'machine-learning',
       title: 'Machine Learning',
       description: 'NLP and sentiment analysis with modern ML frameworks',
       icon: '🤖',
+      link: '#skills',
     },
     {
       id: 'computer-vision',
       title: 'Computer Vision',
       description: 'Real-time object detection and image processing',
       icon: '👁️',
+      link: '#skills',
     },
     {
       id: 'cloud-devops',
       title: 'Cloud & DevOps',
       description: 'AWS infrastructure, Docker, and CI/CD pipelines',
       icon: '☁️',
+      link: '#timeline',
     },
   ];
 
@@ -121,18 +127,22 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {expertiseAreas.map((area) => (
-              <div
+              <a
                 key={area.id}
                 id={area.id}
-                className="bg-slate-900 border border-slate-700 p-8 rounded-lg hover:border-purple-500 transition-all scroll-mt-24"
+                href={area.link}
+                className="block bg-slate-900 border border-slate-700 p-8 rounded-lg hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/20 transition-all scroll-mt-24 group cursor-pointer"
               >
                 <div className="text-4xl mb-4">{area.icon}</div>
-                <h3 className="text-2xl font-semibold text-white mb-3">{area.title}</h3>
-                <p className="text-gray-400">{area.description}</p>
-                <div className="mt-6">
-                  <span className="text-purple-400 text-sm font-medium">Coming Soon</span>
+                <h3 className="text-2xl font-semibold text-white mb-3 group-hover:text-purple-400 transition-colors">{area.title}</h3>
+                <p className="text-gray-400 mb-6">{area.description}</p>
+                <div className="flex items-center gap-2 text-purple-400 text-sm font-medium group-hover:gap-3 transition-all">
+                  <span>View Details</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         </div>
