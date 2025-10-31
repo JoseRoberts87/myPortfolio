@@ -3,6 +3,7 @@
 import { Section, Card, Badge } from '@/components/ui';
 import ObjectDetector from '@/components/ComputerVision/ObjectDetector';
 import ModelInfo from '@/components/ComputerVision/ModelInfo';
+import ImageUploadDetector from '@/components/ComputerVision/ImageUploadDetector';
 
 export default function ComputerVisionPage() {
   return (
@@ -26,6 +27,11 @@ export default function ComputerVisionPage() {
       {/* Model Information */}
       <Section padding="lg" background="subtle">
         <ModelInfo />
+      </Section>
+
+      {/* YOLO Image Upload Detector */}
+      <Section padding="lg">
+        <ImageUploadDetector />
       </Section>
 
       {/* Technology Stack */}
@@ -77,6 +83,18 @@ export default function ComputerVisionPage() {
               <Badge variant="primary">~30 FPS</Badge>
               <Badge variant="primary">Client-side</Badge>
               <Badge variant="primary">No Server</Badge>
+            </div>
+          </Card>
+
+          <Card variant="bordered">
+            <h3 className="text-xl font-semibold mb-3">YOLOv8 (Server-Side)</h3>
+            <p className="text-gray-400 mb-4">
+              Advanced object detection using YOLOv8 on the backend for higher accuracy and more robust detection.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="primary">YOLOv8</Badge>
+              <Badge variant="primary">Python</Badge>
+              <Badge variant="primary">FastAPI</Badge>
             </div>
           </Card>
         </div>
