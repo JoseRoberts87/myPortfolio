@@ -87,6 +87,11 @@ export function useMLModel() {
         // The model returns an array with one result
         const prediction = Array.isArray(result) ? result[0] : result;
 
+        // Validate prediction object
+        if (!prediction || typeof prediction !== 'object' || !prediction.label || typeof prediction.score !== 'number') {
+          throw new Error('Invalid prediction result from model');
+        }
+
         // Map the label to our format
         const label = prediction.label.toLowerCase() as 'positive' | 'negative';
         const score = prediction.score;
@@ -119,10 +124,10 @@ export function useMLModel() {
   );
 
   // Auto-load model on mount (optional - can be triggered manually instead)
-  useEffect(() => {
-    // You can uncomment this to auto-load the model on mount
-    // loadModel();
-  }, [loadModel]);
+  // useEffect(() => {
+  //   // You can uncomment this to auto-load the model on mount
+  //   loadModel();
+  // }, [loadModel]);
 
   // Cleanup on unmount
   useEffect(() => {
