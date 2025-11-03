@@ -93,11 +93,21 @@ function setCachedData(username: string, data: GitHubData): void {
 async function fetchGitHub<T>(endpoint: string): Promise<T> {
   const url = `${GITHUB_API_BASE}${endpoint}`;
 
+  // Get GitHub token from environment variable (optional but recommended to avoid rate limits)
+  const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
+
   try {
+    const headers: HeadersInit = {
+      'Accept': 'application/vnd.github.v3+json',
+    };
+
+    // Add authorization header if token is available
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const response = await fetch(url, {
-      headers: {
-        'Accept': 'application/vnd.github.v3+json',
-      },
+      headers,
     });
 
     // Check rate limit

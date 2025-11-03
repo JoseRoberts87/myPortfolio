@@ -179,7 +179,15 @@ Modular Terraform configuration with 9 modules:
 Frontend (`.env.local`):
 ```
 NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+NEXT_PUBLIC_GITHUB_USERNAME=JoseRoberts87
+NEXT_PUBLIC_GITHUB_TOKEN=your_github_token_here  # Optional but recommended to avoid rate limits
 ```
+
+**GitHub Token Setup** (Required for GitHub integration):
+- Create token at: https://github.com/settings/tokens/new
+- Select scope: `public_repo` (read-only access to public repositories)
+- Without token: 60 requests/hour (will hit rate limit quickly)
+- With token: 5,000 requests/hour (recommended)
 
 Backend (`.env`):
 ```
