@@ -1,47 +1,53 @@
 'use client';
 
 import { useState } from 'react';
-import dynamic from 'next/dynamic';
 import { POSITIVE_WORDS, NEGATIVE_WORDS, FEATURE_IMPORTANCE } from '@/lib/mlModelData';
-
-// Dynamically import ReactWordcloud to avoid SSR issues
-const ReactWordcloud = dynamic(() => import('react-wordcloud'), {
-  ssr: false,
-  loading: () => (
-    <div className="h-96 flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg">
-      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-        <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-        <span>Loading word cloud...</span>
-      </div>
-    </div>
-  ),
-});
+import type { WordCloudWord } from '@/types/ml';
 
 type SentimentType = 'positive' | 'negative';
+
+// Simple custom word cloud component
+function SimpleWordCloud({ words, color }: { words: WordCloudWord[]; color: string }) {
+  // Normalize font sizes based on word values
+  const maxValue = Math.max(...words.map(w => w.value));
+  const minValue = Math.min(...words.map(w => w.value));
+
+  const getFontSize = (value: number) => {
+    const normalized = (value - minValue) / (maxValue - minValue);
+    return 12 + normalized * 48; // Range from 12px to 60px
+  };
+
+  const getOpacity = (value: number) => {
+    const normalized = (value - minValue) / (maxValue - minValue);
+    return 0.5 + normalized * 0.5; // Range from 0.5 to 1.0
+  };
+
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-3 p-8">
+      {words.map((word, index) => (
+        <span
+          key={`${word.text}-${index}`}
+          className={`font-bold transition-transform hover:scale-110 cursor-default ${color}`}
+          style={{
+            fontSize: `${getFontSize(word.value)}px`,
+            opacity: getOpacity(word.value),
+          }}
+          title={`${word.text}: importance ${word.value}`}
+        >
+          {word.text}
+        </span>
+      ))}
+    </div>
+  );
+}
 
 export default function WordCloudSection() {
   const [selectedSentiment, setSelectedSentiment] = useState<SentimentType>('positive');
 
-  // Word cloud options
-  const options = {
-    colors: selectedSentiment === 'positive'
-      ? ['#10b981', '#059669', '#047857', '#065f46', '#064e3b'] // green shades
-      : ['#ef4444', '#dc2626', '#b91c1c', '#991b1b', '#7f1d1d'], // red shades
-    enableTooltip: true,
-    deterministic: true,
-    fontFamily: 'inherit',
-    fontSizes: [16, 80] as [number, number],
-    fontStyle: 'normal' as const,
-    fontWeight: 'bold' as const,
-    padding: 4,
-    rotations: 2,
-    rotationAngles: [0, 0] as [number, number],
-    scale: 'sqrt' as const,
-    spiral: 'archimedean' as const,
-    transitionDuration: 500,
-  };
-
   const words = selectedSentiment === 'positive' ? POSITIVE_WORDS : NEGATIVE_WORDS;
+  const color = selectedSentiment === 'positive'
+    ? 'text-green-600 dark:text-green-400'
+    : 'text-red-600 dark:text-red-400';
 
   // Get top features for the selected sentiment
   const topFeatures = FEATURE_IMPORTANCE.filter((f) => f.sentiment === selectedSentiment).slice(0, 10);
@@ -85,11 +91,11 @@ export default function WordCloudSection() {
         <h3 className="font-semibold mb-4 text-center capitalize">
           {selectedSentiment} Sentiment Word Cloud
         </h3>
-        <div className="h-96">
-          <ReactWordcloud words={words} options={options} />
+        <div className="min-h-96">
+          <SimpleWordCloud words={words} color={color} />
         </div>
         <p className="text-sm text-gray-500 text-center mt-4">
-          Size indicates relative importance in sentiment classification
+          Size indicates relative importance in sentiment classification. Hover over words to see their importance scores.
         </p>
       </div>
 
