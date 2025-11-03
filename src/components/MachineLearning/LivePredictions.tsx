@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { useMLModel } from '@/hooks/useMLModel';
 import type { RedditPost, LivePredictionResult } from '@/types/ml';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_URL = `${API_BASE_URL}/api/v1`;
 
 export default function LivePredictions() {
   const { status, loadModel, predict } = useMLModel();
