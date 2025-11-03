@@ -13,7 +13,7 @@ export default function Footer() {
       { name: 'Cloud & DevOps', href: '/cloud-devops' },
     ],
     social: [
-      { name: 'GitHub', href: 'https://github.com', icon: 'github' },
+      { name: 'GitHub', href: 'https://github.com/JoseRoberts87', icon: 'github' },
       { name: 'LinkedIn', href: 'https://linkedin.com', icon: 'linkedin' },
       { name: 'Twitter', href: 'https://twitter.com', icon: 'twitter' },
     ],
