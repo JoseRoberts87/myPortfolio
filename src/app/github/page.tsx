@@ -5,12 +5,15 @@ import { useGitHub } from '@/hooks/useGitHub';
 import GitHubProfile from '@/components/GitHub/GitHubProfile';
 import GitHubStats from '@/components/GitHub/GitHubStats';
 import GitHubRepos from '@/components/GitHub/GitHubRepos';
+import GitHubActivity from '@/components/GitHub/GitHubActivity';
+import GitHubLanguages from '@/components/GitHub/GitHubLanguages';
+import GitHubContributions from '@/components/GitHub/GitHubContributions';
 
 // GitHub username from environment variable or default
 const GITHUB_USERNAME = process.env.NEXT_PUBLIC_GITHUB_USERNAME || 'JoseRoberts87';
 
 export default function GitHubPage() {
-  const { user, repos, stats, loading, error, refetch } = useGitHub(GITHUB_USERNAME);
+  const { user, repos, stats, events, languages, loading, error, refetch } = useGitHub(GITHUB_USERNAME);
 
   return (
     <div className="min-h-screen pt-16">
@@ -97,6 +100,31 @@ export default function GitHubPage() {
               </p>
             </div>
             <GitHubRepos repos={repos} limit={6} />
+          </Section>
+
+          {/* Activity & Languages Section */}
+          <Section padding="lg" background="subtle">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold mb-2">Activity & Languages</h2>
+              <p className="text-gray-600 dark:text-gray-400">
+                Recent contributions and programming language distribution
+              </p>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+              {/* Activity - 60% width on desktop */}
+              <div className="lg:col-span-3">
+                <GitHubActivity events={events} />
+              </div>
+              {/* Languages - 40% width on desktop */}
+              <div className="lg:col-span-2">
+                <GitHubLanguages languages={languages} />
+              </div>
+            </div>
+          </Section>
+
+          {/* Contribution Graph Section */}
+          <Section padding="lg">
+            <GitHubContributions username={GITHUB_USERNAME} />
           </Section>
 
           {/* Call to Action */}
