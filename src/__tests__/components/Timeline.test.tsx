@@ -15,21 +15,24 @@ describe('Timeline Component', () => {
     it('should render experience items', () => {
       render(<Timeline />);
 
-      expect(screen.getByText('Senior Full-Stack Engineer')).toBeInTheDocument();
-      expect(screen.getByText('Full-Stack Developer')).toBeInTheDocument();
+      expect(screen.getByText('Senior Full-Stack Software Engineer')).toBeInTheDocument();
+      expect(screen.getByText('Senior Data Engineer')).toBeInTheDocument();
+      expect(screen.getByText('Data Engineer')).toBeInTheDocument();
+      expect(screen.getByText('Senior Data Engineer/Analyst - AVP')).toBeInTheDocument();
     });
 
     it('should render education items', () => {
       render(<Timeline />);
 
-      expect(screen.getByText('Bachelor of Science in Computer Science')).toBeInTheDocument();
+      expect(screen.getByText('Master of Science in Computer Science - Software Engineering')).toBeInTheDocument();
+      expect(screen.getByText('Bachelor of Arts in Political Science')).toBeInTheDocument();
     });
 
     it('should render certification items', () => {
       render(<Timeline />);
 
-      expect(screen.getByText('AWS Certified Solutions Architect')).toBeInTheDocument();
-      expect(screen.getByText('Professional Scrum Master (PSM I)')).toBeInTheDocument();
+      expect(screen.getByText('AWS Certified Solutions Architect - Associate')).toBeInTheDocument();
+      expect(screen.getByText('TinyML Certification')).toBeInTheDocument();
     });
   });
 
@@ -44,23 +47,27 @@ describe('Timeline Component', () => {
     it('should display experience organizations', () => {
       render(<Timeline variant="experience" />);
 
-      expect(screen.getByText('Tech Company')).toBeInTheDocument();
-      expect(screen.getByText('Software Solutions Inc.')).toBeInTheDocument();
+      expect(screen.getByText('Very Technology')).toBeInTheDocument();
+      expect(screen.getByText('Evonik Industries')).toBeInTheDocument();
+      expect(screen.getByText('Amazon Robotics')).toBeInTheDocument();
+      expect(screen.getByText('Bank of America')).toBeInTheDocument();
     });
 
     it('should display experience periods', () => {
       render(<Timeline variant="experience" />);
 
       // Periods appear multiple times due to responsive design (mobile and desktop views)
-      expect(screen.getAllByText('2020 - Present').length).toBeGreaterThan(0);
-      expect(screen.getAllByText('2018 - 2020').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('July 2021 - August 2025').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('January 2019 - July 2021').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('April 2018 - January 2019').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('February 2011 - April 2018').length).toBeGreaterThan(0);
     });
 
     it('should display experience descriptions', () => {
       render(<Timeline variant="experience" />);
 
       expect(
-        screen.getByText('Leading full-stack development initiatives for enterprise-scale applications.')
+        screen.getByText('Led teams of engineers emphasizing product ownership and scalable solutions for IoT product usage and services.')
       ).toBeInTheDocument();
     });
 
@@ -68,10 +75,10 @@ describe('Timeline Component', () => {
       render(<Timeline variant="experience" />);
 
       expect(
-        screen.getByText(/Architected and deployed cloud-native applications on AWS/i)
+        screen.getByText(/Consulted in multiple efforts to design and build scalable backends for IoT products/i)
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/Built data pipelines processing millions of records/i)
+        screen.getByText(/Implemented machine learning forecasting model for energy consumption/i)
       ).toBeInTheDocument();
     });
   });
@@ -87,32 +94,32 @@ describe('Timeline Component', () => {
     it('should display education organizations', () => {
       render(<Timeline variant="education" />);
 
-      expect(screen.getByText('University Name')).toBeInTheDocument();
+      expect(screen.getByText('CTU Online')).toBeInTheDocument();
+      expect(screen.getByText('University of Rhode Island')).toBeInTheDocument();
       expect(screen.getByText('Amazon Web Services')).toBeInTheDocument();
-      expect(screen.getByText('Scrum.org')).toBeInTheDocument();
+      expect(screen.getByText('Harvard edX')).toBeInTheDocument();
     });
 
     it('should display education periods', () => {
       render(<Timeline variant="education" />);
 
-      expect(screen.getByText('2014 - 2018')).toBeInTheDocument();
-      expect(screen.getAllByText('2021')).toHaveLength(1);
-      expect(screen.getAllByText('2020')).toHaveLength(1);
+      expect(screen.getAllByText('Graduated').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('Certified').length).toBeGreaterThan(0);
     });
 
     it('should display education descriptions', () => {
       render(<Timeline variant="education" />);
 
       expect(
-        screen.getByText('Focused on software engineering, algorithms, and data structures.')
+        screen.getByText('Advanced studies in software engineering, algorithms, and system design.')
       ).toBeInTheDocument();
     });
 
     it('should display education highlights', () => {
       render(<Timeline variant="education" />);
 
-      expect(screen.getByText('GPA: 3.8/4.0')).toBeInTheDocument();
-      expect(screen.getByText(/Dean's List/i)).toBeInTheDocument();
+      expect(screen.getByText('GPA: 3.95/4.0')).toBeInTheDocument();
+      expect(screen.getByText(/Specialized in Software Engineering/i)).toBeInTheDocument();
     });
   });
 
@@ -155,10 +162,10 @@ describe('Timeline Component', () => {
       render(<Timeline variant="experience" />);
 
       expect(
-        screen.getByText(/Developed modern web applications using React, Next.js, and TypeScript/i)
+        screen.getByText(/Developed full-stack AI-first app for creative marketing using StabilityAI and OpenAI/i)
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/Implemented CI\/CD pipelines and infrastructure as code/i)
+        screen.getByText(/Improved build automation tools using infrastructure as code/i)
       ).toBeInTheDocument();
     });
 
@@ -243,16 +250,18 @@ describe('Timeline Component', () => {
       const titles = screen.getAllByRole('heading', { level: 3 });
       const titleTexts = titles.map(t => t.textContent);
 
-      expect(titleTexts).toContain('Senior Full-Stack Engineer');
-      expect(titleTexts).toContain('Full-Stack Developer');
+      expect(titleTexts).toContain('Senior Full-Stack Software Engineer');
+      expect(titleTexts).toContain('Senior Data Engineer');
+      expect(titleTexts).toContain('Data Engineer');
+      expect(titleTexts).toContain('Senior Data Engineer/Analyst - AVP');
     });
 
     it('should render education and certifications together in education section', () => {
       render(<Timeline variant="education" />);
 
-      // Should have 1 education + 2 certifications = 3 total
+      // Should have 2 education + 2 certifications = 4 total
       const titles = screen.getAllByRole('heading', { level: 3 });
-      expect(titles.length).toBe(3);
+      expect(titles.length).toBe(4);
     });
   });
 
@@ -272,10 +281,10 @@ describe('Timeline Component', () => {
 
       // All items should have descriptions
       expect(
-        screen.getByText('Leading full-stack development initiatives for enterprise-scale applications.')
+        screen.getByText('Led teams of engineers emphasizing product ownership and scalable solutions for IoT product usage and services.')
       ).toBeInTheDocument();
       expect(
-        screen.getByText('Focused on software engineering, algorithms, and data structures.')
+        screen.getByText('Advanced studies in software engineering, algorithms, and system design.')
       ).toBeInTheDocument();
     });
   });

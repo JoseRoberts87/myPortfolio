@@ -78,7 +78,7 @@ export default function Home() {
                 Jose Roberts
               </h1>
               <h2 className="text-3xl md:text-4xl font-semibold text-purple-400">
-                Full-Stack Developer
+                Senior Software Engineer
               </h2>
               <p className="text-xl md:text-2xl text-gray-300">
                 Showcasing expertise across multiple domains
