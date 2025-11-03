@@ -54,9 +54,8 @@ describe('SkillsMatrix Component', () => {
     expect(screen.getByText('95%')).toBeInTheDocument(); // Web Development
     expect(screen.getByText('90%')).toBeInTheDocument(); // Cloud & DevOps
     expect(screen.getByText('85%')).toBeInTheDocument(); // Data Pipelines
-    expect(screen.getByText('80%')).toBeInTheDocument(); // Data Analytics
+    expect(screen.getAllByText('80%')).toHaveLength(2); // Data Analytics & Computer Vision
     expect(screen.getByText('75%')).toBeInTheDocument(); // Machine Learning
-    expect(screen.getByText('65%')).toBeInTheDocument(); // Computer Vision
   });
 
   it('should have Domain Breakdown section', () => {
@@ -72,8 +71,8 @@ describe('SkillsMatrix Component', () => {
     expect(screen.getByText('6')).toBeInTheDocument();
     expect(screen.getByText('Technical Domains')).toBeInTheDocument();
 
-    // Average proficiency (95+90+85+80+75+65)/6 = 81.67 ≈ 82%
-    expect(screen.getByText('82%')).toBeInTheDocument();
+    // Average proficiency (95+90+85+80+75+80)/6 = 84.17 ≈ 84%
+    expect(screen.getByText('84%')).toBeInTheDocument();
     expect(screen.getByText('Average Proficiency')).toBeInTheDocument();
 
     // Technologies count
@@ -110,11 +109,11 @@ describe('SkillsMatrix Component', () => {
     }
 
     // Technologies should be visible
-    expect(screen.getByText('React')).toBeInTheDocument();
-    expect(screen.getByText('Next.js')).toBeInTheDocument();
+    expect(screen.getByText('React 19')).toBeInTheDocument();
+    expect(screen.getByText('Next.js 16')).toBeInTheDocument();
     expect(screen.getByText('TypeScript')).toBeInTheDocument();
     expect(screen.getByText('Tailwind CSS')).toBeInTheDocument();
-    expect(screen.getByText('Node.js')).toBeInTheDocument();
+    expect(screen.getByText('Jest')).toBeInTheDocument();
   });
 
   it('should collapse domain when clicked again', () => {
@@ -205,7 +204,7 @@ describe('SkillsMatrix Component', () => {
     expect(screen.getByText('Terraform')).toBeInTheDocument();
     expect(screen.getByText('Docker')).toBeInTheDocument();
     expect(screen.getByText('ECS Fargate')).toBeInTheDocument();
-    expect(screen.getByText('CI/CD')).toBeInTheDocument();
+    expect(screen.getByText('GitHub Actions')).toBeInTheDocument();
   });
 
   it('should display all Data Pipelines technologies when expanded', () => {
@@ -231,10 +230,11 @@ describe('SkillsMatrix Component', () => {
       fireEvent.click(mlDomain);
     }
 
-    expect(screen.getByText('Transformers')).toBeInTheDocument();
+    expect(screen.getByText('Transformers.js')).toBeInTheDocument();
+    expect(screen.getByText('DistilBERT')).toBeInTheDocument();
     expect(screen.getByText('NLP')).toBeInTheDocument();
-    expect(screen.getByText('Scikit-learn')).toBeInTheDocument();
-    expect(screen.getByText('Model Deployment')).toBeInTheDocument();
+    expect(screen.getByText('Sentiment Analysis')).toBeInTheDocument();
+    expect(screen.getByText('Browser ML')).toBeInTheDocument();
   });
 
   it('should have correct structure with card component', () => {
