@@ -24,14 +24,14 @@ const skillsData: SkillCategory[] = [
   {
     domain: 'Web Development',
     proficiency: 95,
-    technologies: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'Node.js'],
-    description: 'Full-stack web applications with modern frameworks and best practices',
+    technologies: ['React 19', 'Next.js 16', 'TypeScript', 'Tailwind CSS', 'Jest'],
+    description: 'Full-stack web applications with modern frameworks and comprehensive testing',
   },
   {
     domain: 'Cloud & DevOps',
     proficiency: 90,
-    technologies: ['AWS', 'Terraform', 'Docker', 'ECS Fargate', 'CI/CD'],
-    description: 'Infrastructure as Code, containerization, and automated deployments',
+    technologies: ['AWS', 'Terraform', 'Docker', 'ECS Fargate', 'GitHub Actions'],
+    description: 'Infrastructure as Code, containerization, and automated CI/CD pipelines',
   },
   {
     domain: 'Data Pipelines',
@@ -42,20 +42,20 @@ const skillsData: SkillCategory[] = [
   {
     domain: 'Data Analytics',
     proficiency: 80,
-    technologies: ['Pandas', 'SQL', 'Recharts', 'Data Visualization'],
-    description: 'Data analysis, visualization, and business intelligence',
+    technologies: ['Pandas', 'SQL', 'Recharts', 'Data Visualization', 'Dashboards'],
+    description: 'Interactive dashboards, data visualization, and business intelligence',
   },
   {
     domain: 'Machine Learning',
     proficiency: 75,
-    technologies: ['Transformers', 'NLP', 'Scikit-learn', 'Model Deployment'],
-    description: 'NLP, sentiment analysis, and ML model integration',
+    technologies: ['Transformers.js', 'DistilBERT', 'NLP', 'Sentiment Analysis', 'Browser ML'],
+    description: 'Client-side ML with NLP, sentiment analysis, and browser-based inference',
   },
   {
     domain: 'Computer Vision',
-    proficiency: 65,
-    technologies: ['YOLO', 'TensorFlow', 'OpenCV', 'Object Detection'],
-    description: 'Image processing and real-time object detection',
+    proficiency: 80,
+    technologies: ['YOLOv8', 'TensorFlow.js', 'MediaPipe', 'COCO-SSD', 'Real-time Detection'],
+    description: 'Real-time object and face detection with multiple ML frameworks',
   },
 ];
 
