@@ -146,25 +146,89 @@ _Phase 1 complete! All planned tasks finished._
 
 ## Phase 4: Additional Features (Future)
 
-### High Priority
+### Critical Priority - Employer Impact ⭐⭐⭐⭐⭐
+- [ ] **GitHub Integration** (CRITICAL - proves active development)
+  - [ ] Live GitHub contribution graph
+  - [ ] Pinned repositories with stars/forks
+  - [ ] Recent activity feed
+  - [ ] Total commits, PRs, issues closed stats
+  - [ ] Language breakdown visualization
+  - [ ] Link to profile and individual repos
+
+- [ ] **Project Case Studies Pages** (CRITICAL - demonstrates problem-solving)
+  - [ ] Computer Vision case study (problem, solution, results, trade-offs)
+  - [ ] Machine Learning case study (model selection, optimization, deployment)
+  - [ ] Data Pipeline case study (architecture, challenges, performance)
+  - [ ] Include: Problem Statement, Technical Challenges, Architecture Decisions, Results/Impact, Lessons Learned
+  - [ ] Add "View Case Study" buttons to each expertise card
+
+- [ ] **About Me / Professional Story Page** (CRITICAL - humanizes portfolio)
+  - [ ] Career journey and background
+  - [ ] What drives you technically
+  - [ ] Career goals and interests
+  - [ ] Problem-solving philosophy
+  - [ ] Personal hobbies that relate to development
+
+### High Priority - Technical Credibility ⭐⭐⭐⭐
 - [x] Create skills matrix/radar chart visualization
 - [x] Add resume download functionality (PDF)
-- [ ] Implement GitHub integration (repos, contributions)
 - [x] Build contact form with validation
 - [x] Add form submission backend
 - [x] Create CLAUDE.md documentation for AI assistants
 
-### Medium Priority
+- [ ] **Live System Metrics Dashboard** (proves operational excellence)
+  - [ ] Real-time API response times
+  - [ ] Database query performance
+  - [ ] Cache hit rates
+  - [ ] Error rates (last 24h)
+  - [ ] Request volume graphs
+  - [ ] System uptime percentage
+
+- [ ] **Performance Optimization Showcase**
+  - [ ] Lighthouse scores (aim for 95+) with before/after
+  - [ ] Core Web Vitals visualization
+  - [ ] Bundle size optimization results
+  - [ ] Image optimization examples
+  - [ ] Code splitting strategy documentation
+  - [ ] Performance metrics page
+
+- [ ] **Interactive Architecture Diagram**
+  - [ ] Clickable system architecture
+  - [ ] Show data flow on hover
+  - [ ] Highlight tech stack per component
+  - [ ] Link to relevant code/docs
+
+### Medium Priority - Social Proof ⭐⭐⭐
 - [x] Create timeline/experience section
 - [x] Add profile image to hero section
-- [ ] Build project case studies pages
-- [ ] Add LinkedIn integration
-- [ ] Create about me page
 
-### Low Priority
-- [ ] Set up blog/articles section
-- [ ] Add testimonials section
+- [ ] **LinkedIn & Social Integration**
+  - [ ] LinkedIn recommendations section (2-3 strongest)
+  - [ ] LinkedIn profile link with preview
+  - [ ] Open source contributions showcase
+  - [ ] Conference talks or blog posts (if applicable)
+  - [ ] Certifications display (AWS, etc.)
+
+- [ ] **Testimonials Section**
+  - [ ] Client/colleague recommendations
+  - [ ] Project feedback
+  - [ ] GitHub stars/community feedback
+
+### Low Priority - Content & Engagement ⭐⭐
+- [ ] Set up blog/articles section (technical writing showcase)
 - [ ] Build interactive coding playground
+- [ ] Add code examples/snippets section
+
+### Quick Wins - Polish & UX 🚀
+- [ ] Add "View Source" buttons linking to GitHub code for each feature
+- [ ] Add "Schedule a Call" CTA (Calendly integration)
+- [ ] SEO optimization (LinkedIn/social preview cards)
+- [ ] Build status badges (CI/CD passing indicators)
+- [ ] Professional loading states (skeleton screens)
+- [ ] Error boundary improvements (graceful error handling)
+- [ ] Mobile experience polish (test all features)
+- [ ] Add accessibility audit results
+- [ ] Cross-browser compatibility testing
 
 ---
 
