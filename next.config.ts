@@ -4,6 +4,15 @@ const nextConfig: NextConfig = {
   /* config options here */
   output: 'standalone',
   serverExternalPackages: ['@xenova/transformers'],
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+        pathname: '/u/**',
+      },
+    ],
+  },
   webpack: (config, { isServer }) => {
     // Fixes for @xenova/transformers
     config.resolve.alias = {
