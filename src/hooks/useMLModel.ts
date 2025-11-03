@@ -30,16 +30,24 @@ export function useMLModel() {
     setState((prev) => ({ ...prev, status: 'loading', isLoading: true, error: null }));
 
     try {
+      console.log('Loading Transformers.js...');
       // Dynamically import transformers.js to avoid SSR issues
-      const { pipeline } = await import('@xenova/transformers');
+      const { pipeline, env } = await import('@xenova/transformers');
 
+      // Configure Transformers.js
+      env.allowLocalModels = false;
+      env.allowRemoteModels = true;
+
+      console.log('Loading model:', MODEL_INFO.fullName);
       // Load the sentiment analysis pipeline
+      // Use Xenova's converted model which is optimized for browser use
       const classifier = await pipeline(
         'sentiment-analysis',
-        MODEL_INFO.fullName
+        'Xenova/distilbert-base-uncased-finetuned-sst-2-english'
       );
 
       pipelineRef.current = classifier;
+      console.log('Model loaded successfully');
 
       setState((prev) => ({
         ...prev,
@@ -49,6 +57,7 @@ export function useMLModel() {
         error: null,
       }));
     } catch (error) {
+      console.error('Model loading error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to load model';
       setState((prev) => ({
         ...prev,
@@ -115,6 +124,7 @@ export function useMLModel() {
 
         return sentimentResult;
       } catch (error) {
+        console.error('Prediction error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Prediction failed';
         setState((prev) => ({ ...prev, error: errorMessage }));
         return null;

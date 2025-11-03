@@ -89,7 +89,8 @@
       "Bash(npm uninstall:*)",
       "Bash(git -C /Users/jrob/repos/portfolio branch:*)",
       "Bash(git -C /Users/jrob/repos/portfolio status --short)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(.env.local)"
     ],
     "deny": [],
     "ask": []
