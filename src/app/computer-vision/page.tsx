@@ -2,6 +2,7 @@
 
 import { Section, Card, Badge } from '@/components/ui';
 import ObjectDetector from '@/components/ComputerVision/ObjectDetector';
+import FaceDetector from '@/components/ComputerVision/FaceDetector';
 import ModelInfo from '@/components/ComputerVision/ModelInfo';
 import ImageUploadDetector from '@/components/ComputerVision/ImageUploadDetector';
 
@@ -14,7 +15,7 @@ export default function ComputerVisionPage() {
             Computer Vision
           </h1>
           <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-            Real-time object detection using webcam with bounding box visualization powered by TensorFlow.js.
+            Real-time object detection and face recognition using webcam with advanced AI models powered by TensorFlow.js and Google MediaPipe.
           </p>
         </div>
       </Section>
@@ -24,8 +25,13 @@ export default function ComputerVisionPage() {
         <ObjectDetector />
       </Section>
 
-      {/* Model Information */}
+      {/* Face Detector */}
       <Section padding="lg" background="subtle">
+        <FaceDetector />
+      </Section>
+
+      {/* Model Information */}
+      <Section padding="lg">
         <ModelInfo />
       </Section>
 
@@ -95,6 +101,18 @@ export default function ComputerVisionPage() {
               <Badge variant="primary">YOLOv8</Badge>
               <Badge variant="primary">Python</Badge>
               <Badge variant="primary">FastAPI</Badge>
+            </div>
+          </Card>
+
+          <Card variant="bordered">
+            <h3 className="text-xl font-semibold mb-3">Face Detection (MediaPipe)</h3>
+            <p className="text-gray-400 mb-4">
+              Real-time face detection powered by Google's MediaPipe running entirely in the browser with high performance and accuracy.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="primary">MediaPipe</Badge>
+              <Badge variant="primary">Google AI</Badge>
+              <Badge variant="primary">Client-side</Badge>
             </div>
           </Card>
         </div>
