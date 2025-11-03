@@ -22,6 +22,9 @@ export default function LivePredictions() {
       const response = await fetch(`${API_URL}/reddit/posts?limit=1&offset=${Math.floor(Math.random() * 100)}`);
 
       if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Backend API is not available. Please start the backend server to use this feature.');
+        }
         throw new Error('Failed to fetch Reddit post');
       }
 
@@ -55,7 +58,12 @@ export default function LivePredictions() {
         match,
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      let errorMessage = 'An error occurred';
+      if (err instanceof TypeError && err.message.includes('fetch')) {
+        errorMessage = 'Backend server is not running. Please start the backend to use this feature (uvicorn app.main:app --reload).';
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
       setError(errorMessage);
     } finally {
       setIsLoading(false);
