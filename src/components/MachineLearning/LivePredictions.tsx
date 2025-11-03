@@ -20,10 +20,12 @@ export default function LivePredictions() {
     setError(null);
 
     try {
-      const url = `${API_URL}/reddit/posts?limit=1&offset=${Math.floor(Math.random() * 100)}`;
+      // Fetch from a random page to get variety
+      const randomPage = Math.floor(Math.random() * 5) + 1; // Pages 1-5
+      const url = `${API_URL}/reddit/posts?page=${randomPage}&page_size=20`;
       console.log('Fetching from:', url);
 
-      // Fetch a random Reddit post
+      // Fetch Reddit posts
       const response = await fetch(url);
       console.log('Response status:', response.status);
 
@@ -41,8 +43,10 @@ export default function LivePredictions() {
         throw new Error('No posts available');
       }
 
-      const post: RedditPost = data.posts[0];
-      console.log('Got post:', post.title);
+      // Randomly select a post from the returned array
+      const randomIndex = Math.floor(Math.random() * data.posts.length);
+      const post: RedditPost = data.posts[randomIndex];
+      console.log(`Got post ${randomIndex + 1}/${data.posts.length}:`, post.title);
 
       // Combine title and body for sentiment analysis
       const textToAnalyze = post.body ? `${post.title} ${post.body}` : post.title;
