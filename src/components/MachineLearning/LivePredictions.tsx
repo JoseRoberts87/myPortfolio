@@ -15,12 +15,17 @@ export default function LivePredictions() {
 
   // Fetch a random Reddit post and predict its sentiment
   const fetchAndPredict = async () => {
+    console.log('fetchAndPredict called, API_URL:', API_URL);
     setIsLoading(true);
     setError(null);
 
     try {
+      const url = `${API_URL}/reddit/posts?limit=1&offset=${Math.floor(Math.random() * 100)}`;
+      console.log('Fetching from:', url);
+
       // Fetch a random Reddit post
-      const response = await fetch(`${API_URL}/reddit/posts?limit=1&offset=${Math.floor(Math.random() * 100)}`);
+      const response = await fetch(url);
+      console.log('Response status:', response.status);
 
       if (!response.ok) {
         if (response.status === 404) {
@@ -30,18 +35,23 @@ export default function LivePredictions() {
       }
 
       const data = await response.json();
+      console.log('Received data:', data);
 
       if (!data.posts || data.posts.length === 0) {
         throw new Error('No posts available');
       }
 
       const post: RedditPost = data.posts[0];
+      console.log('Got post:', post.title);
 
       // Combine title and body for sentiment analysis
       const textToAnalyze = post.body ? `${post.title} ${post.body}` : post.title;
+      console.log('Text to analyze:', textToAnalyze.substring(0, 100) + '...');
 
       // Predict sentiment using the ML model
+      console.log('Calling predict...');
       const prediction = await predict(textToAnalyze);
+      console.log('Prediction result:', prediction);
 
       if (!prediction) {
         throw new Error('Prediction failed');
@@ -73,10 +83,16 @@ export default function LivePredictions() {
 
   // Handle "Try Another Post" click
   const handleTryAnother = () => {
+    console.log('Button clicked! Model status:', status);
     if (status === 'ready') {
+      console.log('Model ready, fetching post...');
       fetchAndPredict();
     } else {
-      loadModel().then(() => fetchAndPredict());
+      console.log('Model not ready, loading first...');
+      loadModel().then(() => {
+        console.log('Model loaded, now fetching post...');
+        fetchAndPredict();
+      });
     }
   };
 
