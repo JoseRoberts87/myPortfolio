@@ -28,8 +28,8 @@ export default function VisitStats() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
-        const response = await fetch(`${apiUrl}/visits/stats`);
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const response = await fetch(`${baseUrl}/api/v1/visits/stats`);
 
         if (!response.ok) {
           throw new Error('Failed to fetch visit statistics');
@@ -49,8 +49,8 @@ export default function VisitStats() {
     // Track current visit
     const trackVisit = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
-        await fetch(`${apiUrl}/visits/track`, {
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        await fetch(`${baseUrl}/api/v1/visits/track`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
