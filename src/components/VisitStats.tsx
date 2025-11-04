@@ -75,7 +75,7 @@ export default function VisitStats() {
 
   if (loading) {
     return (
-      <div className="fixed top-4 right-4 z-50 bg-slate-800/90 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-lg min-w-[200px]">
+      <div className="fixed top-20 left-4 z-50 bg-slate-800/90 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-lg min-w-[200px]">
         <div className="animate-pulse">
           <div className="h-4 bg-slate-700 rounded w-24 mb-2"></div>
           <div className="h-3 bg-slate-700 rounded w-16"></div>
@@ -89,7 +89,7 @@ export default function VisitStats() {
   }
 
   return (
-    <div className="fixed top-4 right-4 z-50 bg-slate-800/90 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow">
+    <div className="fixed top-20 left-4 z-50 bg-slate-800/90 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow">
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-sm">
           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
