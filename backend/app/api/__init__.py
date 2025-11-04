@@ -1,6 +1,6 @@
 """API routes"""
 from fastapi import APIRouter
-from app.api import reddit, pipeline, stats, analytics, cache, health, contact, computer_vision
+from app.api import reddit, pipeline, stats, analytics, cache, health, contact, computer_vision, visits
 
 api_router = APIRouter()
 
@@ -13,3 +13,4 @@ api_router.include_router(stats.router, prefix="/stats", tags=["stats"])
 api_router.include_router(analytics.router, prefix="/analytics", tags=["analytics"])
 api_router.include_router(cache.router, prefix="/cache", tags=["cache"])
 api_router.include_router(computer_vision.router, prefix="/computer-vision", tags=["computer-vision"])
+api_router.include_router(visits.router, prefix="/visits", tags=["visits"])

@@ -2,6 +2,7 @@ import ContactForm from '@/components/ContactForm';
 import SkillsMatrix from '@/components/SkillsMatrix';
 import ResumeDownload from '@/components/ResumeDownload';
 import Timeline from '@/components/Timeline';
+import VisitStats from '@/components/VisitStats';
 import Image from 'next/image';
 
 export default function Home() {
@@ -52,6 +53,9 @@ export default function Home() {
 
   return (
     <>
+      {/* Visit Statistics Widget */}
+      <VisitStats />
+
       {/* Hero Section */}
       <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
