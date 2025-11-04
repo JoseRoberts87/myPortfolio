@@ -27,7 +27,7 @@ export default function SignalProcessingPage() {
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               {technologies.map((tech) => (
-                <Badge key={tech} variant="purple">
+                <Badge key={tech} variant="primary">
                   {tech}
                 </Badge>
               ))}
@@ -66,7 +66,7 @@ export default function SignalProcessingPage() {
       </Section>
 
       {/* Technical Implementation */}
-      <Section variant="dark">
+      <Section background="dark">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-4xl font-bold text-white mb-8 text-center">
             Technical Implementation
@@ -196,7 +196,7 @@ export default function SignalProcessingPage() {
       </Section>
 
       {/* Technology Stack Details */}
-      <Section variant="dark">
+      <Section background="dark">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-4xl font-bold text-white mb-8 text-center">
             Technology Stack
