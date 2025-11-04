@@ -37,7 +37,7 @@ describe('SkillsMatrix Component', () => {
     expect(screen.getByTestId('radar')).toBeInTheDocument();
   });
 
-  it('should display all 6 skill domains', () => {
+  it('should display all 7 skill domains', () => {
     render(<SkillsMatrix />);
 
     expect(screen.getByText('Web Development')).toBeInTheDocument();
@@ -46,6 +46,7 @@ describe('SkillsMatrix Component', () => {
     expect(screen.getByText('Data Analytics')).toBeInTheDocument();
     expect(screen.getByText('Machine Learning')).toBeInTheDocument();
     expect(screen.getByText('Computer Vision')).toBeInTheDocument();
+    expect(screen.getByText('Signal Processing')).toBeInTheDocument();
   });
 
   it('should display proficiency percentages for each domain', () => {
@@ -55,7 +56,7 @@ describe('SkillsMatrix Component', () => {
     expect(screen.getByText('90%')).toBeInTheDocument(); // Cloud & DevOps
     expect(screen.getByText('85%')).toBeInTheDocument(); // Data Pipelines
     expect(screen.getAllByText('80%')).toHaveLength(2); // Data Analytics & Computer Vision
-    expect(screen.getByText('75%')).toBeInTheDocument(); // Machine Learning
+    expect(screen.getAllByText('75%')).toHaveLength(2); // Machine Learning & Signal Processing
   });
 
   it('should have Domain Breakdown section', () => {
@@ -67,12 +68,12 @@ describe('SkillsMatrix Component', () => {
   it('should display summary statistics', () => {
     render(<SkillsMatrix />);
 
-    // 6 technical domains
-    expect(screen.getByText('6')).toBeInTheDocument();
+    // 7 technical domains
+    expect(screen.getByText('7')).toBeInTheDocument();
     expect(screen.getByText('Technical Domains')).toBeInTheDocument();
 
-    // Average proficiency (95+90+85+80+75+80)/6 = 84.17 ≈ 84%
-    expect(screen.getByText('84%')).toBeInTheDocument();
+    // Average proficiency (95+90+85+80+75+80+75)/7 = 82.86 ≈ 83%
+    expect(screen.getByText('83%')).toBeInTheDocument();
     expect(screen.getByText('Average Proficiency')).toBeInTheDocument();
 
     // Technologies count
@@ -189,7 +190,7 @@ describe('SkillsMatrix Component', () => {
 
     // Check for progress bar containers
     const progressBars = container.querySelectorAll('.bg-gray-700.rounded-full');
-    expect(progressBars.length).toBeGreaterThanOrEqual(6);
+    expect(progressBars.length).toBeGreaterThanOrEqual(7);
   });
 
   it('should display all Cloud & DevOps technologies when expanded', () => {

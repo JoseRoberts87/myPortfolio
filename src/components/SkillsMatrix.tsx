@@ -57,6 +57,12 @@ const skillsData: SkillCategory[] = [
     technologies: ['YOLOv8', 'TensorFlow.js', 'MediaPipe', 'COCO-SSD', 'Real-time Detection'],
     description: 'Real-time object and face detection with multiple ML frameworks',
   },
+  {
+    domain: 'Signal Processing',
+    proficiency: 75,
+    technologies: ['NumPy', 'SciPy', 'FFT', 'Wavelets', 'Audio Processing'],
+    description: 'Digital signal analysis, frequency domain transforms, and audio processing',
+  },
 ];
 
 interface CustomTooltipProps {
@@ -108,7 +114,7 @@ export default function SkillsMatrix() {
       <div className="mb-6">
         <h2 className="text-3xl font-bold mb-2">Skills Matrix</h2>
         <p className="text-gray-400">
-          Comprehensive overview of technical expertise across 6 key domains
+          Comprehensive overview of technical expertise across 7 key domains
         </p>
       </div>
 

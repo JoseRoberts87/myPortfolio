@@ -43,6 +43,13 @@ export default function Home() {
       link: '/computer-vision',
     },
     {
+      id: 'signal-processing',
+      title: 'Signal Processing',
+      description: 'Digital signal analysis, FFT, and audio processing',
+      icon: '📡',
+      link: '/signal-processing',
+    },
+    {
       id: 'cloud-devops',
       title: 'Cloud & DevOps',
       description: 'AWS infrastructure, Docker, and CI/CD pipelines',

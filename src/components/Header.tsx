@@ -14,6 +14,7 @@ export default function Header() {
     { name: 'Analytics', href: '/analytics' },
     { name: 'Machine Learning', href: '/machine-learning' },
     { name: 'Computer Vision', href: '/computer-vision' },
+    { name: 'Signal Processing', href: '/signal-processing' },
     { name: 'Cloud & DevOps', href: '/cloud-devops' },
     { name: 'GitHub', href: '/github' },
   ];
