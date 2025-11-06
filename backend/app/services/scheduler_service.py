@@ -45,6 +45,8 @@ class SchedulerService:
         func,
         job_id: str,
         trigger_type: str = "interval",
+        args: tuple = None,
+        kwargs: dict = None,
         **trigger_args
     ) -> bool:
         """
@@ -54,6 +56,8 @@ class SchedulerService:
             func: The function to execute
             job_id: Unique identifier for the job
             trigger_type: Type of trigger ('interval' or 'cron')
+            args: Positional arguments to pass to the function
+            kwargs: Keyword arguments to pass to the function
             **trigger_args: Arguments for the trigger
 
         Returns:
@@ -62,6 +66,9 @@ class SchedulerService:
         Example:
             # Interval trigger (every 6 hours)
             add_job(my_func, 'my_job', 'interval', hours=6)
+
+            # With function arguments
+            add_job(my_func, 'my_job', 'interval', kwargs={'category': 'tech'}, hours=12)
 
             # Cron trigger (daily at 2 AM)
             add_job(my_func, 'my_job', 'cron', hour=2, minute=0)
@@ -79,6 +86,8 @@ class SchedulerService:
             job = self.scheduler.add_job(
                 func,
                 trigger,
+                args=args or (),
+                kwargs=kwargs or {},
                 id=job_id,
                 replace_existing=True,
                 max_instances=1  # Prevent overlapping executions
@@ -89,6 +98,8 @@ class SchedulerService:
                 "function": func.__name__,
                 "trigger_type": trigger_type,
                 "trigger_args": trigger_args,
+                "function_args": args,
+                "function_kwargs": kwargs,
                 "next_run_time": job.next_run_time,
                 "added_at": datetime.utcnow()
             }

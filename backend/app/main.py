@@ -79,9 +79,11 @@ async def lifespan(app: FastAPI):
                 func=_sync_news_articles,
                 job_id="news_pipeline_scheduled",
                 trigger_type="interval",
-                hours=12,
-                category="technology",  # Default to technology news
-                page_size=50
+                kwargs={
+                    "category": "technology",  # Default to technology news
+                    "page_size": 50
+                },
+                hours=12
             )
             logger.info("✓ News pipeline job scheduled (every 12 hours - technology)")
         else:
