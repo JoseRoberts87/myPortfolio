@@ -52,10 +52,40 @@ async def lifespan(app: FastAPI):
         logger.warning("Application will start but database operations may fail")
         # Don't raise - let the app start anyway, database endpoints will fail gracefully
 
+    # Startup: Initialize scheduler
+    logger.info("Starting scheduler...")
+    try:
+        from app.services.scheduler_service import scheduler_service
+        from app.api.pipeline import _execute_pipeline
+
+        # Start the scheduler
+        scheduler_service.start()
+        logger.info("✓ Scheduler started successfully")
+
+        # Schedule default Reddit pipeline job (every 6 hours)
+        scheduler_service.add_job(
+            func=_execute_pipeline,
+            job_id="reddit_pipeline_scheduled",
+            trigger_type="interval",
+            hours=6
+        )
+        logger.info("✓ Default Reddit pipeline job scheduled (every 6 hours)")
+
+    except Exception as e:
+        logger.error(f"✗ Error starting scheduler: {str(e)}")
+        logger.warning("Scheduler will not run but API endpoints will still work")
+
     yield  # Application runs
 
-    # Shutdown
+    # Shutdown: Stop scheduler
     logger.info("Shutting down...")
+    try:
+        from app.services.scheduler_service import scheduler_service
+        if scheduler_service.is_running():
+            scheduler_service.shutdown(wait=True)
+            logger.info("✓ Scheduler shut down successfully")
+    except Exception as e:
+        logger.error(f"Error shutting down scheduler: {str(e)}")
 
 
 app = FastAPI(

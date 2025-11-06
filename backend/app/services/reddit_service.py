@@ -7,9 +7,13 @@ from datetime import datetime
 from typing import List, Optional
 from app.core.config import settings
 from app.schemas.reddit import RedditPostCreate
+from app.core.retry import api_retry, CircuitBreaker
 import logging
 
 logger = logging.getLogger(__name__)
+
+# Circuit breaker for Reddit API
+reddit_circuit_breaker = CircuitBreaker(failure_threshold=3, timeout=300)
 
 
 class RedditService:
@@ -24,6 +28,7 @@ class RedditService:
         )
         self.subreddits = settings.REDDIT_SUBREDDITS.split(',')
 
+    @api_retry
     def fetch_posts(
         self,
         subreddit_name: str,
@@ -41,6 +46,11 @@ class RedditService:
         Returns:
             List of RedditPostCreate objects
         """
+        # Check circuit breaker
+        if reddit_circuit_breaker.is_open():
+            logger.error(f"Circuit breaker is open, skipping r/{subreddit_name}")
+            raise Exception("Reddit API circuit breaker is open")
+
         try:
             subreddit = self.reddit.subreddit(subreddit_name)
             posts = []
@@ -50,10 +60,12 @@ class RedditService:
                 posts.append(post_data)
 
             logger.info(f"Fetched {len(posts)} posts from r/{subreddit_name}")
+            reddit_circuit_breaker.record_success()
             return posts
 
         except Exception as e:
             logger.error(f"Error fetching posts from r/{subreddit_name}: {str(e)}")
+            reddit_circuit_breaker.record_failure()
             raise
 
     def fetch_posts_from_all_subreddits(

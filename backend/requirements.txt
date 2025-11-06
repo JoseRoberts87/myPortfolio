@@ -49,3 +49,7 @@ psutil==6.1.0
 ultralytics==8.3.49
 opencv-python-headless==4.10.0.84
 pillow==11.0.0
+
+# Task Scheduling & Retry Logic
+apscheduler==3.10.4
+tenacity==9.0.0

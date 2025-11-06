@@ -6,11 +6,15 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 from app.db import get_db
 from app.models.reddit_post import RedditPost
+from app.models.pipeline_run import PipelineRun
 from app.services.reddit_service import RedditService
 from app.services.sentiment_service import SentimentService
 from app.services.cache_service import cache_service
 from app.core.config import settings
 import logging
+import uuid
+import time
+import traceback
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -37,7 +41,8 @@ async def run_pipeline(
         # Run pipeline in background
         background_tasks.add_task(
             _execute_pipeline,
-            time_filter=time_filter
+            time_filter=time_filter,
+            trigger_type="manual"
         )
 
         return {
@@ -49,20 +54,36 @@ async def run_pipeline(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-async def _execute_pipeline(time_filter: str = "day"):
+async def _execute_pipeline(time_filter: str = "day", trigger_type: str = "scheduled"):
     """
-    Execute the data pipeline
+    Execute the data pipeline with metrics tracking
 
     Args:
         time_filter: Time filter for Reddit posts
+        trigger_type: How the pipeline was triggered (manual, scheduled, api)
     """
     from app.db import get_session_local
 
     SessionLocal = get_session_local()
     db = SessionLocal()
 
+    # Generate unique run ID
+    run_id = str(uuid.uuid4())
+    start_time = time.time()
+    pipeline_run = None
+
     try:
-        logger.info(f"Starting data pipeline with time_filter={time_filter}")
+        logger.info(f"Starting data pipeline (run_id={run_id}) with time_filter={time_filter}")
+
+        # Create pipeline run record
+        pipeline_run = PipelineRun(
+            run_id=run_id,
+            pipeline_name="reddit_pipeline",
+            trigger_type=trigger_type,
+            status="running"
+        )
+        db.add(pipeline_run)
+        db.commit()
 
         # Initialize Reddit service
         reddit_service = RedditService()
@@ -76,45 +97,58 @@ async def _execute_pipeline(time_filter: str = "day"):
         # Store posts in database with sentiment analysis
         stored_count = 0
         updated_count = 0
+        failed_count = 0
         sentiment_analyzed_count = 0
+        processing_times = []
 
         for post_data in posts:
-            # Perform sentiment analysis
-            sentiment_score, sentiment_label = SentimentService.analyze_reddit_post(
-                title=post_data.title,
-                content=post_data.content
-            )
+            record_start = time.time()
 
-            # Check if post already exists
-            existing_post = db.query(RedditPost).filter(
-                RedditPost.id == post_data.id
-            ).first()
+            try:
+                # Perform sentiment analysis
+                sentiment_score, sentiment_label = SentimentService.analyze_reddit_post(
+                    title=post_data.title,
+                    content=post_data.content
+                )
 
-            if existing_post:
-                # Update existing post
-                for key, value in post_data.model_dump().items():
-                    setattr(existing_post, key, value)
+                # Check if post already exists
+                existing_post = db.query(RedditPost).filter(
+                    RedditPost.id == post_data.id
+                ).first()
 
-                # Update sentiment data
-                if sentiment_score is not None:
-                    existing_post.sentiment_score = sentiment_score
-                    existing_post.sentiment_label = sentiment_label
-                    existing_post.sentiment_analyzed_at = datetime.utcnow()
-                    sentiment_analyzed_count += 1
+                if existing_post:
+                    # Update existing post
+                    for key, value in post_data.model_dump().items():
+                        setattr(existing_post, key, value)
 
-                updated_count += 1
-            else:
-                # Create new post with sentiment data
-                new_post = RedditPost(**post_data.model_dump())
+                    # Update sentiment data
+                    if sentiment_score is not None:
+                        existing_post.sentiment_score = sentiment_score
+                        existing_post.sentiment_label = sentiment_label
+                        existing_post.sentiment_analyzed_at = datetime.utcnow()
+                        sentiment_analyzed_count += 1
 
-                if sentiment_score is not None:
-                    new_post.sentiment_score = sentiment_score
-                    new_post.sentiment_label = sentiment_label
-                    new_post.sentiment_analyzed_at = datetime.utcnow()
-                    sentiment_analyzed_count += 1
+                    updated_count += 1
+                else:
+                    # Create new post with sentiment data
+                    new_post = RedditPost(**post_data.model_dump())
 
-                db.add(new_post)
-                stored_count += 1
+                    if sentiment_score is not None:
+                        new_post.sentiment_score = sentiment_score
+                        new_post.sentiment_label = sentiment_label
+                        new_post.sentiment_analyzed_at = datetime.utcnow()
+                        sentiment_analyzed_count += 1
+
+                    db.add(new_post)
+                    stored_count += 1
+
+                # Track processing time
+                record_time = (time.time() - record_start) * 1000  # Convert to ms
+                processing_times.append(record_time)
+
+            except Exception as record_error:
+                logger.error(f"Error processing post {post_data.id}: {str(record_error)}")
+                failed_count += 1
 
         db.commit()
 
@@ -125,10 +159,57 @@ async def _execute_pipeline(time_filter: str = "day"):
         cache_service.delete_pattern("cache:analytics_*")
         logger.info("Cache invalidated successfully")
 
-        logger.info(f"Pipeline completed. Stored: {stored_count}, Updated: {updated_count}, Sentiment analyzed: {sentiment_analyzed_count}")
+        # Calculate final metrics
+        end_time = time.time()
+        duration_seconds = end_time - start_time
+        total_processed = stored_count + updated_count + failed_count
+        avg_processing_time = sum(processing_times) / len(processing_times) if processing_times else 0
+
+        # Update pipeline run with success metrics
+        pipeline_run.status = "success"
+        pipeline_run.completed_at = datetime.utcnow()
+        pipeline_run.duration_seconds = duration_seconds
+        pipeline_run.records_processed = total_processed
+        pipeline_run.records_stored = stored_count
+        pipeline_run.records_updated = updated_count
+        pipeline_run.records_failed = failed_count
+        pipeline_run.avg_processing_time_ms = avg_processing_time
+
+        # Simple data quality score based on failure rate
+        if total_processed > 0:
+            pipeline_run.data_quality_score = ((total_processed - failed_count) / total_processed) * 100
+        else:
+            pipeline_run.data_quality_score = 100.0
+
+        db.commit()
+
+        logger.info(
+            f"Pipeline completed (run_id={run_id}). "
+            f"Duration: {duration_seconds:.2f}s, "
+            f"Stored: {stored_count}, Updated: {updated_count}, Failed: {failed_count}, "
+            f"Sentiment analyzed: {sentiment_analyzed_count}"
+        )
 
     except Exception as e:
-        logger.error(f"Pipeline execution failed: {str(e)}")
+        logger.error(f"Pipeline execution failed (run_id={run_id}): {str(e)}")
+
+        # Update pipeline run with failure information
+        if pipeline_run:
+            end_time = time.time()
+            duration_seconds = end_time - start_time
+
+            pipeline_run.status = "failed"
+            pipeline_run.completed_at = datetime.utcnow()
+            pipeline_run.duration_seconds = duration_seconds
+            pipeline_run.error_message = str(e)
+            pipeline_run.error_type = type(e).__name__
+            pipeline_run.stack_trace = traceback.format_exc()
+
+            try:
+                db.commit()
+            except Exception as commit_error:
+                logger.error(f"Failed to update pipeline run with error: {str(commit_error)}")
+
         db.rollback()
         raise
     finally:
