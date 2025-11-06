@@ -2,12 +2,31 @@
 
 import { useState, useEffect } from 'react';
 import { Section, Card, Badge } from '@/components/ui';
-import { getRedditPosts, getPipelineStatus, runPipeline } from '@/lib/api';
-import type { RedditPost, PipelineStatus } from '@/types/api';
+import {
+  getRedditPosts,
+  getPipelineStatus,
+  runPipeline,
+  getSchedulerStatus,
+  getPipelineMetrics,
+  getPipelineRuns
+} from '@/lib/api';
+import type {
+  RedditPost,
+  PipelineStatus,
+  SchedulerStatus,
+  PipelineMetrics,
+  PipelineRun
+} from '@/types/api';
+import { SchedulerStatusWidget } from '@/components/DataPipelines/SchedulerStatusWidget';
+import { PipelineMetricsDashboard } from '@/components/DataPipelines/PipelineMetricsDashboard';
+import { PipelineRunHistoryTable } from '@/components/DataPipelines/PipelineRunHistoryTable';
 
 export default function DataPipelinesPage() {
   const [posts, setPosts] = useState<RedditPost[]>([]);
   const [status, setStatus] = useState<PipelineStatus | null>(null);
+  const [schedulerStatus, setSchedulerStatus] = useState<SchedulerStatus | null>(null);
+  const [pipelineMetrics, setPipelineMetrics] = useState<PipelineMetrics | null>(null);
+  const [pipelineRuns, setPipelineRuns] = useState<PipelineRun[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [runningPipeline, setRunningPipeline] = useState(false);
@@ -22,17 +41,23 @@ export default function DataPipelinesPage() {
       setLoading(true);
       setError(null);
 
-      const [postsData, statusData] = await Promise.all([
+      const [postsData, statusData, schedulerData, metricsData, runsData] = await Promise.all([
         getRedditPosts({
           page: 1,
           page_size: 10,
           sentiment: sentimentFilter || undefined
         }),
         getPipelineStatus(),
+        getSchedulerStatus().catch(() => null),
+        getPipelineMetrics({ days: 7 }).catch(() => null),
+        getPipelineRuns({ limit: 20 }).catch(() => []),
       ]);
 
       setPosts(postsData.posts);
       setStatus(statusData);
+      setSchedulerStatus(schedulerData);
+      setPipelineMetrics(metricsData);
+      setPipelineRuns(runsData);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load data');
       console.error('Error loading data:', err);
@@ -95,6 +120,28 @@ export default function DataPipelinesPage() {
             Real-time social media data ingestion, processing, and storage using FastAPI and PostgreSQL.
           </p>
         </div>
+      </Section>
+
+      {/* Scheduler and Metrics Section */}
+      <Section padding="lg">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <SchedulerStatusWidget
+            schedulerStatus={schedulerStatus}
+            loading={loading && !schedulerStatus}
+          />
+          <PipelineMetricsDashboard
+            metrics={pipelineMetrics}
+            loading={loading && !pipelineMetrics}
+          />
+        </div>
+      </Section>
+
+      {/* Pipeline Run History */}
+      <Section padding="lg" background="subtle">
+        <PipelineRunHistoryTable
+          runs={pipelineRuns}
+          loading={loading && pipelineRuns.length === 0}
+        />
       </Section>
 
       {/* Pipeline Status Section */}

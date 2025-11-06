@@ -3,7 +3,15 @@
  * Functions for interacting with the FastAPI backend
  */
 
-import type { RedditPostsResponse, PipelineStatus, HealthStatus, AnalyticsOverview } from '@/types/api';
+import type {
+  RedditPostsResponse,
+  PipelineStatus,
+  HealthStatus,
+  AnalyticsOverview,
+  SchedulerStatus,
+  PipelineRun,
+  PipelineMetrics
+} from '@/types/api';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 const API_V1 = `${API_URL}/api/v1`;
@@ -147,4 +155,49 @@ export async function detectObjectsInImage(
   }
 
   return await response.json();
+}
+
+/**
+ * Get scheduler status and active jobs
+ */
+export async function getSchedulerStatus(): Promise<SchedulerStatus> {
+  return fetchApi('/jobs/status');
+}
+
+/**
+ * Get pipeline run history
+ */
+export async function getPipelineRuns(params?: {
+  limit?: number;
+  pipeline_name?: string;
+  status?: string;
+}): Promise<PipelineRun[]> {
+  const queryParams = new URLSearchParams();
+
+  if (params?.limit) queryParams.append('limit', params.limit.toString());
+  if (params?.pipeline_name) queryParams.append('pipeline_name', params.pipeline_name);
+  if (params?.status) queryParams.append('status', params.status);
+
+  const query = queryParams.toString();
+  const endpoint = `/jobs/runs/history${query ? `?${query}` : ''}`;
+
+  return fetchApi<PipelineRun[]>(endpoint);
+}
+
+/**
+ * Get aggregated pipeline metrics
+ */
+export async function getPipelineMetrics(params?: {
+  pipeline_name?: string;
+  days?: number;
+}): Promise<PipelineMetrics> {
+  const queryParams = new URLSearchParams();
+
+  if (params?.pipeline_name) queryParams.append('pipeline_name', params.pipeline_name);
+  if (params?.days) queryParams.append('days', params.days.toString());
+
+  const query = queryParams.toString();
+  const endpoint = `/jobs/metrics/summary${query ? `?${query}` : ''}`;
+
+  return fetchApi<PipelineMetrics>(endpoint);
 }

@@ -96,3 +96,60 @@ export interface AnalyticsOverview {
   sentiment_by_subreddit: SubredditSentimentData[];
   engagement_metrics: EngagementMetrics | null;
 }
+
+// Scheduler and Pipeline Run types
+export interface Job {
+  id: string;
+  name: string;
+  next_run_time: string | null;
+  trigger: string;
+  pending: boolean;
+  metadata?: {
+    function: string;
+    trigger_type: string;
+    trigger_args: Record<string, any>;
+    next_run_time: string | null;
+    added_at: string;
+  };
+}
+
+export interface SchedulerStatus {
+  running: boolean;
+  total_jobs: number;
+  jobs: Job[];
+}
+
+export interface PipelineRun {
+  id: number;
+  run_id: string;
+  pipeline_name: string;
+  trigger_type: string;
+  status: string;
+  started_at: string;
+  completed_at: string | null;
+  duration_seconds: number | null;
+  records_processed: number;
+  records_stored: number;
+  records_updated: number;
+  records_failed: number;
+  data_quality_score: number | null;
+  validation_errors: number;
+  avg_processing_time_ms: number | null;
+  error_message: string | null;
+  error_type: string | null;
+  retry_count: number;
+  is_retry: boolean;
+}
+
+export interface PipelineMetrics {
+  total_runs: number;
+  successful_runs: number;
+  failed_runs: number;
+  running_runs: number;
+  avg_duration_seconds: number;
+  avg_records_per_run: number;
+  total_records_processed: number;
+  avg_success_rate: number;
+  last_run: PipelineRun | null;
+  recent_runs: PipelineRun[];
+}
