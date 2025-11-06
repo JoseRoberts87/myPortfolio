@@ -8,22 +8,37 @@ import {
   runPipeline,
   getSchedulerStatus,
   getPipelineMetrics,
-  getPipelineRuns
+  getPipelineRuns,
+  getArticles,
+  syncNewsArticles,
+  getArticleSourceStats
 } from '@/lib/api';
 import type {
   RedditPost,
   PipelineStatus,
   SchedulerStatus,
   PipelineMetrics,
-  PipelineRun
+  PipelineRun,
+  Article,
+  ArticleSourceStats
 } from '@/types/api';
 import { SchedulerStatusWidget } from '@/components/DataPipelines/SchedulerStatusWidget';
 import { PipelineMetricsDashboard } from '@/components/DataPipelines/PipelineMetricsDashboard';
 import { PipelineRunHistoryTable } from '@/components/DataPipelines/PipelineRunHistoryTable';
 
 export default function DataPipelinesPage() {
+  // Tab state
+  const [activeTab, setActiveTab] = useState<'reddit' | 'articles'>('reddit');
+
+  // Reddit state
   const [posts, setPosts] = useState<RedditPost[]>([]);
   const [status, setStatus] = useState<PipelineStatus | null>(null);
+
+  // Articles state
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [articleStats, setArticleStats] = useState<ArticleSourceStats | null>(null);
+
+  // Shared state
   const [schedulerStatus, setSchedulerStatus] = useState<SchedulerStatus | null>(null);
   const [pipelineMetrics, setPipelineMetrics] = useState<PipelineMetrics | null>(null);
   const [pipelineRuns, setPipelineRuns] = useState<PipelineRun[]>([]);
@@ -31,33 +46,55 @@ export default function DataPipelinesPage() {
   const [error, setError] = useState<string | null>(null);
   const [runningPipeline, setRunningPipeline] = useState(false);
   const [sentimentFilter, setSentimentFilter] = useState<'positive' | 'negative' | 'neutral' | null>(null);
+  const [sourceTypeFilter, setSourceTypeFilter] = useState<string | null>(null);
 
   useEffect(() => {
     loadData();
-  }, [sentimentFilter]);
+  }, [sentimentFilter, sourceTypeFilter, activeTab]);
 
   async function loadData() {
     try {
       setLoading(true);
       setError(null);
 
-      const [postsData, statusData, schedulerData, metricsData, runsData] = await Promise.all([
-        getRedditPosts({
-          page: 1,
-          page_size: 10,
-          sentiment: sentimentFilter || undefined
-        }),
-        getPipelineStatus(),
-        getSchedulerStatus().catch(() => null),
-        getPipelineMetrics({ days: 7 }).catch(() => null),
-        getPipelineRuns({ limit: 20 }).catch(() => []),
-      ]);
+      if (activeTab === 'reddit') {
+        const [postsData, statusData, schedulerData, metricsData, runsData] = await Promise.all([
+          getRedditPosts({
+            page: 1,
+            page_size: 10,
+            sentiment: sentimentFilter || undefined
+          }),
+          getPipelineStatus(),
+          getSchedulerStatus().catch(() => null),
+          getPipelineMetrics({ days: 7 }).catch(() => null),
+          getPipelineRuns({ limit: 20 }).catch(() => []),
+        ]);
 
-      setPosts(postsData.posts);
-      setStatus(statusData);
-      setSchedulerStatus(schedulerData);
-      setPipelineMetrics(metricsData);
-      setPipelineRuns(runsData);
+        setPosts(postsData.posts);
+        setStatus(statusData);
+        setSchedulerStatus(schedulerData);
+        setPipelineMetrics(metricsData);
+        setPipelineRuns(runsData);
+      } else {
+        const [articlesData, statsData, schedulerData, metricsData, runsData] = await Promise.all([
+          getArticles({
+            page: 1,
+            page_size: 10,
+            sentiment: sentimentFilter || undefined,
+            source_type: sourceTypeFilter || undefined
+          }),
+          getArticleSourceStats().catch(() => null),
+          getSchedulerStatus().catch(() => null),
+          getPipelineMetrics({ days: 7 }).catch(() => null),
+          getPipelineRuns({ limit: 20 }).catch(() => []),
+        ]);
+
+        setArticles(articlesData.articles);
+        setArticleStats(statsData);
+        setSchedulerStatus(schedulerData);
+        setPipelineMetrics(metricsData);
+        setPipelineRuns(runsData);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load data');
       console.error('Error loading data:', err);
@@ -69,7 +106,11 @@ export default function DataPipelinesPage() {
   async function handleRunPipeline() {
     try {
       setRunningPipeline(true);
-      await runPipeline('day');
+      if (activeTab === 'reddit') {
+        await runPipeline('day');
+      } else {
+        await syncNewsArticles({ category: 'technology', page_size: 20 });
+      }
 
       // Wait a few seconds and reload data
       setTimeout(() => {
@@ -269,10 +310,44 @@ export default function DataPipelinesPage() {
         </Card>
       </Section>
 
-      {/* Recent Posts Section */}
+      {/* Recent Content Section with Tabs */}
       <Section padding="lg" background="subtle">
+        {/* Tab Navigation */}
+        <div className="flex items-center gap-4 mb-8 border-b border-gray-700">
+          <button
+            onClick={() => {
+              setActiveTab('reddit');
+              setSentimentFilter(null);
+              setSourceTypeFilter(null);
+            }}
+            className={`px-6 py-3 font-semibold transition-colors border-b-2 ${
+              activeTab === 'reddit'
+                ? 'text-blue-400 border-blue-400'
+                : 'text-gray-400 border-transparent hover:text-gray-300'
+            }`}
+          >
+            Reddit Posts
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab('articles');
+              setSentimentFilter(null);
+              setSourceTypeFilter(null);
+            }}
+            className={`px-6 py-3 font-semibold transition-colors border-b-2 ${
+              activeTab === 'articles'
+                ? 'text-blue-400 border-blue-400'
+                : 'text-gray-400 border-transparent hover:text-gray-300'
+            }`}
+          >
+            News Articles
+          </button>
+        </div>
+
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold">Recent Posts</h2>
+          <h2 className="text-3xl font-bold">
+            {activeTab === 'reddit' ? 'Recent Posts' : 'Recent Articles'}
+          </h2>
 
           {/* Sentiment Filter */}
           <div className="flex items-center gap-2">
@@ -320,78 +395,169 @@ export default function DataPipelinesPage() {
           </div>
         </div>
 
-        {loading && posts.length === 0 ? (
-          <div className="text-center py-12 text-gray-400">Loading posts...</div>
-        ) : posts.length === 0 ? (
-          <Card variant="bordered" padding="lg">
-            <div className="text-center py-12">
-              <Badge variant="warning" size="lg" className="mb-4">
-                No Data Yet
-              </Badge>
-              <h3 className="text-xl font-semibold mb-4">No posts collected yet</h3>
-              <p className="text-gray-400 mb-6">
-                Run the pipeline to start collecting Reddit data
-              </p>
-              <button
-                onClick={handleRunPipeline}
-                disabled={runningPipeline}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors"
-              >
-                {runningPipeline ? 'Running Pipeline...' : 'Run Pipeline Now'}
-              </button>
-            </div>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 gap-6">
-            {posts.map((post) => (
-              <Card key={post.id} variant="bordered" padding="lg">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="primary" size="sm">
-                        r/{post.subreddit}
-                      </Badge>
-                      {post.sentiment_label && (
-                        <Badge
-                          variant={getSentimentBadgeVariant(post.sentiment_label)}
-                          size="sm"
-                          className="cursor-help"
-                          title={post.sentiment_score !== null ? `Sentiment Score: ${post.sentiment_score.toFixed(3)}` : undefined}
-                        >
-                          {getSentimentEmoji(post.sentiment_label)} {post.sentiment_label}
+        {activeTab === 'reddit' ? (
+          // Reddit Posts Display
+          loading && posts.length === 0 ? (
+            <div className="text-center py-12 text-gray-400">Loading posts...</div>
+          ) : posts.length === 0 ? (
+            <Card variant="bordered" padding="lg">
+              <div className="text-center py-12">
+                <Badge variant="warning" size="lg" className="mb-4">
+                  No Data Yet
+                </Badge>
+                <h3 className="text-xl font-semibold mb-4">No posts collected yet</h3>
+                <p className="text-gray-400 mb-6">
+                  Run the pipeline to start collecting Reddit data
+                </p>
+                <button
+                  onClick={handleRunPipeline}
+                  disabled={runningPipeline}
+                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors"
+                >
+                  {runningPipeline ? 'Running Pipeline...' : 'Run Pipeline Now'}
+                </button>
+              </div>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 gap-6">
+              {posts.map((post) => (
+                <Card key={post.id} variant="bordered" padding="lg">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge variant="primary" size="sm">
+                          r/{post.subreddit}
                         </Badge>
+                        {post.sentiment_label && (
+                          <Badge
+                            variant={getSentimentBadgeVariant(post.sentiment_label)}
+                            size="sm"
+                            className="cursor-help"
+                            title={post.sentiment_score !== null ? `Sentiment Score: ${post.sentiment_score.toFixed(3)}` : undefined}
+                          >
+                            {getSentimentEmoji(post.sentiment_label)} {post.sentiment_label}
+                          </Badge>
+                        )}
+                        <span className="text-sm text-gray-400">by u/{post.author || '[deleted]'}</span>
+                        <span className="text-sm text-gray-500">•</span>
+                        <span className="text-sm text-gray-400">
+                          {formatDate(post.created_utc)}
+                        </span>
+                      </div>
+
+                      <a
+                        href={post.url || '#'}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xl font-semibold hover:text-blue-400 transition-colors block mb-2"
+                      >
+                        {post.title}
+                      </a>
+
+                      {post.content && (
+                        <p className="text-gray-400 line-clamp-2 mb-3">
+                          {post.content}
+                        </p>
                       )}
-                      <span className="text-sm text-gray-400">by u/{post.author || '[deleted]'}</span>
-                      <span className="text-sm text-gray-500">•</span>
-                      <span className="text-sm text-gray-400">
-                        {formatDate(post.created_utc)}
-                      </span>
-                    </div>
 
-                    <a
-                      href={post.url || '#'}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xl font-semibold hover:text-blue-400 transition-colors block mb-2"
-                    >
-                      {post.title}
-                    </a>
-
-                    {post.content && (
-                      <p className="text-gray-400 line-clamp-2 mb-3">
-                        {post.content}
-                      </p>
-                    )}
-
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                      <span>↑ {post.score.toLocaleString()} points</span>
-                      <span>💬 {post.num_comments.toLocaleString()} comments</span>
+                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <span>↑ {post.score.toLocaleString()} points</span>
+                        <span>💬 {post.num_comments.toLocaleString()} comments</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Card>
-            ))}
-          </div>
+                </Card>
+              ))}
+            </div>
+          )
+        ) : (
+          // Articles Display
+          loading && articles.length === 0 ? (
+            <div className="text-center py-12 text-gray-400">Loading articles...</div>
+          ) : articles.length === 0 ? (
+            <Card variant="bordered" padding="lg">
+              <div className="text-center py-12">
+                <Badge variant="warning" size="lg" className="mb-4">
+                  No Articles Yet
+                </Badge>
+                <h3 className="text-xl font-semibold mb-4">No articles collected yet</h3>
+                <p className="text-gray-400 mb-6">
+                  Sync news articles to start collecting data
+                </p>
+                <button
+                  onClick={handleRunPipeline}
+                  disabled={runningPipeline}
+                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors"
+                >
+                  {runningPipeline ? 'Syncing Articles...' : 'Sync News Now'}
+                </button>
+              </div>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 gap-6">
+              {articles.map((article) => (
+                <Card key={article.id} variant="bordered" padding="lg">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge variant="primary" size="sm">
+                          {article.source_name}
+                        </Badge>
+                        {article.sentiment_label && (
+                          <Badge
+                            variant={getSentimentBadgeVariant(article.sentiment_label)}
+                            size="sm"
+                            className="cursor-help"
+                            title={article.sentiment_score !== null ? `Sentiment Score: ${article.sentiment_score.toFixed(3)}` : undefined}
+                          >
+                            {getSentimentEmoji(article.sentiment_label)} {article.sentiment_label}
+                          </Badge>
+                        )}
+                        {article.category && (
+                          <Badge variant="secondary" size="sm">
+                            {article.category}
+                          </Badge>
+                        )}
+                        {article.author && (
+                          <span className="text-sm text-gray-400">by {article.author}</span>
+                        )}
+                        <span className="text-sm text-gray-500">•</span>
+                        <span className="text-sm text-gray-400">
+                          {formatDate(article.published_at)}
+                        </span>
+                      </div>
+
+                      <a
+                        href={article.url || '#'}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xl font-semibold hover:text-blue-400 transition-colors block mb-2"
+                      >
+                        {article.title}
+                      </a>
+
+                      {(article.summary || article.content) && (
+                        <p className="text-gray-400 line-clamp-2 mb-3">
+                          {article.summary || article.content}
+                        </p>
+                      )}
+
+                      {article.image_url && (
+                        <div className="mt-3 mb-3">
+                          <img
+                            src={article.image_url}
+                            alt={article.title}
+                            className="rounded-lg max-h-48 w-auto object-cover"
+                            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )
         )}
       </Section>
 

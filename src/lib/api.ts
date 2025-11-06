@@ -10,7 +10,10 @@ import type {
   AnalyticsOverview,
   SchedulerStatus,
   PipelineRun,
-  PipelineMetrics
+  PipelineMetrics,
+  ArticlesResponse,
+  Article,
+  ArticleSourceStats
 } from '@/types/api';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -200,4 +203,78 @@ export async function getPipelineMetrics(params?: {
   const endpoint = `/jobs/metrics/summary${query ? `?${query}` : ''}`;
 
   return fetchApi<PipelineMetrics>(endpoint);
+}
+
+/**
+ * Get articles with optional filters
+ */
+export async function getArticles(params?: {
+  source_type?: string;
+  source_name?: string;
+  category?: string;
+  sentiment?: 'positive' | 'negative' | 'neutral';
+  author?: string;
+  language?: string;
+  search_query?: string;
+  from_date?: string;
+  to_date?: string;
+  page?: number;
+  page_size?: number;
+  sort_by?: string;
+  sort_order?: 'asc' | 'desc';
+}): Promise<ArticlesResponse> {
+  const queryParams = new URLSearchParams();
+
+  if (params?.source_type) queryParams.append('source_type', params.source_type);
+  if (params?.source_name) queryParams.append('source_name', params.source_name);
+  if (params?.category) queryParams.append('category', params.category);
+  if (params?.sentiment) queryParams.append('sentiment', params.sentiment);
+  if (params?.author) queryParams.append('author', params.author);
+  if (params?.language) queryParams.append('language', params.language);
+  if (params?.search_query) queryParams.append('search_query', params.search_query);
+  if (params?.from_date) queryParams.append('from_date', params.from_date);
+  if (params?.to_date) queryParams.append('to_date', params.to_date);
+  if (params?.page) queryParams.append('page', params.page.toString());
+  if (params?.page_size) queryParams.append('page_size', params.page_size.toString());
+  if (params?.sort_by) queryParams.append('sort_by', params.sort_by);
+  if (params?.sort_order) queryParams.append('sort_order', params.sort_order);
+
+  const query = queryParams.toString();
+  const endpoint = `/articles/${query ? `?${query}` : ''}`;
+
+  return fetchApi<ArticlesResponse>(endpoint);
+}
+
+/**
+ * Get a specific article by ID
+ */
+export async function getArticle(articleId: number): Promise<Article> {
+  return fetchApi(`/articles/${articleId}`);
+}
+
+/**
+ * Trigger manual news sync
+ */
+export async function syncNewsArticles(params?: {
+  category?: string;
+  sources?: string;
+  page_size?: number;
+}): Promise<{ status: string; message: string }> {
+  const queryParams = new URLSearchParams();
+
+  if (params?.category) queryParams.append('category', params.category);
+  if (params?.sources) queryParams.append('sources', params.sources);
+  if (params?.page_size) queryParams.append('page_size', params.page_size.toString());
+
+  const query = queryParams.toString();
+  const endpoint = `/articles/sync/news${query ? `?${query}` : ''}`;
+
+  return fetchApi(endpoint, { method: 'POST' });
+}
+
+/**
+ * Get article source statistics
+ */
+export async function getArticleSourceStats(): Promise<ArticleSourceStats> {
+  return fetchApi('/articles/stats/sources');
 }
