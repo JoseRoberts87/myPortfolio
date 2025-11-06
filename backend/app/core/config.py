@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     REDDIT_CLIENT_SECRET: str
     REDDIT_USER_AGENT: str
 
+    # News API (NewsAPI.org)
+    NEWS_API_KEY: str = ""  # Get from https://newsapi.org/
+
     # CORS (comma-separated string that will be split)
     CORS_ORIGINS: str = "http://localhost:3000,https://portfolio-60sng8hin-joseroberts87s-projects.vercel.app"
 

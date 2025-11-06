@@ -57,6 +57,7 @@ async def lifespan(app: FastAPI):
     try:
         from app.services.scheduler_service import scheduler_service
         from app.api.pipeline import _execute_pipeline
+        from app.api.articles import _sync_news_articles
 
         # Start the scheduler
         scheduler_service.start()
@@ -69,7 +70,22 @@ async def lifespan(app: FastAPI):
             trigger_type="interval",
             hours=6
         )
-        logger.info("✓ Default Reddit pipeline job scheduled (every 6 hours)")
+        logger.info("✓ Reddit pipeline job scheduled (every 6 hours)")
+
+        # Schedule News API pipeline job (every 12 hours)
+        # Only schedule if NEWS_API_KEY is configured
+        if settings.NEWS_API_KEY:
+            scheduler_service.add_job(
+                func=_sync_news_articles,
+                job_id="news_pipeline_scheduled",
+                trigger_type="interval",
+                hours=12,
+                category="technology",  # Default to technology news
+                page_size=50
+            )
+            logger.info("✓ News pipeline job scheduled (every 12 hours - technology)")
+        else:
+            logger.warning("⚠ NEWS_API_KEY not configured, skipping news pipeline scheduling")
 
     except Exception as e:
         logger.error(f"✗ Error starting scheduler: {str(e)}")
