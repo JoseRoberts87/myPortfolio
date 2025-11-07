@@ -17,6 +17,7 @@ from app.schemas.article import (
 )
 from app.services.news_service import NewsAPIService
 from app.services.sentiment_service import SentimentService
+from app.services.ner_service import get_ner_service
 from app.core.config import settings
 import logging
 
@@ -283,6 +284,30 @@ async def _sync_news_articles(
         logger.info(
             f"News sync completed. Stored: {stored_count}, Updated: {updated_count}, Failed: {failed_count}"
         )
+
+        # Extract entities for newly stored articles
+        if stored_count > 0:
+            try:
+                logger.info(f"Starting NER processing for {stored_count} new articles")
+                ner_service = get_ner_service()
+
+                # Get all newly created articles from this batch
+                for article_data in articles:
+                    if article_data['id']:  # Only process if we have the article ID
+                        article = db.query(Article).filter(
+                            Article.external_id == article_data['id']
+                        ).first()
+
+                        if article:
+                            try:
+                                entities = ner_service.process_article(article.id, db)
+                                logger.debug(f"Extracted {len(entities)} entities from article {article.id}")
+                            except Exception as ner_error:
+                                logger.error(f"NER processing failed for article {article.id}: {ner_error}")
+
+                logger.info("NER processing completed for new articles")
+            except Exception as ner_batch_error:
+                logger.error(f"NER batch processing failed: {ner_batch_error}")
 
     except Exception as e:
         logger.error(f"News sync failed: {str(e)}")
