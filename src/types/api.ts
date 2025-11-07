@@ -154,6 +154,83 @@ export interface PipelineMetrics {
   recent_runs: PipelineRun[];
 }
 
+// Named Entity Recognition (NER) types
+export interface Entity {
+  id: number;
+  article_id: number;
+  entity_type: string;  // PERSON, ORG, GPE, LOC, etc.
+  entity_text: string;
+  start_char: number;
+  end_char: number;
+  created_at: string;
+}
+
+export interface EntityListResponse {
+  entities: Entity[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface EntityStats {
+  total_entities: number;
+  unique_entities: number;
+  by_type: Array<{
+    entity_type: string;
+    count: number;
+  }>;
+  top_entities: Array<{
+    entity_text: string;
+    entity_type: string;
+    count: number;
+  }>;
+}
+
+// Keyword Extraction types
+export interface Keyword {
+  id: number;
+  article_id: number;
+  keyword: string;
+  score: number;  // TF-IDF score
+  created_at: string;
+}
+
+export interface KeywordListResponse {
+  keywords: Keyword[];
+  total: number;
+  limit?: number;
+  offset?: number;
+  page?: number;
+  page_size?: number;
+  total_pages?: number;
+}
+
+export interface KeywordStats {
+  total_keywords: number;
+  unique_keywords: number;
+  avg_score: number;
+  top_keywords: Array<{
+    keyword: string;
+    count: number;
+    avg_score: number;
+  }>;
+}
+
+export interface TrendingKeyword {
+  keyword: string;
+  mention_count: number;
+  article_count: number;
+  avg_score: number;
+  trend_score: number;
+  time_window: string;
+}
+
+export interface KeywordTrendingResponse {
+  trending: TrendingKeyword[];
+  time_window: string;
+  generated_at: string;
+}
+
 // Articles types
 export interface Article {
   id: number;
@@ -184,6 +261,8 @@ export interface Article {
   is_verified_source: boolean | null;
   has_thumbnail: boolean | null;
   source_metadata: Record<string, any> | null;
+  entities?: Entity[];  // Optional: populated when fetching article details
+  keywords?: Keyword[];  // Optional: populated when fetching article details
 }
 
 export interface ArticlesResponse {
