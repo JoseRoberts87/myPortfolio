@@ -14,12 +14,12 @@ praw==7.8.1
 
 # Data Processing
 pandas==2.2.3
-numpy==2.2.0
+numpy==1.26.4
 
 # Sentiment Analysis & NLP
 textblob==0.18.0.post0
 spacy==3.7.2
-scikit-learn==1.5.2
+scikit-learn==1.3.2
 
 # Environment Variables
 python-dotenv==1.0.1
