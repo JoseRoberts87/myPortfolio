@@ -153,3 +153,60 @@ export interface PipelineMetrics {
   last_run: PipelineRun | null;
   recent_runs: PipelineRun[];
 }
+
+// Articles types
+export interface Article {
+  id: number;
+  external_id: string;
+  source_type: string;
+  source_name: string;
+  title: string;
+  content: string | null;
+  summary: string | null;
+  url: string | null;
+  image_url: string | null;
+  author: string | null;
+  author_url: string | null;
+  published_at: string;
+  retrieved_at: string;
+  updated_at: string | null;
+  score: number | null;
+  comment_count: number | null;
+  view_count: number | null;
+  engagement_rate: number | null;
+  sentiment_score: number | null;
+  sentiment_label: string | null;
+  sentiment_analyzed_at: string | null;
+  category: string | null;
+  tags: string[] | null;
+  language: string | null;
+  is_video: boolean | null;
+  is_verified_source: boolean | null;
+  has_thumbnail: boolean | null;
+  source_metadata: Record<string, any> | null;
+}
+
+export interface ArticlesResponse {
+  articles: Article[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+}
+
+export interface ArticleSourceStats {
+  total_articles: number;
+  by_source_type: Array<{
+    source_type: string;
+    count: number;
+  }>;
+  top_sources: Array<{
+    source_name: string;
+    source_type: string;
+    count: number;
+  }>;
+  date_range: {
+    earliest: string | null;
+    latest: string | null;
+  };
+}
