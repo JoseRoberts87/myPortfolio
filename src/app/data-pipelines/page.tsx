@@ -11,7 +11,9 @@ import {
   getPipelineRuns,
   getArticles,
   syncNewsArticles,
-  getArticleSourceStats
+  getArticleSourceStats,
+  getArticleEntities,
+  getArticleKeywords
 } from '@/lib/api';
 import type {
   RedditPost,
@@ -20,11 +22,14 @@ import type {
   PipelineMetrics,
   PipelineRun,
   Article,
-  ArticleSourceStats
+  ArticleSourceStats,
+  Entity,
+  Keyword
 } from '@/types/api';
 import { SchedulerStatusWidget } from '@/components/DataPipelines/SchedulerStatusWidget';
 import { PipelineMetricsDashboard } from '@/components/DataPipelines/PipelineMetricsDashboard';
 import { PipelineRunHistoryTable } from '@/components/DataPipelines/PipelineRunHistoryTable';
+import { EntityBadge, KeywordTag } from '@/components/NLP';
 
 export default function DataPipelinesPage() {
   // Tab state
@@ -37,6 +42,11 @@ export default function DataPipelinesPage() {
   // Articles state
   const [articles, setArticles] = useState<Article[]>([]);
   const [articleStats, setArticleStats] = useState<ArticleSourceStats | null>(null);
+
+  // NLP data state (keyed by article ID)
+  const [articleEntities, setArticleEntities] = useState<Record<number, Entity[]>>({});
+  const [articleKeywords, setArticleKeywords] = useState<Record<number, Keyword[]>>({});
+  const [loadingNLP, setLoadingNLP] = useState<Record<number, boolean>>({});
 
   // Shared state
   const [schedulerStatus, setSchedulerStatus] = useState<SchedulerStatus | null>(null);
@@ -122,6 +132,39 @@ export default function DataPipelinesPage() {
       setRunningPipeline(false);
     }
   }
+
+  // Load NLP data (entities and keywords) for an article
+  async function loadArticleNLP(articleId: number) {
+    // Skip if already loading or loaded
+    if (loadingNLP[articleId] || (articleEntities[articleId] && articleKeywords[articleId])) {
+      return;
+    }
+
+    setLoadingNLP(prev => ({ ...prev, [articleId]: true }));
+
+    try {
+      const [entitiesResponse, keywordsResponse] = await Promise.all([
+        getArticleEntities(articleId).catch(() => ({ entities: [], total: 0, limit: 0, offset: 0 })),
+        getArticleKeywords(articleId).catch(() => ({ keywords: [], total: 0 }))
+      ]);
+
+      setArticleEntities(prev => ({ ...prev, [articleId]: entitiesResponse.entities }));
+      setArticleKeywords(prev => ({ ...prev, [articleId]: keywordsResponse.keywords }));
+    } catch (err) {
+      console.error(`Error loading NLP data for article ${articleId}:`, err);
+    } finally {
+      setLoadingNLP(prev => ({ ...prev, [articleId]: false }));
+    }
+  }
+
+  // Load NLP data for all articles when articles change
+  useEffect(() => {
+    if (activeTab === 'articles' && articles.length > 0) {
+      articles.forEach(article => {
+        loadArticleNLP(article.id);
+      });
+    }
+  }, [articles, activeTab]);
 
   function formatDate(dateString: string): string {
     try {
@@ -550,6 +593,71 @@ export default function DataPipelinesPage() {
                             className="rounded-lg max-h-48 w-auto object-cover"
                             onError={(e) => { e.currentTarget.style.display = 'none'; }}
                           />
+                        </div>
+                      )}
+
+                      {/* NLP Features: Entities and Keywords */}
+                      {(articleEntities[article.id]?.length > 0 || articleKeywords[article.id]?.length > 0) && (
+                        <div className="mt-4 space-y-3 pt-3 border-t border-gray-700/50">
+                          {/* Entities Section */}
+                          {articleEntities[article.id]?.length > 0 && (
+                            <div>
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="text-xs font-semibold text-gray-400 uppercase">
+                                  Named Entities
+                                </span>
+                                <span className="text-xs text-gray-500">
+                                  ({articleEntities[article.id].length})
+                                </span>
+                              </div>
+                              <div className="flex flex-wrap gap-1.5">
+                                {articleEntities[article.id].slice(0, 8).map((entity, idx) => (
+                                  <EntityBadge key={`${article.id}-entity-${idx}`} entity={entity} size="sm" />
+                                ))}
+                                {articleEntities[article.id].length > 8 && (
+                                  <Badge variant="secondary" size="sm">
+                                    +{articleEntities[article.id].length - 8} more
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Keywords Section */}
+                          {articleKeywords[article.id]?.length > 0 && (
+                            <div>
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="text-xs font-semibold text-gray-400 uppercase">
+                                  Key Topics
+                                </span>
+                                <span className="text-xs text-gray-500">
+                                  ({articleKeywords[article.id].length})
+                                </span>
+                              </div>
+                              <div className="flex flex-wrap gap-1.5">
+                                {articleKeywords[article.id]
+                                  .sort((a, b) => b.score - a.score)
+                                  .slice(0, 10)
+                                  .map((keyword, idx) => (
+                                    <KeywordTag key={`${article.id}-keyword-${idx}`} keyword={keyword} size="sm" compact />
+                                  ))}
+                                {articleKeywords[article.id].length > 10 && (
+                                  <Badge variant="secondary" size="sm">
+                                    +{articleKeywords[article.id].length - 10} more
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Loading indicator for NLP data */}
+                      {loadingNLP[article.id] && (
+                        <div className="mt-4 pt-3 border-t border-gray-700/50">
+                          <span className="text-xs text-gray-500 italic">
+                            Loading NLP analysis...
+                          </span>
                         </div>
                       )}
                     </div>

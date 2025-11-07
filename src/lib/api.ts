@@ -13,7 +13,14 @@ import type {
   PipelineMetrics,
   ArticlesResponse,
   Article,
-  ArticleSourceStats
+  ArticleSourceStats,
+  Entity,
+  EntityListResponse,
+  EntityStats,
+  Keyword,
+  KeywordListResponse,
+  KeywordStats,
+  KeywordTrendingResponse
 } from '@/types/api';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -277,4 +284,124 @@ export async function syncNewsArticles(params?: {
  */
 export async function getArticleSourceStats(): Promise<ArticleSourceStats> {
   return fetchApi('/articles/stats/sources');
+}
+
+// ============================================================================
+// Entity (NER) API Functions
+// ============================================================================
+
+/**
+ * Get entities with optional filters
+ */
+export async function getEntities(params?: {
+  article_id?: number;
+  entity_type?: string;
+  entity_text?: string;
+  limit?: number;
+  offset?: number;
+}): Promise<EntityListResponse> {
+  const queryParams = new URLSearchParams();
+
+  if (params?.article_id !== undefined) queryParams.append('article_id', params.article_id.toString());
+  if (params?.entity_type) queryParams.append('entity_type', params.entity_type);
+  if (params?.entity_text) queryParams.append('entity_text', params.entity_text);
+  if (params?.limit) queryParams.append('limit', params.limit.toString());
+  if (params?.offset) queryParams.append('offset', params.offset.toString());
+
+  const query = queryParams.toString();
+  const endpoint = `/entities/${query ? `?${query}` : ''}`;
+
+  return fetchApi<EntityListResponse>(endpoint);
+}
+
+/**
+ * Get entities for a specific article
+ */
+export async function getArticleEntities(articleId: number): Promise<EntityListResponse> {
+  return fetchApi<EntityListResponse>(`/entities/article/${articleId}`);
+}
+
+/**
+ * Get entity statistics
+ */
+export async function getEntityStats(): Promise<EntityStats> {
+  return fetchApi<EntityStats>('/entities/stats');
+}
+
+/**
+ * Manually trigger entity extraction for an article
+ */
+export async function processArticleEntities(articleId: number): Promise<EntityListResponse> {
+  return fetchApi<EntityListResponse>(`/entities/process-article/${articleId}`, {
+    method: 'POST'
+  });
+}
+
+// ============================================================================
+// Keyword API Functions
+// ============================================================================
+
+/**
+ * Get keywords with optional filters
+ */
+export async function getKeywords(params?: {
+  article_id?: number;
+  keyword?: string;
+  min_score?: number;
+  limit?: number;
+  offset?: number;
+}): Promise<KeywordListResponse> {
+  const queryParams = new URLSearchParams();
+
+  if (params?.article_id !== undefined) queryParams.append('article_id', params.article_id.toString());
+  if (params?.keyword) queryParams.append('keyword', params.keyword);
+  if (params?.min_score !== undefined) queryParams.append('min_score', params.min_score.toString());
+  if (params?.limit) queryParams.append('limit', params.limit.toString());
+  if (params?.offset) queryParams.append('offset', params.offset.toString());
+
+  const query = queryParams.toString();
+  const endpoint = `/keywords/${query ? `?${query}` : ''}`;
+
+  return fetchApi<KeywordListResponse>(endpoint);
+}
+
+/**
+ * Get keywords for a specific article
+ */
+export async function getArticleKeywords(articleId: number): Promise<KeywordListResponse> {
+  return fetchApi<KeywordListResponse>(`/keywords/article/${articleId}`);
+}
+
+/**
+ * Get keyword statistics
+ */
+export async function getKeywordStats(): Promise<KeywordStats> {
+  return fetchApi<KeywordStats>('/keywords/stats');
+}
+
+/**
+ * Get trending keywords
+ */
+export async function getTrendingKeywords(params?: {
+  time_window?: '24h' | '7d' | '30d';
+  limit?: number;
+}): Promise<KeywordTrendingResponse> {
+  const queryParams = new URLSearchParams();
+
+  if (params?.time_window) queryParams.append('time_window', params.time_window);
+  if (params?.limit) queryParams.append('limit', params.limit.toString());
+
+  const query = queryParams.toString();
+  const endpoint = `/keywords/trending${query ? `?${query}` : ''}`;
+
+  return fetchApi<KeywordTrendingResponse>(endpoint);
+}
+
+/**
+ * Manually trigger keyword extraction for an article
+ */
+export async function processArticleKeywords(articleId: number): Promise<KeywordListResponse> {
+  return fetchApi<KeywordListResponse>(`/keywords/process-article/${articleId}`, {
+    method: 'POST'
+  });
 }
