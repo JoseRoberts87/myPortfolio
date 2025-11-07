@@ -75,6 +75,7 @@ class Article(Base):
 
     # Relationships
     entities = relationship("Entity", back_populates="article", cascade="all, delete-orphan")
+    keywords = relationship("Keyword", back_populates="article", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Article(id={self.id}, source={self.source_type}, title='{self.title[:50]}...')>"

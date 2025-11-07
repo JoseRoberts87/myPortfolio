@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Import database and models
 from app.db.database import Base
-from app.models import RedditPost, ContactMessage, Visit, PipelineRun, Article, Entity
+from app.models import RedditPost, ContactMessage, Visit, PipelineRun, Article, Entity, Keyword
 from app.core.config import settings
 
 # this is the Alembic Config object, which provides
