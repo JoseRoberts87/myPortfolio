@@ -1,6 +1,6 @@
 """API routes"""
 from fastapi import APIRouter
-from app.api import reddit, pipeline, stats, analytics, cache, health, contact, computer_vision, visits, jobs, articles, entities
+from app.api import reddit, pipeline, stats, analytics, cache, health, contact, computer_vision, visits, jobs, articles, entities, keywords
 
 api_router = APIRouter()
 
@@ -10,6 +10,7 @@ api_router.include_router(contact.router, tags=["contact"])
 api_router.include_router(reddit.router, prefix="/reddit", tags=["reddit"])
 api_router.include_router(articles.router, prefix="/articles", tags=["articles"])
 api_router.include_router(entities.router, prefix="/entities", tags=["entities"])
+api_router.include_router(keywords.router, prefix="/keywords", tags=["keywords"])
 api_router.include_router(pipeline.router, prefix="/pipeline", tags=["pipeline"])
 api_router.include_router(jobs.router, prefix="/jobs", tags=["jobs"])
 api_router.include_router(stats.router, prefix="/stats", tags=["stats"])

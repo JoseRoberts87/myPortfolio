@@ -18,6 +18,7 @@ from app.schemas.article import (
 from app.services.news_service import NewsAPIService
 from app.services.sentiment_service import SentimentService
 from app.services.ner_service import get_ner_service
+from app.services.keyword_service import get_keyword_service
 from app.core.config import settings
 import logging
 
@@ -308,6 +309,30 @@ async def _sync_news_articles(
                 logger.info("NER processing completed for new articles")
             except Exception as ner_batch_error:
                 logger.error(f"NER batch processing failed: {ner_batch_error}")
+
+        # Extract keywords for newly stored articles
+        if stored_count > 0:
+            try:
+                logger.info(f"Starting keyword extraction for {stored_count} new articles")
+                keyword_service = get_keyword_service()
+
+                # Get all newly created articles from this batch
+                for article_data in articles:
+                    if article_data['id']:  # Only process if we have the article ID
+                        article = db.query(Article).filter(
+                            Article.external_id == article_data['id']
+                        ).first()
+
+                        if article:
+                            try:
+                                keywords = keyword_service.process_article(article.id, db)
+                                logger.debug(f"Extracted {len(keywords)} keywords from article {article.id}")
+                            except Exception as keyword_error:
+                                logger.error(f"Keyword extraction failed for article {article.id}: {keyword_error}")
+
+                logger.info("Keyword extraction completed for new articles")
+            except Exception as keyword_batch_error:
+                logger.error(f"Keyword batch processing failed: {keyword_batch_error}")
 
     except Exception as e:
         logger.error(f"News sync failed: {str(e)}")
