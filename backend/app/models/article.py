@@ -3,6 +3,7 @@ Article Model - Unified data model for content from all sources
 Represents articles, posts, tweets, etc. in a consistent format
 """
 from sqlalchemy import Column, String, Integer, Float, DateTime, Text, Boolean, JSON
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.db.database import Base
 
@@ -71,6 +72,9 @@ class Article(Base):
     # - Reddit: {"subreddit": "technology", "upvote_ratio": 0.95, "num_awards": 3}
     # - News: {"publisher": "BBC", "section": "technology", "word_count": 1200}
     # - Twitter: {"retweet_count": 500, "quote_count": 50, "hashtags": ["AI", "ML"]}
+
+    # Relationships
+    entities = relationship("Entity", back_populates="article", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Article(id={self.id}, source={self.source_type}, title='{self.title[:50]}...')>"
