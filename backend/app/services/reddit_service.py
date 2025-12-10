@@ -27,6 +27,7 @@ class RedditService:
             user_agent=settings.REDDIT_USER_AGENT
         )
         self.subreddits = settings.REDDIT_SUBREDDITS.split(',')
+        self.search_queries = [q.strip() for q in settings.REDDIT_SEARCH_QUERIES.split(',') if q.strip()]
 
     @api_retry
     def fetch_posts(
@@ -125,6 +126,84 @@ class RedditService:
             is_video=submission.is_video,
             over_18=submission.over_18
         )
+
+    @api_retry
+    def search_posts(
+        self,
+        query: str,
+        limit: int = 100,
+        time_filter: str = "day",
+        sort: str = "relevance"
+    ) -> List[RedditPostCreate]:
+        """
+        Search for posts across all of Reddit matching a query
+
+        Args:
+            query: Search query string
+            limit: Maximum number of posts to fetch
+            time_filter: Time filter (hour, day, week, month, year, all)
+            sort: Sort method (relevance, hot, top, new, comments)
+
+        Returns:
+            List of RedditPostCreate objects
+        """
+        # Check circuit breaker
+        if reddit_circuit_breaker.is_open():
+            logger.error(f"Circuit breaker is open, skipping search for '{query}'")
+            raise Exception("Reddit API circuit breaker is open")
+
+        try:
+            posts = []
+
+            for submission in self.reddit.subreddit("all").search(
+                query=query,
+                sort=sort,
+                time_filter=time_filter,
+                limit=limit
+            ):
+                post_data = self._submission_to_schema(submission)
+                posts.append(post_data)
+
+            logger.info(f"Search for '{query}' returned {len(posts)} posts")
+            reddit_circuit_breaker.record_success()
+            return posts
+
+        except Exception as e:
+            logger.error(f"Error searching for '{query}': {str(e)}")
+            reddit_circuit_breaker.record_failure()
+            raise
+
+    def fetch_posts_from_all_search_queries(
+        self,
+        limit_per_query: int = 100,
+        time_filter: str = "day"
+    ) -> List[RedditPostCreate]:
+        """
+        Search for posts matching all configured search queries
+
+        Args:
+            limit_per_query: Maximum posts per search query
+            time_filter: Time filter
+
+        Returns:
+            Combined list of posts from all search queries
+        """
+        all_posts = []
+
+        for query in self.search_queries:
+            try:
+                posts = self.search_posts(
+                    query=query,
+                    limit=limit_per_query,
+                    time_filter=time_filter
+                )
+                all_posts.extend(posts)
+            except Exception as e:
+                logger.error(f"Failed to search for '{query}': {str(e)}")
+                continue
+
+        logger.info(f"Total posts from search queries: {len(all_posts)}")
+        return all_posts
 
     def test_connection(self) -> bool:
         """

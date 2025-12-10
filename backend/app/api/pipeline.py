@@ -94,6 +94,16 @@ async def _execute_pipeline(time_filter: str = "day", trigger_type: str = "sched
             time_filter=time_filter
         )
 
+        # Fetch posts from search queries (e.g., "hasbro")
+        if reddit_service.search_queries:
+            logger.info(f"Searching Reddit for queries: {reddit_service.search_queries}")
+            search_posts = reddit_service.fetch_posts_from_all_search_queries(
+                limit_per_query=settings.REDDIT_POST_LIMIT,
+                time_filter=time_filter
+            )
+            posts.extend(search_posts)
+            logger.info(f"Total posts after search queries: {len(posts)}")
+
         # Store posts in database with sentiment analysis
         stored_count = 0
         updated_count = 0
@@ -250,6 +260,7 @@ async def get_pipeline_status(db: Session = Depends(get_db)):
             "total_subreddits": subreddits,
             "latest_post_date": latest_post.created_utc if latest_post else None,
             "configured_subreddits": settings.REDDIT_SUBREDDITS.split(','),
+            "configured_search_queries": [q.strip() for q in settings.REDDIT_SEARCH_QUERIES.split(',') if q.strip()],
             "sentiment_stats": {
                 "positive": positive_count,
                 "negative": negative_count,

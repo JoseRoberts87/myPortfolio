@@ -86,6 +86,21 @@ async def lifespan(app: FastAPI):
                 hours=12
             )
             logger.info("✓ News pipeline job scheduled (every 12 hours - technology)")
+
+            # Schedule news search queries (e.g., "hasbro")
+            search_queries = [q.strip() for q in settings.NEWS_SEARCH_QUERIES.split(',') if q.strip()]
+            for query in search_queries:
+                scheduler_service.add_job(
+                    func=_sync_news_articles,
+                    job_id=f"news_search_{query.lower().replace(' ', '_')}",
+                    trigger_type="interval",
+                    kwargs={
+                        "query": query,
+                        "page_size": 50
+                    },
+                    hours=12
+                )
+                logger.info(f"✓ News search job scheduled (every 12 hours - query: '{query}')")
         else:
             logger.warning("⚠ NEWS_API_KEY not configured, skipping news pipeline scheduling")
 
