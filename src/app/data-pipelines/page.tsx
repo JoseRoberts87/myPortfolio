@@ -350,6 +350,19 @@ export default function DataPipelinesPage() {
               </div>
             </div>
           )}
+
+          {status && status.configured_search_queries && status.configured_search_queries.length > 0 && (
+            <div className="mt-6 pt-6 border-t border-gray-700">
+              <h3 className="text-sm font-semibold text-gray-400 mb-3">Search Queries (All Reddit)</h3>
+              <div className="flex flex-wrap gap-2">
+                {status.configured_search_queries.map((query) => (
+                  <Badge key={query} variant="secondary">
+                    🔍 {query}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
         </Card>
       </Section>
 
