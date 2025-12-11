@@ -29,8 +29,12 @@ class Settings(BaseSettings):
 
     # Pipeline Configuration
     REDDIT_SUBREDDITS: str = "python,javascript,machinelearning,datascience"
+    REDDIT_SEARCH_QUERIES: str = "hasbro"  # Comma-separated search queries for Reddit
     REDDIT_POST_LIMIT: int = 100
     PIPELINE_SCHEDULE_MINUTES: int = 60
+
+    # News Search Configuration
+    NEWS_SEARCH_QUERIES: str = "hasbro"  # Comma-separated search queries for news
 
     # Redis Cache Configuration
     REDIS_HOST: str = "localhost"

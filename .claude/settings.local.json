@@ -92,7 +92,20 @@
       "Bash(npm run build:*)",
       "Bash(.env.local)",
       "Bash(source venv/bin/activate:*)",
-      "Bash(git check-ignore:*)"
+      "Bash(git check-ignore:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill -9)",
+      "Bash(gh pr create:*)",
+      "Bash(alembic revision:*)",
+      "Bash(alembic upgrade:*)",
+      "Bash(uvicorn:*)",
+      "Bash(./venv/bin/python:*)",
+      "Bash(PYTHONPATH=/Users/jrob/repos/portfolio/backend python3:*)",
+      "Bash(for id in 1 2 3 4 5)",
+      "Bash(do echo 'Processing article $id...' curl -X POST http://localhost:8000/api/v1/entities/process-article/$id)",
+      "Bash(xargs:*)",
+      "WebFetch(domain:newsapi.org)",
+      "Bash(docker-compose up:*)"
     ],
     "deny": [],
     "ask": []

@@ -149,6 +149,7 @@ async def get_article(article_id: int, db: Session = Depends(get_db)):
 async def sync_news_articles(
     background_tasks: BackgroundTasks,
     category: Optional[str] = Query(None, description="News category (technology, business, etc.)"),
+    query: Optional[str] = Query(None, description="Search query (e.g., 'hasbro')"),
     sources: Optional[str] = Query(None, description="Comma-separated source IDs"),
     page_size: int = Query(20, ge=1, le=100, description="Number of articles to fetch"),
     db: Session = Depends(get_db)
@@ -173,6 +174,7 @@ async def sync_news_articles(
         background_tasks.add_task(
             _sync_news_articles,
             category=category,
+            query=query,
             sources=sources,
             page_size=page_size
         )
@@ -181,6 +183,7 @@ async def sync_news_articles(
             "status": "started",
             "message": f"News article sync started. Fetching {page_size} articles.",
             "category": category,
+            "query": query,
             "sources": sources
         }
 
@@ -193,6 +196,7 @@ async def sync_news_articles(
 
 async def _sync_news_articles(
     category: Optional[str] = None,
+    query: Optional[str] = None,
     sources: Optional[str] = None,
     page_size: int = 20
 ):
@@ -201,6 +205,7 @@ async def _sync_news_articles(
 
     Args:
         category: News category filter
+        query: Search query (e.g., 'hasbro')
         sources: Source IDs filter
         page_size: Number of articles to fetch
     """
@@ -210,18 +215,27 @@ async def _sync_news_articles(
     db = SessionLocal()
 
     try:
-        logger.info(f"Starting news sync: category={category}, sources={sources}, page_size={page_size}")
+        logger.info(f"Starting news sync: category={category}, query={query}, sources={sources}, page_size={page_size}")
 
         # Initialize News API service
         news_service = NewsAPIService(api_key=settings.NEWS_API_KEY)
 
-        # Fetch articles
-        articles = await news_service.fetch_and_transform(
-            category=category,
-            sources=sources,
-            page_size=page_size,
-            endpoint='top-headlines'
-        )
+        # Fetch articles - use 'everything' endpoint if query is provided, otherwise 'top-headlines'
+        if query:
+            # Use search endpoint for query-based searches
+            articles = await news_service.fetch_and_transform(
+                query=query,
+                page_size=page_size,
+                endpoint='everything'
+            )
+        else:
+            # Use top-headlines endpoint for category-based fetching
+            articles = await news_service.fetch_and_transform(
+                category=category,
+                sources=sources,
+                page_size=page_size,
+                endpoint='top-headlines'
+            )
 
         logger.info(f"Fetched {len(articles)} articles from News API")
 
