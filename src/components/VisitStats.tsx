@@ -39,7 +39,9 @@ export default function VisitStats() {
         setStats(data);
         setError(null);
       } catch (err) {
-        console.error('Error fetching visit stats:', err);
+        // Visit stats are non-critical; log at debug level so an offline or
+        // unreachable backend doesn't spam the console or the Next.js dev overlay.
+        console.debug('Visit stats unavailable:', err);
         setError('Unable to load stats');
       } finally {
         setLoading(false);
@@ -61,7 +63,8 @@ export default function VisitStats() {
           }),
         });
       } catch (err) {
-        console.error('Error tracking visit:', err);
+        // Best-effort analytics; ignore failures quietly (e.g. backend offline).
+        console.debug('Visit tracking failed:', err);
       }
     };
 
