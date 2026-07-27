@@ -53,7 +53,7 @@ export default function ResumeDownload() {
             Jose Roberts
           </h3>
           <p className="text-lg text-purple-400 mb-4">
-            Senior Full-Stack Engineer
+            Data & AI Architect
           </p>
 
           <div className="space-y-3 text-gray-300">
@@ -70,7 +70,7 @@ export default function ResumeDownload() {
                 />
               </svg>
               <span className="text-sm">
-                6+ years of full-stack development experience
+                15+ years architecting data pipelines & AI-first systems
               </span>
             </div>
             <div className="flex items-start gap-2">
@@ -86,7 +86,7 @@ export default function ResumeDownload() {
                 />
               </svg>
               <span className="text-sm">
-                Expertise in React, Next.js, TypeScript, Python, AWS
+                AI & LLM solutions with OpenAI, Databricks & agentic workflows
               </span>
             </div>
             <div className="flex items-start gap-2">
@@ -102,7 +102,7 @@ export default function ResumeDownload() {
                 />
               </svg>
               <span className="text-sm">
-                Cloud infrastructure and DevOps with Terraform & Docker
+                Full-stack delivery with React, Next.js, TypeScript & Python
               </span>
             </div>
             <div className="flex items-start gap-2">
@@ -118,7 +118,7 @@ export default function ResumeDownload() {
                 />
               </svg>
               <span className="text-sm">
-                Machine Learning & Data Engineering capabilities
+                Cloud, MLOps & DevOps with AWS, Terraform, Docker & Kubernetes
               </span>
             </div>
           </div>
@@ -162,7 +162,7 @@ export default function ResumeDownload() {
             <span>{isDownloading ? 'Downloading...' : 'Download Resume'}</span>
           </button>
 
-          <p className="text-gray-400 text-sm mt-4">PDF • 79 KB</p>
+          <p className="text-gray-400 text-sm mt-4">PDF • 95 KB</p>
 
           <div className="mt-6 flex items-center gap-4 text-xs text-gray-500">
             <span className="flex items-center gap-1">

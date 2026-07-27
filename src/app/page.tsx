@@ -74,7 +74,7 @@ export default function Home() {
                 <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-purple-500/50 shadow-2xl">
                   <Image
                     src="/profile-photo.png"
-                    alt="Jose Roberts - Full-Stack Developer"
+                    alt="Jose Roberts - Data & AI Architect"
                     fill
                     className="object-cover"
                     priority
@@ -89,13 +89,13 @@ export default function Home() {
                 Jose Roberts
               </h1>
               <h2 className="text-3xl md:text-4xl font-semibold text-purple-400">
-                Senior Software Engineer
+                Data & AI Architect
               </h2>
               <p className="text-xl md:text-2xl text-gray-300">
                 Showcasing expertise across multiple domains
               </p>
               <p className="text-lg text-gray-400 max-w-2xl">
-                Building modern web applications, data pipelines, ML models, and cloud infrastructure
+                15+ years architecting data pipelines, AI agents, ML models, and cloud infrastructure
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-4 lg:justify-start justify-center">
                 <a
