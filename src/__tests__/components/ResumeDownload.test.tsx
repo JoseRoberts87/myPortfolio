@@ -26,23 +26,23 @@ describe('ResumeDownload Component', () => {
     render(<ResumeDownload />);
 
     expect(screen.getByText('Jose Roberts')).toBeInTheDocument();
-    expect(screen.getByText('Senior Full-Stack Engineer')).toBeInTheDocument();
+    expect(screen.getByText('Data & AI Architect')).toBeInTheDocument();
   });
 
   it('should display key qualifications', () => {
     render(<ResumeDownload />);
 
     expect(
-      screen.getByText(/6\+ years of full-stack development experience/i)
+      screen.getByText(/15\+ years architecting data pipelines & AI-first systems/i)
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/Expertise in React, Next.js, TypeScript, Python, AWS/i)
+      screen.getByText(/AI & LLM solutions with OpenAI, Databricks & agentic workflows/i)
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/Cloud infrastructure and DevOps with Terraform & Docker/i)
+      screen.getByText(/Full-stack delivery with React, Next.js, TypeScript & Python/i)
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/Machine Learning & Data Engineering capabilities/i)
+      screen.getByText(/Cloud, MLOps & DevOps with AWS, Terraform, Docker & Kubernetes/i)
     ).toBeInTheDocument();
   });
 
@@ -57,7 +57,7 @@ describe('ResumeDownload Component', () => {
   it('should display file information', () => {
     render(<ResumeDownload />);
 
-    expect(screen.getByText('PDF • 79 KB')).toBeInTheDocument();
+    expect(screen.getByText('PDF • 95 KB')).toBeInTheDocument();
   });
 
   it('should display security badges', () => {

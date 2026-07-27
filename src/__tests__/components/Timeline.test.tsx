@@ -15,7 +15,8 @@ describe('Timeline Component', () => {
     it('should render experience items', () => {
       render(<Timeline />);
 
-      expect(screen.getByText('Senior Full-Stack Software Engineer')).toBeInTheDocument();
+      expect(screen.getByText('Data and AI Architect')).toBeInTheDocument();
+      expect(screen.getByText('Manager of Data Science and Data Engineering')).toBeInTheDocument();
       expect(screen.getByText('Senior Data Engineer')).toBeInTheDocument();
       expect(screen.getByText('Data Engineer')).toBeInTheDocument();
       expect(screen.getByText('Senior Data Engineer/Analyst - AVP')).toBeInTheDocument();
@@ -31,6 +32,7 @@ describe('Timeline Component', () => {
     it('should render certification items', () => {
       render(<Timeline />);
 
+      expect(screen.getByText('Databricks Certified Data Engineer Professional')).toBeInTheDocument();
       expect(screen.getByText('AWS Certified Solutions Architect - Associate')).toBeInTheDocument();
       expect(screen.getByText('TinyML Certification')).toBeInTheDocument();
     });
@@ -47,6 +49,7 @@ describe('Timeline Component', () => {
     it('should display experience organizations', () => {
       render(<Timeline variant="experience" />);
 
+      expect(screen.getByText('MojoTech')).toBeInTheDocument();
       expect(screen.getByText('Very Technology')).toBeInTheDocument();
       expect(screen.getByText('Evonik Industries')).toBeInTheDocument();
       expect(screen.getByText('Amazon Robotics')).toBeInTheDocument();
@@ -67,7 +70,7 @@ describe('Timeline Component', () => {
       render(<Timeline variant="experience" />);
 
       expect(
-        screen.getByText('Led teams of engineers emphasizing product ownership and scalable solutions for IoT product usage and services.')
+        screen.getByText('Led teams of engineers emphasizing product ownership and scalable solutions integrating LLMs and generative AI.')
       ).toBeInTheDocument();
     });
 
@@ -75,7 +78,7 @@ describe('Timeline Component', () => {
       render(<Timeline variant="experience" />);
 
       expect(
-        screen.getByText(/Consulted in multiple efforts to design and build scalable backends for IoT products/i)
+        screen.getByText(/Directed the integration of LLMs and Generative AI into existing systems/i)
       ).toBeInTheDocument();
       expect(
         screen.getByText(/Implemented machine learning forecasting model for energy consumption/i)
@@ -162,10 +165,10 @@ describe('Timeline Component', () => {
       render(<Timeline variant="experience" />);
 
       expect(
-        screen.getByText(/Developed full-stack AI-first app for creative marketing using StabilityAI and OpenAI/i)
+        screen.getByText(/Built an agentic workforce that automated workflows and managed tasks/i)
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/Improved build automation tools using infrastructure as code/i)
+        screen.getByText(/Consulted on the design of an AI-first system/i)
       ).toBeInTheDocument();
     });
 
@@ -250,7 +253,8 @@ describe('Timeline Component', () => {
       const titles = screen.getAllByRole('heading', { level: 3 });
       const titleTexts = titles.map(t => t.textContent);
 
-      expect(titleTexts).toContain('Senior Full-Stack Software Engineer');
+      expect(titleTexts).toContain('Data and AI Architect');
+      expect(titleTexts).toContain('Manager of Data Science and Data Engineering');
       expect(titleTexts).toContain('Senior Data Engineer');
       expect(titleTexts).toContain('Data Engineer');
       expect(titleTexts).toContain('Senior Data Engineer/Analyst - AVP');
@@ -259,9 +263,9 @@ describe('Timeline Component', () => {
     it('should render education and certifications together in education section', () => {
       render(<Timeline variant="education" />);
 
-      // Should have 2 education + 2 certifications = 4 total
+      // Should have 2 education + 3 certifications = 5 total
       const titles = screen.getAllByRole('heading', { level: 3 });
-      expect(titles.length).toBe(4);
+      expect(titles.length).toBe(5);
     });
   });
 
@@ -281,7 +285,7 @@ describe('Timeline Component', () => {
 
       // All items should have descriptions
       expect(
-        screen.getByText('Led teams of engineers emphasizing product ownership and scalable solutions for IoT product usage and services.')
+        screen.getByText('Led teams of engineers emphasizing product ownership and scalable solutions integrating LLMs and generative AI.')
       ).toBeInTheDocument();
       expect(
         screen.getByText('Advanced studies in software engineering, algorithms, and system design.')
