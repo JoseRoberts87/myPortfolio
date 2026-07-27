@@ -33,7 +33,7 @@ export default async function CaseStudyPage({ params }: PageProps) {
   const caseStudy = getCaseStudyBySlug(slug);
 
   if (!caseStudy) {
-    notFound();
+    return notFound();
   }
 
   return (

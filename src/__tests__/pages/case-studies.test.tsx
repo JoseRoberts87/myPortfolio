@@ -55,9 +55,9 @@ describe('Case Studies Index Page', () => {
     expect(screen.getByText('spaCy')).toBeInTheDocument();
     expect(screen.getByText('DistilBERT')).toBeInTheDocument();
 
-    // Data Pipeline case study techs
-    expect(screen.getByText('FastAPI')).toBeInTheDocument();
-    expect(screen.getByText('PostgreSQL')).toBeInTheDocument();
+    // Data Pipeline case study techs (FastAPI/PostgreSQL appear across multiple case studies)
+    expect(screen.getAllByText('FastAPI').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('PostgreSQL').length).toBeGreaterThan(0);
   });
 
   it('should render metrics for each case study', () => {
