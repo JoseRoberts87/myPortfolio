@@ -66,6 +66,16 @@ class Settings(BaseSettings):
     RESEND_FROM_EMAIL: str = "onboarding@resend.dev"  # Sender email
     RESEND_TO_EMAIL: str = ""  # Where to receive notifications
 
+    # OpenAI / AI Assistant Configuration
+    OPENAI_API_KEY: str = ""  # Get from https://platform.openai.com/api-keys
+    OPENAI_CHAT_MODEL: str = "gpt-4o-mini"
+    OPENAI_EMBED_MODEL: str = "text-embedding-3-small"
+    AI_CHAT_ENABLED: bool = True  # Master switch for the /ai/chat endpoint
+    AI_MAX_QUESTION_CHARS: int = 500  # Reject longer questions (cost guard)
+    AI_MAX_ANSWER_TOKENS: int = 500  # Cap completion tokens (cost guard)
+    AI_RETRIEVAL_TOP_K: int = 4  # Knowledge chunks retrieved per query
+    AI_RATE_LIMIT_PER_HOUR: int = 20  # Per-IP requests per hour
+
     model_config = SettingsConfigDict(
         env_file=".env",
         case_sensitive=True

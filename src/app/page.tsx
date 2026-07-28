@@ -8,6 +8,13 @@ import Image from 'next/image';
 export default function Home() {
   const expertiseAreas = [
     {
+      id: 'ai-agents',
+      title: 'AI Agents & LLMs',
+      description: 'Agentic AI, RAG chatbots, and LLM integration — ask my portfolio anything',
+      icon: '🧠',
+      link: '/ai-agents',
+    },
+    {
       id: 'web-dev',
       title: 'Web Development',
       description: 'Modern full-stack applications with Next.js, React, and TypeScript',
