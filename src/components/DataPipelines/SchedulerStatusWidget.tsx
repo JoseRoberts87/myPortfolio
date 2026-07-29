@@ -13,7 +13,7 @@ export function SchedulerStatusWidget({ schedulerStatus, loading }: SchedulerSta
     return (
       <Card variant="elevated" padding="lg">
         <h3 className="text-xl font-semibold mb-4">Scheduler Status</h3>
-        <div className="text-center py-4 text-slate-500 dark:text-gray-400">Loading scheduler status...</div>
+        <div className="text-center py-4 text-muted">Loading scheduler status...</div>
       </Card>
     );
   }
@@ -22,7 +22,7 @@ export function SchedulerStatusWidget({ schedulerStatus, loading }: SchedulerSta
     return (
       <Card variant="elevated" padding="lg">
         <h3 className="text-xl font-semibold mb-4">Scheduler Status</h3>
-        <div className="text-center py-4 text-slate-500 dark:text-gray-400">Unable to load scheduler status</div>
+        <div className="text-center py-4 text-muted">Unable to load scheduler status</div>
       </Card>
     );
   }
@@ -59,20 +59,20 @@ export function SchedulerStatusWidget({ schedulerStatus, loading }: SchedulerSta
         <div className="grid grid-cols-2 gap-4 text-center">
           <div>
             <div className="text-2xl font-bold text-blue-400">{schedulerStatus.total_jobs}</div>
-            <div className="text-sm text-slate-500 dark:text-gray-400">Active Jobs</div>
+            <div className="text-sm text-muted">Active Jobs</div>
           </div>
           <div>
             <div className="text-2xl font-bold text-green-400">
               {schedulerStatus.jobs.filter(j => !j.pending).length}
             </div>
-            <div className="text-sm text-slate-500 dark:text-gray-400">Ready to Run</div>
+            <div className="text-sm text-muted">Ready to Run</div>
           </div>
         </div>
 
         {/* Active Jobs */}
         {schedulerStatus.jobs.length > 0 && (
           <div className="pt-4 border-t border-slate-200 dark:border-gray-700">
-            <h4 className="text-sm font-semibold text-slate-500 dark:text-gray-400 mb-3">Scheduled Jobs</h4>
+            <h4 className="text-sm font-semibold text-muted mb-3">Scheduled Jobs</h4>
             <div className="space-y-3">
               {schedulerStatus.jobs.map((job) => (
                 <div key={job.id} className="bg-slate-100 dark:bg-gray-800/50 rounded-lg p-3">
@@ -82,7 +82,7 @@ export function SchedulerStatusWidget({ schedulerStatus, loading }: SchedulerSta
                       {job.trigger}
                     </Badge>
                   </div>
-                  <div className="flex items-center justify-between text-xs text-slate-500 dark:text-gray-400">
+                  <div className="flex items-center justify-between text-xs text-muted">
                     <span>Function: {job.name}</span>
                     <span className="text-blue-400">
                       Next run: {formatNextRunTime(job.next_run_time)}
@@ -95,7 +95,7 @@ export function SchedulerStatusWidget({ schedulerStatus, loading }: SchedulerSta
         )}
 
         {schedulerStatus.total_jobs === 0 && (
-          <div className="text-center py-4 text-slate-500 dark:text-gray-400 text-sm">
+          <div className="text-center py-4 text-muted text-sm">
             No jobs scheduled
           </div>
         )}

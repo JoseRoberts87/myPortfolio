@@ -193,7 +193,7 @@ describe('Timeline Component', () => {
     it('should have period badges with purple background', () => {
       const { container } = render(<Timeline />);
 
-      const periodBadges = container.querySelectorAll('.bg-purple-900\\/50.text-purple-300');
+      const periodBadges = container.querySelectorAll('.bg-accent-soft');
       expect(periodBadges.length).toBeGreaterThan(0);
     });
 
@@ -320,7 +320,7 @@ describe('Timeline Component', () => {
     it('should have purple text for organizations', () => {
       const { container } = render(<Timeline />);
 
-      const purpleOrgs = container.querySelectorAll('.text-purple-400');
+      const purpleOrgs = container.querySelectorAll('.text-accent');
       expect(purpleOrgs.length).toBeGreaterThan(0);
     });
 

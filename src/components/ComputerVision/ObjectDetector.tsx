@@ -193,17 +193,17 @@ export default function ObjectDetector() {
 
       {/* Stats Bar */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-        <div className="text-center p-3 bg-slate-100 dark:bg-slate-800/50 rounded-lg">
+        <div className="text-center p-3 bg-sunken rounded-lg">
           <div className="text-2xl font-bold text-blue-400">{stats.fps}</div>
-          <div className="text-sm text-slate-500 dark:text-gray-400">FPS</div>
+          <div className="text-sm text-muted">FPS</div>
         </div>
-        <div className="text-center p-3 bg-slate-100 dark:bg-slate-800/50 rounded-lg">
+        <div className="text-center p-3 bg-sunken rounded-lg">
           <div className="text-2xl font-bold text-green-400">
             {stats.objectCount}
           </div>
-          <div className="text-sm text-slate-500 dark:text-gray-400">Objects</div>
+          <div className="text-sm text-muted">Objects</div>
         </div>
-        <div className="text-center p-3 bg-slate-100 dark:bg-slate-800/50 rounded-lg">
+        <div className="text-center p-3 bg-sunken rounded-lg">
           <Badge
             variant={isDetecting ? 'success' : 'warning'}
             size="lg"
@@ -211,19 +211,19 @@ export default function ObjectDetector() {
           >
             {isDetecting ? 'Active' : 'Idle'}
           </Badge>
-          <div className="text-sm text-slate-500 dark:text-gray-400">Status</div>
+          <div className="text-sm text-muted">Status</div>
         </div>
-        <div className="text-center p-3 bg-slate-100 dark:bg-slate-800/50 rounded-lg">
-          <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+        <div className="text-center p-3 bg-sunken rounded-lg">
+          <div className="text-2xl font-bold text-accent">
             {Math.round(minConfidence * 100)}%
           </div>
-          <div className="text-sm text-slate-500 dark:text-gray-400">Confidence</div>
+          <div className="text-sm text-muted">Confidence</div>
         </div>
       </div>
 
       {/* Confidence Slider */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-slate-600 dark:text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-body mb-2">
           Minimum Confidence Threshold
         </label>
         <input
@@ -233,9 +233,9 @@ export default function ObjectDetector() {
           step="0.05"
           value={minConfidence}
           onChange={(e) => setMinConfidence(parseFloat(e.target.value))}
-          className="w-full h-2 bg-slate-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-600"
+          className="w-full h-2 bg-track rounded-lg appearance-none cursor-pointer accent-purple-600"
         />
-        <div className="flex justify-between text-xs text-slate-400 dark:text-gray-500 mt-1">
+        <div className="flex justify-between text-xs text-faint mt-1">
           <span>0%</span>
           <span>50%</span>
           <span>100%</span>
@@ -253,19 +253,19 @@ export default function ObjectDetector() {
               .map((detection, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-2 bg-slate-100 dark:bg-slate-800/50 rounded"
+                  className="flex items-center justify-between p-2 bg-sunken rounded"
                 >
-                  <span className="text-slate-600 dark:text-gray-300 capitalize">
+                  <span className="text-body capitalize">
                     {detection.class}
                   </span>
                   <div className="flex items-center gap-2">
-                    <div className="w-32 bg-slate-200 dark:bg-gray-700 rounded-full h-2">
+                    <div className="w-32 bg-track rounded-full h-2">
                       <div
                         className="bg-purple-500 h-2 rounded-full transition-all"
                         style={{ width: `${detection.score * 100}%` }}
                       ></div>
                     </div>
-                    <span className="text-sm text-slate-500 dark:text-gray-400 w-12 text-right">
+                    <span className="text-sm text-muted w-12 text-right">
                       {Math.round(detection.score * 100)}%
                     </span>
                   </div>

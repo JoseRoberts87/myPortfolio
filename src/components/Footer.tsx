@@ -20,12 +20,12 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+    <footer className="bg-surface-alt border-t border-slate-200 dark:border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand Section */}
           <div className="space-y-4">
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Portfolio</h3>
+            <h3 className="text-2xl font-bold text-foreground">Portfolio</h3>
             <p className="text-slate-600 dark:text-gray-400 text-sm">
               Showcasing expertise in web development, data engineering, machine learning, and cloud infrastructure.
             </p>
@@ -61,7 +61,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-slate-900 dark:text-white">Expertise Areas</h4>
+            <h4 className="text-lg font-semibold text-foreground">Expertise Areas</h4>
             <ul className="space-y-2">
               {footerLinks.sections.map((link) => (
                 <li key={link.name}>
@@ -78,7 +78,7 @@ export default function Footer() {
 
           {/* Resources */}
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-slate-900 dark:text-white">Resources</h4>
+            <h4 className="text-lg font-semibold text-foreground">Resources</h4>
             <ul className="space-y-2">
               <li>
                 <Link href="/docs" className="text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white text-sm transition-colors">

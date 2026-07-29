@@ -63,7 +63,7 @@ export default function GitHubPage() {
                 href={`https://github.com/${GITHUB_USERNAME}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-6 py-3 border-2 border-purple-600 text-purple-600 dark:text-purple-400 hover:bg-purple-600 hover:text-white font-semibold rounded-lg transition-colors"
+                className="px-6 py-3 border-2 border-purple-600 text-accent hover:bg-purple-600 hover:text-white font-semibold rounded-lg transition-colors"
               >
                 View on GitHub
               </a>
@@ -150,7 +150,7 @@ export default function GitHubPage() {
                 </a>
                 <button
                   onClick={refetch}
-                  className="inline-flex items-center gap-2 px-8 py-4 border-2 border-purple-600 text-purple-600 dark:text-purple-400 hover:bg-purple-600 hover:text-white font-semibold rounded-lg transition-colors text-lg"
+                  className="inline-flex items-center gap-2 px-8 py-4 border-2 border-purple-600 text-accent hover:bg-purple-600 hover:text-white font-semibold rounded-lg transition-colors text-lg"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />

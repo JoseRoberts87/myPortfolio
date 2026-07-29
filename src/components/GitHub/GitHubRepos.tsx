@@ -83,7 +83,7 @@ export default function GitHubRepos({ repos, limit = 6 }: GitHubReposProps) {
                   href={repo.html_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xl font-bold text-purple-600 dark:text-purple-400 hover:underline flex-1"
+                  className="text-xl font-bold text-accent hover:underline flex-1"
                 >
                   {repo.name}
                 </a>

@@ -198,17 +198,17 @@ export default function FaceDetector() {
 
       {/* Stats Bar */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-        <div className="text-center p-3 bg-slate-100 dark:bg-slate-800/50 rounded-lg">
+        <div className="text-center p-3 bg-sunken rounded-lg">
           <div className="text-2xl font-bold text-blue-400">{stats.fps}</div>
-          <div className="text-sm text-slate-500 dark:text-gray-400">FPS</div>
+          <div className="text-sm text-muted">FPS</div>
         </div>
-        <div className="text-center p-3 bg-slate-100 dark:bg-slate-800/50 rounded-lg">
+        <div className="text-center p-3 bg-sunken rounded-lg">
           <div className="text-2xl font-bold text-green-400">
             {stats.faceCount}
           </div>
-          <div className="text-sm text-slate-500 dark:text-gray-400">Faces</div>
+          <div className="text-sm text-muted">Faces</div>
         </div>
-        <div className="text-center p-3 bg-slate-100 dark:bg-slate-800/50 rounded-lg">
+        <div className="text-center p-3 bg-sunken rounded-lg">
           <Badge
             variant={isDetecting ? 'success' : 'warning'}
             size="lg"
@@ -216,7 +216,7 @@ export default function FaceDetector() {
           >
             {isDetecting ? 'Active' : 'Idle'}
           </Badge>
-          <div className="text-sm text-slate-500 dark:text-gray-400">Status</div>
+          <div className="text-sm text-muted">Status</div>
         </div>
       </div>
 
@@ -230,17 +230,17 @@ export default function FaceDetector() {
             {stats.faces.map((face, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-800/50 rounded"
+                className="flex items-center justify-between p-3 bg-sunken rounded"
               >
-                <span className="text-slate-600 dark:text-gray-300">Face {index + 1}</span>
+                <span className="text-body">Face {index + 1}</span>
                 <div className="flex items-center gap-3">
-                  <div className="w-32 bg-slate-200 dark:bg-gray-700 rounded-full h-2">
+                  <div className="w-32 bg-track rounded-full h-2">
                     <div
                       className="bg-purple-500 h-2 rounded-full transition-all"
                       style={{ width: `${face.score * 100}%` }}
                     ></div>
                   </div>
-                  <span className="text-sm text-slate-500 dark:text-gray-400 w-12 text-right">
+                  <span className="text-sm text-muted w-12 text-right">
                     {Math.round(face.score * 100)}%
                   </span>
                 </div>
@@ -251,10 +251,10 @@ export default function FaceDetector() {
       )}
 
       {/* Info Footer */}
-      <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
-        <div className="flex items-start gap-2 text-sm text-slate-500 dark:text-gray-400">
+      <div className="mt-6 pt-6 border-t border-subtle">
+        <div className="flex items-start gap-2 text-sm text-muted">
           <svg
-            className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-0.5 flex-shrink-0"
+            className="w-5 h-5 text-accent mt-0.5 flex-shrink-0"
             fill="currentColor"
             viewBox="0 0 20 20"
           >

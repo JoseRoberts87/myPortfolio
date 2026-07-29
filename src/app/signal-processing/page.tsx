@@ -14,7 +14,7 @@ export default function SignalProcessingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900">
+    <div className="min-h-screen bg-surface-alt">
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -39,26 +39,26 @@ export default function SignalProcessingPage() {
       {/* Overview Section */}
       <Section>
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-8 text-center">
+          <h2 className="text-4xl font-bold text-foreground mb-8 text-center">
             Digital Signal Processing Expertise
           </h2>
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-8">
-            <p className="text-slate-600 dark:text-gray-300 text-lg leading-relaxed mb-6">
+          <div className="bg-surface border border-subtle rounded-lg p-8">
+            <p className="text-body text-lg leading-relaxed mb-6">
               Leveraging advanced signal processing techniques to analyze, transform, and extract meaningful information from time-series data.
               Specializing in frequency domain analysis, filtering, and real-time audio processing applications.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
               <div className="text-center">
-                <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">FFT</div>
-                <p className="text-slate-500 dark:text-gray-400 text-sm">Fast Fourier Transform Analysis</p>
+                <div className="text-3xl font-bold text-accent mb-2">FFT</div>
+                <p className="text-muted text-sm">Fast Fourier Transform Analysis</p>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">Wavelets</div>
-                <p className="text-slate-500 dark:text-gray-400 text-sm">Time-Frequency Decomposition</p>
+                <div className="text-3xl font-bold text-accent mb-2">Wavelets</div>
+                <p className="text-muted text-sm">Time-Frequency Decomposition</p>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">Real-time</div>
-                <p className="text-slate-500 dark:text-gray-400 text-sm">Audio Processing Pipeline</p>
+                <div className="text-3xl font-bold text-accent mb-2">Real-time</div>
+                <p className="text-muted text-sm">Audio Processing Pipeline</p>
               </div>
             </div>
           </div>
@@ -68,23 +68,23 @@ export default function SignalProcessingPage() {
       {/* Technical Implementation */}
       <Section background="dark">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-8 text-center">
+          <h2 className="text-4xl font-bold text-foreground mb-8 text-center">
             Technical Implementation
           </h2>
 
           <div className="space-y-8">
             {/* Frequency Domain Analysis */}
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6">
-              <h3 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">
+            <div className="bg-surface border border-subtle rounded-lg p-6">
+              <h3 className="text-2xl font-semibold text-foreground mb-4">
                 📊 Frequency Domain Analysis
               </h3>
-              <p className="text-slate-600 dark:text-gray-300 mb-4">
+              <p className="text-body mb-4">
                 Utilizing NumPy's FFT implementation for efficient frequency spectrum analysis.
                 Transform time-domain signals to identify dominant frequencies, harmonics, and spectral patterns.
               </p>
               <div className="bg-slate-100 dark:bg-slate-900/50 rounded-lg p-4 border border-slate-300 dark:border-slate-600">
-                <h4 className="text-sm font-semibold text-purple-600 dark:text-purple-400 mb-2">Key Capabilities:</h4>
-                <ul className="text-slate-600 dark:text-gray-300 text-sm space-y-1 list-disc list-inside">
+                <h4 className="text-sm font-semibold text-accent mb-2">Key Capabilities:</h4>
+                <ul className="text-body text-sm space-y-1 list-disc list-inside">
                   <li>Fast Fourier Transform (FFT) and inverse FFT (IFFT)</li>
                   <li>Power spectral density estimation</li>
                   <li>Spectrogram generation for time-frequency visualization</li>
@@ -94,17 +94,17 @@ export default function SignalProcessingPage() {
             </div>
 
             {/* Wavelet Transform */}
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6">
-              <h3 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">
+            <div className="bg-surface border border-subtle rounded-lg p-6">
+              <h3 className="text-2xl font-semibold text-foreground mb-4">
                 🌊 Wavelet Transform Analysis
               </h3>
-              <p className="text-slate-600 dark:text-gray-300 mb-4">
+              <p className="text-body mb-4">
                 Implementing discrete and continuous wavelet transforms using PyWavelets and SciPy for
                 multi-resolution signal analysis. Ideal for non-stationary signals where frequency content changes over time.
               </p>
               <div className="bg-slate-100 dark:bg-slate-900/50 rounded-lg p-4 border border-slate-300 dark:border-slate-600">
-                <h4 className="text-sm font-semibold text-purple-600 dark:text-purple-400 mb-2">Applications:</h4>
-                <ul className="text-slate-600 dark:text-gray-300 text-sm space-y-1 list-disc list-inside">
+                <h4 className="text-sm font-semibold text-accent mb-2">Applications:</h4>
+                <ul className="text-body text-sm space-y-1 list-disc list-inside">
                   <li>Transient signal detection and analysis</li>
                   <li>Multi-scale feature extraction</li>
                   <li>Signal denoising with wavelet thresholding</li>
@@ -114,17 +114,17 @@ export default function SignalProcessingPage() {
             </div>
 
             {/* Digital Filtering */}
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6">
-              <h3 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">
+            <div className="bg-surface border border-subtle rounded-lg p-6">
+              <h3 className="text-2xl font-semibold text-foreground mb-4">
                 🔊 Digital Filtering & Audio Processing
               </h3>
-              <p className="text-slate-600 dark:text-gray-300 mb-4">
+              <p className="text-body mb-4">
                 Designing and implementing IIR and FIR filters using SciPy.signal for noise reduction,
                 frequency isolation, and signal conditioning. Real-time audio processing pipelines for streaming data.
               </p>
               <div className="bg-slate-100 dark:bg-slate-900/50 rounded-lg p-4 border border-slate-300 dark:border-slate-600">
-                <h4 className="text-sm font-semibold text-purple-600 dark:text-purple-400 mb-2">Filter Types:</h4>
-                <ul className="text-slate-600 dark:text-gray-300 text-sm space-y-1 list-disc list-inside">
+                <h4 className="text-sm font-semibold text-accent mb-2">Filter Types:</h4>
+                <ul className="text-body text-sm space-y-1 list-disc list-inside">
                   <li>Butterworth, Chebyshev, and Elliptic filters</li>
                   <li>Band-pass, band-stop, low-pass, and high-pass filters</li>
                   <li>Adaptive filtering for noise cancellation</li>
@@ -134,17 +134,17 @@ export default function SignalProcessingPage() {
             </div>
 
             {/* Signal Analysis Tools */}
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6">
-              <h3 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">
+            <div className="bg-surface border border-subtle rounded-lg p-6">
+              <h3 className="text-2xl font-semibold text-foreground mb-4">
                 🔬 Signal Analysis & Feature Extraction
               </h3>
-              <p className="text-slate-600 dark:text-gray-300 mb-4">
+              <p className="text-body mb-4">
                 Extracting meaningful features from signals for classification, anomaly detection, and pattern recognition.
                 Statistical and spectral features for machine learning pipelines.
               </p>
               <div className="bg-slate-100 dark:bg-slate-900/50 rounded-lg p-4 border border-slate-300 dark:border-slate-600">
-                <h4 className="text-sm font-semibold text-purple-600 dark:text-purple-400 mb-2">Features & Techniques:</h4>
-                <ul className="text-slate-600 dark:text-gray-300 text-sm space-y-1 list-disc list-inside">
+                <h4 className="text-sm font-semibold text-accent mb-2">Features & Techniques:</h4>
+                <ul className="text-body text-sm space-y-1 list-disc list-inside">
                   <li>Statistical moments (mean, variance, skewness, kurtosis)</li>
                   <li>Spectral features (centroid, rolloff, flux, bandwidth)</li>
                   <li>Zero-crossing rate and autocorrelation analysis</li>
@@ -159,34 +159,34 @@ export default function SignalProcessingPage() {
       {/* Use Cases */}
       <Section>
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-8 text-center">
+          <h2 className="text-4xl font-bold text-foreground mb-8 text-center">
             Real-World Applications
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 hover:border-purple-500 transition-colors">
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">🎵 Audio Analysis</h3>
-              <p className="text-slate-500 dark:text-gray-400 text-sm">
+            <div className="bg-surface border border-subtle rounded-lg p-6 hover:border-purple-500 transition-colors">
+              <h3 className="text-xl font-semibold text-foreground mb-3">🎵 Audio Analysis</h3>
+              <p className="text-muted text-sm">
                 Music information retrieval, pitch detection, tempo estimation, and audio fingerprinting
                 for content identification and recommendation systems.
               </p>
             </div>
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 hover:border-purple-500 transition-colors">
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">📈 Financial Time-Series</h3>
-              <p className="text-slate-500 dark:text-gray-400 text-sm">
+            <div className="bg-surface border border-subtle rounded-lg p-6 hover:border-purple-500 transition-colors">
+              <h3 className="text-xl font-semibold text-foreground mb-3">📈 Financial Time-Series</h3>
+              <p className="text-muted text-sm">
                 Trend analysis, cycle detection, and noise filtering for stock market data.
                 Spectral analysis for identifying periodic patterns in trading signals.
               </p>
             </div>
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 hover:border-purple-500 transition-colors">
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">🏥 Biomedical Signals</h3>
-              <p className="text-slate-500 dark:text-gray-400 text-sm">
+            <div className="bg-surface border border-subtle rounded-lg p-6 hover:border-purple-500 transition-colors">
+              <h3 className="text-xl font-semibold text-foreground mb-3">🏥 Biomedical Signals</h3>
+              <p className="text-muted text-sm">
                 ECG and EEG signal processing for healthcare applications. Filtering artifacts,
                 detecting anomalies, and extracting diagnostic features from physiological data.
               </p>
             </div>
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6 hover:border-purple-500 transition-colors">
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">📡 Communication Systems</h3>
-              <p className="text-slate-500 dark:text-gray-400 text-sm">
+            <div className="bg-surface border border-subtle rounded-lg p-6 hover:border-purple-500 transition-colors">
+              <h3 className="text-xl font-semibold text-foreground mb-3">📡 Communication Systems</h3>
+              <p className="text-muted text-sm">
                 Modulation/demodulation, channel equalization, and interference mitigation.
                 Implementing software-defined radio (SDR) techniques for signal transmission.
               </p>
@@ -198,58 +198,58 @@ export default function SignalProcessingPage() {
       {/* Technology Stack Details */}
       <Section background="dark">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-8 text-center">
+          <h2 className="text-4xl font-bold text-foreground mb-8 text-center">
             Technology Stack
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6">
-              <h3 className="text-xl font-semibold text-purple-600 dark:text-purple-400 mb-4">Core Libraries</h3>
+            <div className="bg-surface border border-subtle rounded-lg p-6">
+              <h3 className="text-xl font-semibold text-accent mb-4">Core Libraries</h3>
               <ul className="space-y-3">
                 <li className="flex items-start">
-                  <span className="text-purple-600 dark:text-purple-400 mr-2">•</span>
+                  <span className="text-accent mr-2">•</span>
                   <div>
-                    <span className="text-slate-900 dark:text-white font-medium">NumPy</span>
-                    <p className="text-slate-500 dark:text-gray-400 text-sm">Array operations and FFT implementation</p>
+                    <span className="text-foreground font-medium">NumPy</span>
+                    <p className="text-muted text-sm">Array operations and FFT implementation</p>
                   </div>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-purple-600 dark:text-purple-400 mr-2">•</span>
+                  <span className="text-accent mr-2">•</span>
                   <div>
-                    <span className="text-slate-900 dark:text-white font-medium">SciPy.signal</span>
-                    <p className="text-slate-500 dark:text-gray-400 text-sm">Filter design and signal processing algorithms</p>
+                    <span className="text-foreground font-medium">SciPy.signal</span>
+                    <p className="text-muted text-sm">Filter design and signal processing algorithms</p>
                   </div>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-purple-600 dark:text-purple-400 mr-2">•</span>
+                  <span className="text-accent mr-2">•</span>
                   <div>
-                    <span className="text-slate-900 dark:text-white font-medium">PyWavelets</span>
-                    <p className="text-slate-500 dark:text-gray-400 text-sm">Wavelet transform implementation</p>
+                    <span className="text-foreground font-medium">PyWavelets</span>
+                    <p className="text-muted text-sm">Wavelet transform implementation</p>
                   </div>
                 </li>
               </ul>
             </div>
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-6">
-              <h3 className="text-xl font-semibold text-purple-600 dark:text-purple-400 mb-4">Visualization</h3>
+            <div className="bg-surface border border-subtle rounded-lg p-6">
+              <h3 className="text-xl font-semibold text-accent mb-4">Visualization</h3>
               <ul className="space-y-3">
                 <li className="flex items-start">
-                  <span className="text-purple-600 dark:text-purple-400 mr-2">•</span>
+                  <span className="text-accent mr-2">•</span>
                   <div>
-                    <span className="text-slate-900 dark:text-white font-medium">Matplotlib</span>
-                    <p className="text-slate-500 dark:text-gray-400 text-sm">Time-domain and frequency-domain plots</p>
+                    <span className="text-foreground font-medium">Matplotlib</span>
+                    <p className="text-muted text-sm">Time-domain and frequency-domain plots</p>
                   </div>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-purple-600 dark:text-purple-400 mr-2">•</span>
+                  <span className="text-accent mr-2">•</span>
                   <div>
-                    <span className="text-slate-900 dark:text-white font-medium">Plotly</span>
-                    <p className="text-slate-500 dark:text-gray-400 text-sm">Interactive spectrograms and 3D visualizations</p>
+                    <span className="text-foreground font-medium">Plotly</span>
+                    <p className="text-muted text-sm">Interactive spectrograms and 3D visualizations</p>
                   </div>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-purple-600 dark:text-purple-400 mr-2">•</span>
+                  <span className="text-accent mr-2">•</span>
                   <div>
-                    <span className="text-slate-900 dark:text-white font-medium">Librosa</span>
-                    <p className="text-slate-500 dark:text-gray-400 text-sm">Audio feature extraction and visualization</p>
+                    <span className="text-foreground font-medium">Librosa</span>
+                    <p className="text-muted text-sm">Audio feature extraction and visualization</p>
                   </div>
                 </li>
               </ul>

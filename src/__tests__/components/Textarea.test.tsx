@@ -39,7 +39,7 @@ describe('Textarea Component', () => {
   it('should apply default styles', () => {
     render(<Textarea />);
     const textarea = screen.getByRole('textbox');
-    expect(textarea).toHaveClass('bg-slate-800', 'border', 'rounded-lg', 'px-4', 'py-3');
+    expect(textarea).toHaveClass('bg-white', 'dark:bg-gray-800', 'border', 'rounded-lg', 'px-4', 'py-3');
   });
 
   it('should support ref forwarding', () => {
@@ -86,7 +86,7 @@ describe('Textarea Component', () => {
     render(<Textarea />);
     const textarea = screen.getByRole('textbox');
     expect(textarea).not.toHaveClass('border-red-500');
-    expect(textarea).toHaveClass('border-slate-700');
+    expect(textarea).toHaveClass('border-slate-300');
   });
 
   it('should render helper text when helperText prop is provided', () => {

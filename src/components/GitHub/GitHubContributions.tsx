@@ -49,7 +49,7 @@ export default function GitHubContributions({ username }: GitHubContributionsPro
           href={`https://github.com/${username}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm text-purple-600 dark:text-purple-400 hover:underline"
+          className="text-sm text-accent hover:underline"
         >
           View detailed contribution activity on GitHub →
         </a>

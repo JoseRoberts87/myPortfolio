@@ -37,7 +37,7 @@ export default function GitHubProfile({ user }: GitHubProfileProps) {
               href={user.html_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-purple-600 dark:text-purple-400 hover:underline text-lg"
+              className="text-accent hover:underline text-lg"
             >
               @{user.login}
             </a>

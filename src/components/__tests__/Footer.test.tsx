@@ -111,6 +111,6 @@ describe('Footer Component', () => {
   it('uses consistent color scheme', () => {
     const { container } = render(<Footer />);
     const footer = container.querySelector('footer');
-    expect(footer).toHaveClass('bg-white', 'dark:bg-slate-900', 'border-t', 'border-slate-200', 'dark:border-slate-800');
+    expect(footer).toHaveClass('bg-surface-alt', 'border-t', 'border-slate-200', 'dark:border-slate-800');
   });
 });

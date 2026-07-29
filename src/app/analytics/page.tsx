@@ -74,12 +74,12 @@ export default function AnalyticsPage() {
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Analytics Dashboard
           </h1>
-          <p className="text-xl text-slate-500 dark:text-gray-400 max-w-3xl mx-auto mb-6">
+          <p className="text-xl text-muted max-w-3xl mx-auto mb-6">
             Comprehensive analytics and insights from Reddit data pipeline
           </p>
 
           <div className="flex items-center justify-center gap-2">
-            <span className="text-sm text-slate-500 dark:text-gray-400">Time Range:</span>
+            <span className="text-sm text-muted">Time Range:</span>
             {[7, 14, 30, 60, 90].map((days) => (
               <button
                 key={days}
@@ -87,7 +87,7 @@ export default function AnalyticsPage() {
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   timeRange === days
                     ? 'bg-blue-600 text-white'
-                    : 'bg-slate-200 dark:bg-gray-700 text-slate-600 dark:text-gray-300 hover:bg-slate-300 dark:hover:bg-gray-600'
+                    : 'bg-track text-body hover:bg-slate-300 dark:hover:bg-gray-600'
                 }`}
               >
                 {days} days
@@ -99,7 +99,7 @@ export default function AnalyticsPage() {
 
       {loading && !data ? (
         <Section padding="lg">
-          <div className="text-center py-12 text-slate-500 dark:text-gray-400">Loading analytics...</div>
+          <div className="text-center py-12 text-muted">Loading analytics...</div>
         </Section>
       ) : error ? (
         <Section padding="lg">
@@ -111,7 +111,7 @@ export default function AnalyticsPage() {
               <p className="text-red-400">{error}</p>
               <button
                 onClick={loadAnalytics}
-                className="mt-4 px-4 py-2 bg-slate-200 dark:bg-gray-700 hover:bg-slate-300 dark:hover:bg-gray-600 rounded-lg transition-colors"
+                className="mt-4 px-4 py-2 bg-track hover:bg-slate-300 dark:hover:bg-gray-600 rounded-lg transition-colors"
               >
                 Retry
               </button>
@@ -129,7 +129,7 @@ export default function AnalyticsPage() {
                     <div className="text-3xl font-bold text-blue-400">
                       {data.engagement_metrics.avg_score.toFixed(0)}
                     </div>
-                    <div className="text-slate-500 dark:text-gray-400 mt-1 text-sm">Avg Score</div>
+                    <div className="text-muted mt-1 text-sm">Avg Score</div>
                   </div>
                 </Card>
                 <Card variant="bordered" padding="lg">
@@ -137,15 +137,15 @@ export default function AnalyticsPage() {
                     <div className="text-3xl font-bold text-green-400">
                       {data.engagement_metrics.max_score}
                     </div>
-                    <div className="text-slate-500 dark:text-gray-400 mt-1 text-sm">Max Score</div>
+                    <div className="text-muted mt-1 text-sm">Max Score</div>
                   </div>
                 </Card>
                 <Card variant="bordered" padding="lg">
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
+                    <div className="text-3xl font-bold text-accent">
                       {data.engagement_metrics.avg_comments.toFixed(1)}
                     </div>
-                    <div className="text-slate-500 dark:text-gray-400 mt-1 text-sm">Avg Comments</div>
+                    <div className="text-muted mt-1 text-sm">Avg Comments</div>
                   </div>
                 </Card>
                 <Card variant="bordered" padding="lg">
@@ -153,7 +153,7 @@ export default function AnalyticsPage() {
                     <div className="text-3xl font-bold text-orange-400">
                       {data.engagement_metrics.max_comments}
                     </div>
-                    <div className="text-slate-500 dark:text-gray-400 mt-1 text-sm">Max Comments</div>
+                    <div className="text-muted mt-1 text-sm">Max Comments</div>
                   </div>
                 </Card>
                 <Card variant="bordered" padding="lg">
@@ -161,7 +161,7 @@ export default function AnalyticsPage() {
                     <div className="text-3xl font-bold text-cyan-400">
                       {(data.engagement_metrics.avg_upvote_ratio * 100).toFixed(0)}%
                     </div>
-                    <div className="text-slate-500 dark:text-gray-400 mt-1 text-sm">Upvote Ratio</div>
+                    <div className="text-muted mt-1 text-sm">Upvote Ratio</div>
                   </div>
                 </Card>
               </div>
@@ -295,11 +295,11 @@ export default function AnalyticsPage() {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-slate-200 dark:border-slate-700">
-                      <th className="text-left py-3 px-4 text-slate-500 dark:text-gray-400">Subreddit</th>
-                      <th className="text-right py-3 px-4 text-slate-500 dark:text-gray-400">Posts</th>
-                      <th className="text-right py-3 px-4 text-slate-500 dark:text-gray-400">Avg Score</th>
-                      <th className="text-right py-3 px-4 text-slate-500 dark:text-gray-400">Avg Comments</th>
+                    <tr className="border-b border-subtle">
+                      <th className="text-left py-3 px-4 text-muted">Subreddit</th>
+                      <th className="text-right py-3 px-4 text-muted">Posts</th>
+                      <th className="text-right py-3 px-4 text-muted">Avg Score</th>
+                      <th className="text-right py-3 px-4 text-muted">Avg Comments</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -308,13 +308,13 @@ export default function AnalyticsPage() {
                         <td className="py-3 px-4">
                           <Badge variant="primary">r/{subreddit.subreddit}</Badge>
                         </td>
-                        <td className="text-right py-3 px-4 text-slate-600 dark:text-gray-300">
+                        <td className="text-right py-3 px-4 text-body">
                           {subreddit.post_count}
                         </td>
-                        <td className="text-right py-3 px-4 text-slate-600 dark:text-gray-300">
+                        <td className="text-right py-3 px-4 text-body">
                           {subreddit.avg_score}
                         </td>
-                        <td className="text-right py-3 px-4 text-slate-600 dark:text-gray-300">
+                        <td className="text-right py-3 px-4 text-body">
                           {subreddit.avg_comments}
                         </td>
                       </tr>

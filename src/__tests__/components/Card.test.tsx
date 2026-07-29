@@ -99,7 +99,7 @@ describe('Card Component', () => {
     );
 
     const card = container.firstChild as HTMLElement;
-    expect(card).toHaveClass('bg-slate-800');
+    expect(card).toHaveClass('bg-surface');
     expect(card).toHaveClass('shadow-lg');
   });
 

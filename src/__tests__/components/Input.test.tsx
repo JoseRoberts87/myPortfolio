@@ -51,7 +51,7 @@ describe('Input Component', () => {
   it('should apply default styles', () => {
     render(<Input />);
     const input = screen.getByRole('textbox');
-    expect(input).toHaveClass('bg-slate-800', 'border', 'rounded-lg', 'px-4', 'py-3');
+    expect(input).toHaveClass('bg-white', 'dark:bg-gray-800', 'border', 'rounded-lg', 'px-4', 'py-3');
   });
 
   it('should support ref forwarding', () => {
@@ -86,7 +86,7 @@ describe('Input Component', () => {
     render(<Input />);
     const input = screen.getByRole('textbox');
     expect(input).not.toHaveClass('border-red-500');
-    expect(input).toHaveClass('border-slate-700');
+    expect(input).toHaveClass('border-slate-300');
   });
 
   it('should render helper text when helperText prop is provided', () => {

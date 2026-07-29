@@ -189,7 +189,7 @@ describe('SkillsMatrix Component', () => {
     const { container } = render(<SkillsMatrix />);
 
     // Check for progress bar containers
-    const progressBars = container.querySelectorAll('.bg-gray-700.rounded-full');
+    const progressBars = container.querySelectorAll('.bg-track.rounded-full');
     expect(progressBars.length).toBeGreaterThanOrEqual(7);
   });
 

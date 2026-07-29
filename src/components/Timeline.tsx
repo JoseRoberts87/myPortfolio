@@ -182,7 +182,7 @@ export default function Timeline({ variant = 'all' }: TimelineProps) {
       {/* Experience Section */}
       {(variant === 'all' || variant === 'experience') && (
         <div>
-          <h2 className="text-4xl font-bold text-slate-900 dark:text-white text-center mb-12">
+          <h2 className="text-4xl font-bold text-foreground text-center mb-12">
             Professional Experience
           </h2>
           <div className="space-y-8">
@@ -197,7 +197,7 @@ export default function Timeline({ variant = 'all' }: TimelineProps) {
                   {/* Left side */}
                   <div className={index % 2 === 0 ? 'md:text-right' : 'md:order-2'}>
                     <div className="md:inline-block">
-                      <span className="inline-block px-4 py-2 bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded-full text-sm font-medium mb-4">
+                      <span className="inline-block px-4 py-2 bg-accent-soft text-accent-strong rounded-full text-sm font-medium mb-4">
                         {item.period}
                       </span>
                     </div>
@@ -218,22 +218,22 @@ export default function Timeline({ variant = 'all' }: TimelineProps) {
                           {getIconForType(item.type)}
                         </div>
                         <div>
-                          <span className="inline-block px-3 py-1 bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded-full text-xs font-medium">
+                          <span className="inline-block px-3 py-1 bg-accent-soft text-accent-strong rounded-full text-xs font-medium">
                             {item.period}
                           </span>
                         </div>
                       </div>
 
-                      <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">{item.title}</h3>
-                      <p className="text-lg text-purple-600 dark:text-purple-400 mb-3">{item.organization}</p>
-                      <p className="text-slate-600 dark:text-gray-300 mb-4">{item.description}</p>
+                      <h3 className="text-2xl font-bold text-foreground mb-2">{item.title}</h3>
+                      <p className="text-lg text-accent mb-3">{item.organization}</p>
+                      <p className="text-body mb-4">{item.description}</p>
 
                       {item.highlights && item.highlights.length > 0 && (
                         <ul className="space-y-2">
                           {item.highlights.map((highlight, idx) => (
-                            <li key={idx} className="flex items-start gap-2 text-sm text-slate-500 dark:text-gray-400">
+                            <li key={idx} className="flex items-start gap-2 text-sm text-muted">
                               <svg
-                                className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-0.5 flex-shrink-0"
+                                className="w-5 h-5 text-accent mt-0.5 flex-shrink-0"
                                 fill="currentColor"
                                 viewBox="0 0 20 20"
                               >
@@ -260,7 +260,7 @@ export default function Timeline({ variant = 'all' }: TimelineProps) {
       {/* Education & Certifications Section */}
       {(variant === 'all' || variant === 'education') && (
         <div className="mt-16">
-          <h2 className="text-4xl font-bold text-slate-900 dark:text-white text-center mb-12">
+          <h2 className="text-4xl font-bold text-foreground text-center mb-12">
             Education & Certifications
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -271,22 +271,22 @@ export default function Timeline({ variant = 'all' }: TimelineProps) {
                     {getIconForType(item.type)}
                   </div>
                   <div className="flex-1">
-                    <span className="inline-block px-3 py-1 bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded-full text-xs font-medium">
+                    <span className="inline-block px-3 py-1 bg-accent-soft text-accent-strong rounded-full text-xs font-medium">
                       {item.period}
                     </span>
                   </div>
                 </div>
 
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{item.title}</h3>
-                <p className="text-purple-600 dark:text-purple-400 mb-3 font-medium">{item.organization}</p>
-                <p className="text-sm text-slate-600 dark:text-gray-300 mb-3">{item.description}</p>
+                <h3 className="text-xl font-bold text-foreground mb-2">{item.title}</h3>
+                <p className="text-accent mb-3 font-medium">{item.organization}</p>
+                <p className="text-sm text-body mb-3">{item.description}</p>
 
                 {item.highlights && item.highlights.length > 0 && (
                   <ul className="space-y-1">
                     {item.highlights.map((highlight, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-xs text-slate-500 dark:text-gray-400">
+                      <li key={idx} className="flex items-start gap-2 text-xs text-muted">
                         <svg
-                          className="w-4 h-4 text-purple-600 dark:text-purple-400 mt-0.5 flex-shrink-0"
+                          className="w-4 h-4 text-accent mt-0.5 flex-shrink-0"
                           fill="currentColor"
                           viewBox="0 0 20 20"
                         >

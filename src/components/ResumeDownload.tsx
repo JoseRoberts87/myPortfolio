@@ -44,22 +44,22 @@ export default function ResumeDownload() {
               </svg>
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Resume</h2>
-              <p className="text-slate-500 dark:text-gray-400 text-sm">PDF Document</p>
+              <h2 className="text-2xl font-bold text-foreground">Resume</h2>
+              <p className="text-muted text-sm">PDF Document</p>
             </div>
           </div>
 
-          <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
+          <h3 className="text-xl font-semibold text-foreground mb-2">
             Jose Roberts
           </h3>
-          <p className="text-lg text-purple-600 dark:text-purple-400 mb-4">
+          <p className="text-lg text-accent mb-4">
             Data & AI Architect
           </p>
 
-          <div className="space-y-3 text-slate-600 dark:text-gray-300">
+          <div className="space-y-3 text-body">
             <div className="flex items-start gap-2">
               <svg
-                className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-0.5 flex-shrink-0"
+                className="w-5 h-5 text-accent mt-0.5 flex-shrink-0"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -75,7 +75,7 @@ export default function ResumeDownload() {
             </div>
             <div className="flex items-start gap-2">
               <svg
-                className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-0.5 flex-shrink-0"
+                className="w-5 h-5 text-accent mt-0.5 flex-shrink-0"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -91,7 +91,7 @@ export default function ResumeDownload() {
             </div>
             <div className="flex items-start gap-2">
               <svg
-                className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-0.5 flex-shrink-0"
+                className="w-5 h-5 text-accent mt-0.5 flex-shrink-0"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -107,7 +107,7 @@ export default function ResumeDownload() {
             </div>
             <div className="flex items-start gap-2">
               <svg
-                className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-0.5 flex-shrink-0"
+                className="w-5 h-5 text-accent mt-0.5 flex-shrink-0"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -127,7 +127,7 @@ export default function ResumeDownload() {
         {/* Right side - Download CTA */}
         <div className="flex flex-col items-center justify-center p-8 bg-gradient-to-br from-purple-900/20 to-slate-900/20 rounded-lg border border-purple-500/20">
           <svg
-            className="w-20 h-20 text-purple-600 dark:text-purple-400 mb-6"
+            className="w-20 h-20 text-accent mb-6"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -162,9 +162,9 @@ export default function ResumeDownload() {
             <span>{isDownloading ? 'Downloading...' : 'Download Resume'}</span>
           </button>
 
-          <p className="text-slate-500 dark:text-gray-400 text-sm mt-4">PDF • 95 KB</p>
+          <p className="text-muted text-sm mt-4">PDF • 95 KB</p>
 
-          <div className="mt-6 flex items-center gap-4 text-xs text-slate-400 dark:text-gray-500">
+          <div className="mt-6 flex items-center gap-4 text-xs text-faint">
             <span className="flex items-center gap-1">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path
