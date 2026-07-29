@@ -45,7 +45,7 @@ export default async function CaseStudyPage({ params }: PageProps) {
           <div className="mb-6">
             <Link
               href="/case-studies"
-              className="text-purple-400 hover:text-purple-300 flex items-center gap-2 text-sm"
+              className="text-purple-600 dark:text-purple-400 hover:text-purple-300 flex items-center gap-2 text-sm"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -63,15 +63,15 @@ export default async function CaseStudyPage({ params }: PageProps) {
           </div>
 
           {/* Title and Subtitle */}
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4">
             {caseStudy.title}
           </h1>
-          <h2 className="text-2xl text-purple-400 mb-6 font-medium">
+          <h2 className="text-2xl text-purple-600 dark:text-purple-400 mb-6 font-medium">
             {caseStudy.subtitle}
           </h2>
 
           {/* Meta Info */}
-          <div className="flex flex-wrap gap-6 text-sm text-gray-400 mb-8">
+          <div className="flex flex-wrap gap-6 text-sm text-slate-500 dark:text-gray-400 mb-8">
             <div className="flex items-center gap-2">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -88,13 +88,13 @@ export default async function CaseStudyPage({ params }: PageProps) {
 
           {/* Challenge Statement */}
           <Card variant="elevated" padding="lg">
-            <h3 className="text-xl font-bold text-white mb-3 flex items-center gap-2">
-              <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+              <svg className="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
               The Challenge
             </h3>
-            <p className="text-gray-300 text-lg leading-relaxed">
+            <p className="text-slate-600 dark:text-gray-300 text-lg leading-relaxed">
               {caseStudy.challenge}
             </p>
           </Card>
@@ -104,19 +104,19 @@ export default async function CaseStudyPage({ params }: PageProps) {
       {/* Key Metrics */}
       <Section padding="lg">
         <div className="max-w-4xl mx-auto">
-          <h3 className="text-2xl font-bold text-white mb-6 text-center">Key Metrics</h3>
+          <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 text-center">Key Metrics</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {caseStudy.metrics.map((metric) => (
               <Card key={metric.label} variant="bordered" padding="md">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-purple-400 mb-2">
+                  <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">
                     {metric.value}
                   </div>
-                  <div className="text-sm font-medium text-white mb-1">
+                  <div className="text-sm font-medium text-slate-900 dark:text-white mb-1">
                     {metric.label}
                   </div>
                   {metric.description && (
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-slate-400 dark:text-gray-500">
                       {metric.description}
                     </div>
                   )}
@@ -130,7 +130,7 @@ export default async function CaseStudyPage({ params }: PageProps) {
       {/* Technologies Used */}
       <Section padding="lg" background="subtle">
         <div className="max-w-4xl mx-auto">
-          <h3 className="text-2xl font-bold text-white mb-6 text-center">Technologies Used</h3>
+          <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 text-center">Technologies Used</h3>
           <div className="flex flex-wrap justify-center gap-3">
             {caseStudy.technologies.map((tech) => (
               <Badge key={tech} variant="primary" size="lg">
@@ -156,10 +156,10 @@ export default async function CaseStudyPage({ params }: PageProps) {
       {caseStudy.liveDemo && (
         <Section padding="lg" background="subtle">
           <div className="max-w-4xl mx-auto text-center">
-            <h3 className="text-2xl font-bold text-white mb-4">
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
               See It In Action
             </h3>
-            <p className="text-gray-400 mb-6">
+            <p className="text-slate-500 dark:text-gray-400 mb-6">
               Experience the live implementation and interact with the features described in this case study.
             </p>
             <Link
@@ -179,7 +179,7 @@ export default async function CaseStudyPage({ params }: PageProps) {
       {caseStudy.relatedCaseStudies.length > 0 && (
         <Section padding="lg">
           <div className="max-w-4xl mx-auto">
-            <h3 className="text-2xl font-bold text-white mb-6">Related Case Studies</h3>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Related Case Studies</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {caseStudy.relatedCaseStudies.map((relatedSlug) => {
                 const related = getCaseStudyBySlug(relatedSlug);
@@ -194,10 +194,10 @@ export default async function CaseStudyPage({ params }: PageProps) {
                           <Badge variant="secondary" size="sm">{related.category}</Badge>
                         </div>
                       </div>
-                      <h4 className="text-xl font-bold text-white mb-2">
+                      <h4 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
                         {related.title}
                       </h4>
-                      <p className="text-gray-400 text-sm line-clamp-2">
+                      <p className="text-slate-500 dark:text-gray-400 text-sm line-clamp-2">
                         {related.description}
                       </p>
                     </Card>
@@ -212,10 +212,10 @@ export default async function CaseStudyPage({ params }: PageProps) {
       {/* Bottom CTA */}
       <Section padding="lg" background="subtle">
         <div className="max-w-4xl mx-auto text-center">
-          <h3 className="text-2xl font-bold text-white mb-4">
+          <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">
             Interested in Working Together?
           </h3>
-          <p className="text-gray-400 mb-6">
+          <p className="text-slate-500 dark:text-gray-400 mb-6">
             Let's discuss how I can help solve your technical challenges.
           </p>
           <Link
@@ -235,20 +235,20 @@ function CaseStudySection({ section }: { section: CaseStudy['problemStatement'] 
   return (
     <Section padding="lg">
       <div>
-        <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-3">
           <span className="w-2 h-8 bg-purple-500 rounded-full"></span>
           {section.title}
         </h2>
 
         {/* Content paragraphs */}
-        <div className="prose prose-invert prose-lg max-w-none mb-6">
+        <div className="prose dark:prose-invert prose-lg max-w-none mb-6">
           {section.content.map((paragraph, idx) => {
             // Check if paragraph starts with **text** for bold headings
             if (paragraph.startsWith('**') && paragraph.includes('**:')) {
               const parts = paragraph.split('**');
               return (
-                <p key={idx} className="text-gray-300 mb-4">
-                  <strong className="text-white">{parts[1]}</strong>
+                <p key={idx} className="text-slate-600 dark:text-gray-300 mb-4">
+                  <strong className="text-slate-900 dark:text-white">{parts[1]}</strong>
                   {parts[2]}
                 </p>
               );
@@ -256,7 +256,7 @@ function CaseStudySection({ section }: { section: CaseStudy['problemStatement'] 
             // Check if it's a bullet point (starts with •)
             else if (paragraph.startsWith('•')) {
               return (
-                <p key={idx} className="text-gray-300 mb-2 ml-4">
+                <p key={idx} className="text-slate-600 dark:text-gray-300 mb-2 ml-4">
                   {paragraph}
                 </p>
               );
@@ -264,7 +264,7 @@ function CaseStudySection({ section }: { section: CaseStudy['problemStatement'] 
             // Check if it's a numbered point
             else if (/^\d+\./.test(paragraph)) {
               return (
-                <p key={idx} className="text-gray-300 mb-2 ml-4">
+                <p key={idx} className="text-slate-600 dark:text-gray-300 mb-2 ml-4">
                   {paragraph}
                 </p>
               );
@@ -276,7 +276,7 @@ function CaseStudySection({ section }: { section: CaseStudy['problemStatement'] 
             // Regular paragraph
             else {
               return (
-                <p key={idx} className="text-gray-300 mb-4 leading-relaxed">
+                <p key={idx} className="text-slate-600 dark:text-gray-300 mb-4 leading-relaxed">
                   {paragraph}
                 </p>
               );
@@ -287,16 +287,16 @@ function CaseStudySection({ section }: { section: CaseStudy['problemStatement'] 
         {/* Highlights */}
         {section.highlights && section.highlights.length > 0 && (
           <Card variant="bordered" padding="lg" className="mb-6">
-            <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-              <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+              <svg className="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               Key Highlights
             </h4>
             <ul className="space-y-2">
               {section.highlights.map((highlight, idx) => (
-                <li key={idx} className="text-gray-300 flex items-start gap-3">
-                  <span className="text-purple-400 mt-1">▸</span>
+                <li key={idx} className="text-slate-600 dark:text-gray-300 flex items-start gap-3">
+                  <span className="text-purple-600 dark:text-purple-400 mt-1">▸</span>
                   <span>{highlight}</span>
                 </li>
               ))}

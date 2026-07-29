@@ -153,7 +153,7 @@ export default function ContactForm() {
   return (
     <Card variant="elevated" padding="lg">
       <h2 className="text-3xl font-bold mb-6">Get In Touch</h2>
-      <p className="text-gray-400 mb-8">
+      <p className="text-slate-500 dark:text-gray-400 mb-8">
         Have a question or want to work together? I'd love to hear from you.
       </p>
 
@@ -183,8 +183,8 @@ export default function ContactForm() {
               value={formData.name}
               onChange={handleChange}
               maxLength={100}
-              className={`w-full px-4 py-3 bg-gray-800 border ${
-                errors.name ? 'border-red-500' : 'border-gray-700'
+              className={`w-full px-4 py-3 bg-white dark:bg-gray-800 border ${
+                errors.name ? 'border-red-500' : 'border-slate-300 dark:border-gray-700'
               } rounded-lg focus:outline-none focus:border-primary-500 transition-colors`}
               placeholder="John Doe"
             />
@@ -204,8 +204,8 @@ export default function ContactForm() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className={`w-full px-4 py-3 bg-gray-800 border ${
-                errors.email ? 'border-red-500' : 'border-gray-700'
+              className={`w-full px-4 py-3 bg-white dark:bg-gray-800 border ${
+                errors.email ? 'border-red-500' : 'border-slate-300 dark:border-gray-700'
               } rounded-lg focus:outline-none focus:border-primary-500 transition-colors`}
               placeholder="john@example.com"
             />
@@ -226,8 +226,8 @@ export default function ContactForm() {
               value={formData.company}
               onChange={handleChange}
               maxLength={100}
-              className={`w-full px-4 py-3 bg-gray-800 border ${
-                errors.company ? 'border-red-500' : 'border-gray-700'
+              className={`w-full px-4 py-3 bg-white dark:bg-gray-800 border ${
+                errors.company ? 'border-red-500' : 'border-slate-300 dark:border-gray-700'
               } rounded-lg focus:outline-none focus:border-primary-500 transition-colors`}
               placeholder="Acme Inc."
             />
@@ -248,8 +248,8 @@ export default function ContactForm() {
               value={formData.phone}
               onChange={handleChange}
               maxLength={20}
-              className={`w-full px-4 py-3 bg-gray-800 border ${
-                errors.phone ? 'border-red-500' : 'border-gray-700'
+              className={`w-full px-4 py-3 bg-white dark:bg-gray-800 border ${
+                errors.phone ? 'border-red-500' : 'border-slate-300 dark:border-gray-700'
               } rounded-lg focus:outline-none focus:border-primary-500 transition-colors`}
               placeholder="+1 (555) 123-4567"
             />
@@ -271,8 +271,8 @@ export default function ContactForm() {
             value={formData.subject}
             onChange={handleChange}
             maxLength={200}
-            className={`w-full px-4 py-3 bg-gray-800 border ${
-              errors.subject ? 'border-red-500' : 'border-gray-700'
+            className={`w-full px-4 py-3 bg-white dark:bg-gray-800 border ${
+              errors.subject ? 'border-red-500' : 'border-slate-300 dark:border-gray-700'
             } rounded-lg focus:outline-none focus:border-primary-500 transition-colors`}
             placeholder="Project Inquiry"
           />
@@ -293,8 +293,8 @@ export default function ContactForm() {
             onChange={handleChange}
             rows={6}
             maxLength={5000}
-            className={`w-full px-4 py-3 bg-gray-800 border ${
-              errors.message ? 'border-red-500' : 'border-gray-700'
+            className={`w-full px-4 py-3 bg-white dark:bg-gray-800 border ${
+              errors.message ? 'border-red-500' : 'border-slate-300 dark:border-gray-700'
             } rounded-lg focus:outline-none focus:border-primary-500 transition-colors resize-vertical`}
             placeholder="Tell me about your project..."
           />
