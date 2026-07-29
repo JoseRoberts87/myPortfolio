@@ -126,7 +126,7 @@ export default function ConfusionMatrix() {
                 <span className="font-medium">False Positive/Negative:</span> Incorrect predictions
               </span>
             </div>
-            <p className="text-xs text-gray-500 mt-4">
+            <p className="text-xs text-slate-400 dark:text-gray-500 mt-4">
               Color intensity indicates the percentage of total predictions.
             </p>
           </div>

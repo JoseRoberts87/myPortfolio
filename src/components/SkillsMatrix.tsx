@@ -76,17 +76,17 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <div className="bg-gray-900 border border-purple-500/30 rounded-lg p-4 shadow-xl">
-        <p className="text-white font-semibold mb-2">{data.domain}</p>
-        <p className="text-purple-400 text-sm mb-2">
+      <div className="bg-white dark:bg-gray-900 border border-slate-200 dark:border-purple-500/30 rounded-lg p-4 shadow-xl">
+        <p className="text-slate-900 dark:text-white font-semibold mb-2">{data.domain}</p>
+        <p className="text-purple-600 dark:text-purple-400 text-sm mb-2">
           Proficiency: {data.proficiency}%
         </p>
-        <p className="text-gray-300 text-xs mb-2">{data.description}</p>
+        <p className="text-slate-600 dark:text-gray-300 text-xs mb-2">{data.description}</p>
         <div className="flex flex-wrap gap-1">
           {data.technologies.map((tech) => (
             <span
               key={tech}
-              className="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded"
+              className="text-xs bg-purple-500/20 text-purple-700 dark:text-purple-300 px-2 py-1 rounded"
             >
               {tech}
             </span>
@@ -113,7 +113,7 @@ export default function SkillsMatrix() {
     <Card variant="elevated" padding="lg">
       <div className="mb-6">
         <h2 className="text-3xl font-bold mb-2">Skills Matrix</h2>
-        <p className="text-gray-400">
+        <p className="text-slate-500 dark:text-gray-400">
           Comprehensive overview of technical expertise across 7 key domains
         </p>
       </div>
@@ -156,19 +156,19 @@ export default function SkillsMatrix() {
               className={`p-4 rounded-lg border transition-all cursor-pointer ${
                 selectedDomain === skill.domain
                   ? 'border-purple-500 bg-purple-500/10'
-                  : 'border-gray-700 hover:border-gray-600'
+                  : 'border-slate-200 dark:border-gray-700 hover:border-slate-300 dark:hover:border-gray-600'
               }`}
               onClick={() => handleDomainClick(skill.domain)}
             >
               <div className="flex items-center justify-between mb-2">
-                <h4 className="font-semibold text-white">{skill.domain}</h4>
-                <span className="text-purple-400 font-semibold">
+                <h4 className="font-semibold text-slate-900 dark:text-white">{skill.domain}</h4>
+                <span className="text-purple-600 dark:text-purple-400 font-semibold">
                   {skill.proficiency}%
                 </span>
               </div>
 
               {/* Progress Bar */}
-              <div className="w-full bg-gray-700 rounded-full h-2 mb-2">
+              <div className="w-full bg-slate-200 dark:bg-gray-700 rounded-full h-2 mb-2">
                 <div
                   className="bg-gradient-to-r from-purple-600 to-purple-400 h-2 rounded-full transition-all duration-500"
                   style={{ width: `${skill.proficiency}%` }}
@@ -177,15 +177,15 @@ export default function SkillsMatrix() {
 
               {/* Expanded Details */}
               {selectedDomain === skill.domain && (
-                <div className="mt-3 pt-3 border-t border-gray-700 animate-fadeIn">
-                  <p className="text-gray-300 text-sm mb-3">
+                <div className="mt-3 pt-3 border-t border-slate-200 dark:border-gray-700 animate-fadeIn">
+                  <p className="text-slate-600 dark:text-gray-300 text-sm mb-3">
                     {skill.description}
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {skill.technologies.map((tech) => (
                       <span
                         key={tech}
-                        className="text-xs bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full border border-purple-500/30"
+                        className="text-xs bg-purple-500/20 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-full border border-purple-500/30"
                       >
                         {tech}
                       </span>
@@ -199,29 +199,29 @@ export default function SkillsMatrix() {
       </div>
 
       {/* Summary Stats */}
-      <div className="mt-8 pt-6 border-t border-gray-700">
+      <div className="mt-8 pt-6 border-t border-slate-200 dark:border-gray-700">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <div className="text-center">
-            <div className="text-3xl font-bold text-purple-400">
+            <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
               {skillsData.length}
             </div>
-            <div className="text-sm text-gray-400">Technical Domains</div>
+            <div className="text-sm text-slate-500 dark:text-gray-400">Technical Domains</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-purple-400">
+            <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
               {Math.round(
                 skillsData.reduce((sum, s) => sum + s.proficiency, 0) /
                   skillsData.length
               )}
               %
             </div>
-            <div className="text-sm text-gray-400">Average Proficiency</div>
+            <div className="text-sm text-slate-500 dark:text-gray-400">Average Proficiency</div>
           </div>
           <div className="text-center col-span-2 md:col-span-1">
-            <div className="text-3xl font-bold text-purple-400">
+            <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
               {skillsData.reduce((sum, s) => sum + s.technologies.length, 0)}+
             </div>
-            <div className="text-sm text-gray-400">Technologies</div>
+            <div className="text-sm text-slate-500 dark:text-gray-400">Technologies</div>
           </div>
         </div>
       </div>

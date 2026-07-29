@@ -64,7 +64,7 @@ export default function ModelMetrics() {
             <p className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">
               {(metric.value * 100).toFixed(1)}%
             </p>
-            <p className="text-xs text-gray-500">{metric.description}</p>
+            <p className="text-xs text-slate-400 dark:text-gray-500">{metric.description}</p>
           </div>
         ))}
       </div>

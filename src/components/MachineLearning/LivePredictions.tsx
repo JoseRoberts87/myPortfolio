@@ -191,9 +191,9 @@ export default function LivePredictions() {
               <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium">
                 r/{result.post.subreddit}
               </span>
-              <span className="text-sm text-gray-500">by u/{result.post.author}</span>
-              <span className="text-sm text-gray-500">•</span>
-              <span className="text-sm text-gray-500">{formatDate(result.post.created_at)}</span>
+              <span className="text-sm text-slate-400 dark:text-gray-500">by u/{result.post.author}</span>
+              <span className="text-sm text-slate-400 dark:text-gray-500">•</span>
+              <span className="text-sm text-slate-400 dark:text-gray-500">{formatDate(result.post.created_at)}</span>
             </div>
 
             {/* Title */}

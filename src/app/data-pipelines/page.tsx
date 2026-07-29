@@ -200,7 +200,7 @@ export default function DataPipelinesPage() {
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Data Pipelines
           </h1>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+          <p className="text-xl text-slate-500 dark:text-gray-400 max-w-3xl mx-auto">
             Real-time social media data ingestion, processing, and storage using FastAPI and PostgreSQL.
           </p>
         </div>
@@ -243,7 +243,7 @@ export default function DataPipelinesPage() {
           </div>
 
           {loading && !status ? (
-            <div className="text-center py-8 text-gray-400">Loading status...</div>
+            <div className="text-center py-8 text-slate-500 dark:text-gray-400">Loading status...</div>
           ) : error ? (
             <div className="text-center py-8">
               <Badge variant="error" size="lg" className="mb-4">
@@ -252,7 +252,7 @@ export default function DataPipelinesPage() {
               <p className="text-red-400">{error}</p>
               <button
                 onClick={loadData}
-                className="mt-4 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
+                className="mt-4 px-4 py-2 bg-slate-200 dark:bg-gray-700 hover:bg-slate-300 dark:hover:bg-gray-600 rounded-lg transition-colors"
               >
                 Retry
               </button>
@@ -261,41 +261,41 @@ export default function DataPipelinesPage() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="text-center">
                 <div className="text-3xl font-bold text-blue-400">{status.total_posts}</div>
-                <div className="text-gray-400 mt-1">Total Posts</div>
+                <div className="text-slate-500 dark:text-gray-400 mt-1">Total Posts</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-green-400">{status.total_subreddits}</div>
-                <div className="text-gray-400 mt-1">Subreddits</div>
+                <div className="text-slate-500 dark:text-gray-400 mt-1">Subreddits</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-purple-400">
+                <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
                   {status.configured_subreddits.length}
                 </div>
-                <div className="text-gray-400 mt-1">Configured</div>
+                <div className="text-slate-500 dark:text-gray-400 mt-1">Configured</div>
               </div>
               <div className="text-center">
                 <Badge variant={status.status === 'active' ? 'success' : 'warning'} size="lg">
                   {status.status}
                 </Badge>
-                <div className="text-gray-400 mt-1">Status</div>
+                <div className="text-slate-500 dark:text-gray-400 mt-1">Status</div>
               </div>
             </div>
           ) : null}
 
           {/* Sentiment Distribution */}
           {status?.sentiment_stats && status.sentiment_stats.analyzed > 0 && (
-            <div className="mt-6 pt-6 border-t border-gray-700">
-              <h3 className="text-sm font-semibold text-gray-400 mb-3">Sentiment Analysis</h3>
+            <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+              <h3 className="text-sm font-semibold text-slate-500 dark:text-gray-400 mb-3">Sentiment Analysis</h3>
               <div className="space-y-3">
                 {/* Positive */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm text-gray-300">😊 Positive</span>
+                    <span className="text-sm text-slate-600 dark:text-gray-300">😊 Positive</span>
                     <span className="text-sm font-semibold text-green-400">
                       {status.sentiment_stats.positive} ({Math.round((status.sentiment_stats.positive / status.sentiment_stats.analyzed) * 100)}%)
                     </span>
                   </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2">
+                  <div className="w-full bg-slate-200 dark:bg-gray-700 rounded-full h-2">
                     <div
                       className="bg-green-500 h-2 rounded-full transition-all"
                       style={{ width: `${(status.sentiment_stats.positive / status.sentiment_stats.analyzed) * 100}%` }}
@@ -306,12 +306,12 @@ export default function DataPipelinesPage() {
                 {/* Neutral */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm text-gray-300">😐 Neutral</span>
+                    <span className="text-sm text-slate-600 dark:text-gray-300">😐 Neutral</span>
                     <span className="text-sm font-semibold text-yellow-400">
                       {status.sentiment_stats.neutral} ({Math.round((status.sentiment_stats.neutral / status.sentiment_stats.analyzed) * 100)}%)
                     </span>
                   </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2">
+                  <div className="w-full bg-slate-200 dark:bg-gray-700 rounded-full h-2">
                     <div
                       className="bg-yellow-500 h-2 rounded-full transition-all"
                       style={{ width: `${(status.sentiment_stats.neutral / status.sentiment_stats.analyzed) * 100}%` }}
@@ -322,12 +322,12 @@ export default function DataPipelinesPage() {
                 {/* Negative */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm text-gray-300">😞 Negative</span>
+                    <span className="text-sm text-slate-600 dark:text-gray-300">😞 Negative</span>
                     <span className="text-sm font-semibold text-red-400">
                       {status.sentiment_stats.negative} ({Math.round((status.sentiment_stats.negative / status.sentiment_stats.analyzed) * 100)}%)
                     </span>
                   </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2">
+                  <div className="w-full bg-slate-200 dark:bg-gray-700 rounded-full h-2">
                     <div
                       className="bg-red-500 h-2 rounded-full transition-all"
                       style={{ width: `${(status.sentiment_stats.negative / status.sentiment_stats.analyzed) * 100}%` }}
@@ -339,8 +339,8 @@ export default function DataPipelinesPage() {
           )}
 
           {status && status.configured_subreddits.length > 0 && (
-            <div className="mt-6 pt-6 border-t border-gray-700">
-              <h3 className="text-sm font-semibold text-gray-400 mb-3">Configured Subreddits</h3>
+            <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+              <h3 className="text-sm font-semibold text-slate-500 dark:text-gray-400 mb-3">Configured Subreddits</h3>
               <div className="flex flex-wrap gap-2">
                 {status.configured_subreddits.map((subreddit) => (
                   <Badge key={subreddit} variant="primary">
@@ -352,8 +352,8 @@ export default function DataPipelinesPage() {
           )}
 
           {status && status.configured_search_queries && status.configured_search_queries.length > 0 && (
-            <div className="mt-6 pt-6 border-t border-gray-700">
-              <h3 className="text-sm font-semibold text-gray-400 mb-3">Search Queries (All Reddit)</h3>
+            <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+              <h3 className="text-sm font-semibold text-slate-500 dark:text-gray-400 mb-3">Search Queries (All Reddit)</h3>
               <div className="flex flex-wrap gap-2">
                 {status.configured_search_queries.map((query) => (
                   <Badge key={query} variant="secondary">
@@ -369,7 +369,7 @@ export default function DataPipelinesPage() {
       {/* Recent Content Section with Tabs */}
       <Section padding="lg" background="subtle">
         {/* Tab Navigation */}
-        <div className="flex items-center gap-4 mb-8 border-b border-gray-700">
+        <div className="flex items-center gap-4 mb-8 border-b border-slate-200 dark:border-slate-700">
           <button
             onClick={() => {
               setActiveTab('reddit');
@@ -379,7 +379,7 @@ export default function DataPipelinesPage() {
             className={`px-6 py-3 font-semibold transition-colors border-b-2 ${
               activeTab === 'reddit'
                 ? 'text-blue-400 border-blue-400'
-                : 'text-gray-400 border-transparent hover:text-gray-300'
+                : 'text-slate-500 dark:text-gray-400 border-transparent hover:text-slate-600 dark:hover:text-gray-300'
             }`}
           >
             Reddit Posts
@@ -393,7 +393,7 @@ export default function DataPipelinesPage() {
             className={`px-6 py-3 font-semibold transition-colors border-b-2 ${
               activeTab === 'articles'
                 ? 'text-blue-400 border-blue-400'
-                : 'text-gray-400 border-transparent hover:text-gray-300'
+                : 'text-slate-500 dark:text-gray-400 border-transparent hover:text-slate-600 dark:hover:text-gray-300'
             }`}
           >
             News Articles
@@ -407,13 +407,13 @@ export default function DataPipelinesPage() {
 
           {/* Sentiment Filter */}
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-400">Filter by sentiment:</span>
+            <span className="text-sm text-slate-500 dark:text-gray-400">Filter by sentiment:</span>
             <button
               onClick={() => setSentimentFilter(null)}
               className={`px-3 py-1 rounded-lg transition-colors ${
                 sentimentFilter === null
                   ? 'bg-blue-600 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  : 'bg-slate-200 dark:bg-gray-700 text-slate-600 dark:text-gray-300 hover:bg-slate-300 dark:hover:bg-gray-600'
               }`}
             >
               All
@@ -423,7 +423,7 @@ export default function DataPipelinesPage() {
               className={`px-3 py-1 rounded-lg transition-colors ${
                 sentimentFilter === 'positive'
                   ? 'bg-green-600 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  : 'bg-slate-200 dark:bg-gray-700 text-slate-600 dark:text-gray-300 hover:bg-slate-300 dark:hover:bg-gray-600'
               }`}
             >
               Positive
@@ -433,7 +433,7 @@ export default function DataPipelinesPage() {
               className={`px-3 py-1 rounded-lg transition-colors ${
                 sentimentFilter === 'neutral'
                   ? 'bg-gray-500 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  : 'bg-slate-200 dark:bg-gray-700 text-slate-600 dark:text-gray-300 hover:bg-slate-300 dark:hover:bg-gray-600'
               }`}
             >
               Neutral
@@ -443,7 +443,7 @@ export default function DataPipelinesPage() {
               className={`px-3 py-1 rounded-lg transition-colors ${
                 sentimentFilter === 'negative'
                   ? 'bg-red-600 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  : 'bg-slate-200 dark:bg-gray-700 text-slate-600 dark:text-gray-300 hover:bg-slate-300 dark:hover:bg-gray-600'
               }`}
             >
               Negative
@@ -454,7 +454,7 @@ export default function DataPipelinesPage() {
         {activeTab === 'reddit' ? (
           // Reddit Posts Display
           loading && posts.length === 0 ? (
-            <div className="text-center py-12 text-gray-400">Loading posts...</div>
+            <div className="text-center py-12 text-slate-500 dark:text-gray-400">Loading posts...</div>
           ) : posts.length === 0 ? (
             <Card variant="bordered" padding="lg">
               <div className="text-center py-12">
@@ -462,7 +462,7 @@ export default function DataPipelinesPage() {
                   No Data Yet
                 </Badge>
                 <h3 className="text-xl font-semibold mb-4">No posts collected yet</h3>
-                <p className="text-gray-400 mb-6">
+                <p className="text-slate-500 dark:text-gray-400 mb-6">
                   Run the pipeline to start collecting Reddit data
                 </p>
                 <button
@@ -494,9 +494,9 @@ export default function DataPipelinesPage() {
                             {getSentimentEmoji(post.sentiment_label)} {post.sentiment_label}
                           </Badge>
                         )}
-                        <span className="text-sm text-gray-400">by u/{post.author || '[deleted]'}</span>
-                        <span className="text-sm text-gray-500">•</span>
-                        <span className="text-sm text-gray-400">
+                        <span className="text-sm text-slate-500 dark:text-gray-400">by u/{post.author || '[deleted]'}</span>
+                        <span className="text-sm text-slate-400 dark:text-gray-500">•</span>
+                        <span className="text-sm text-slate-500 dark:text-gray-400">
                           {formatDate(post.created_utc)}
                         </span>
                       </div>
@@ -511,12 +511,12 @@ export default function DataPipelinesPage() {
                       </a>
 
                       {post.content && (
-                        <p className="text-gray-400 line-clamp-2 mb-3">
+                        <p className="text-slate-500 dark:text-gray-400 line-clamp-2 mb-3">
                           {post.content}
                         </p>
                       )}
 
-                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                      <div className="flex items-center gap-4 text-sm text-slate-400 dark:text-gray-500">
                         <span>↑ {post.score.toLocaleString()} points</span>
                         <span>💬 {post.num_comments.toLocaleString()} comments</span>
                       </div>
@@ -529,7 +529,7 @@ export default function DataPipelinesPage() {
         ) : (
           // Articles Display
           loading && articles.length === 0 ? (
-            <div className="text-center py-12 text-gray-400">Loading articles...</div>
+            <div className="text-center py-12 text-slate-500 dark:text-gray-400">Loading articles...</div>
           ) : articles.length === 0 ? (
             <Card variant="bordered" padding="lg">
               <div className="text-center py-12">
@@ -537,7 +537,7 @@ export default function DataPipelinesPage() {
                   No Articles Yet
                 </Badge>
                 <h3 className="text-xl font-semibold mb-4">No articles collected yet</h3>
-                <p className="text-gray-400 mb-6">
+                <p className="text-slate-500 dark:text-gray-400 mb-6">
                   Sync news articles to start collecting data
                 </p>
                 <button
@@ -575,10 +575,10 @@ export default function DataPipelinesPage() {
                           </Badge>
                         )}
                         {article.author && (
-                          <span className="text-sm text-gray-400">by {article.author}</span>
+                          <span className="text-sm text-slate-500 dark:text-gray-400">by {article.author}</span>
                         )}
-                        <span className="text-sm text-gray-500">•</span>
-                        <span className="text-sm text-gray-400">
+                        <span className="text-sm text-slate-400 dark:text-gray-500">•</span>
+                        <span className="text-sm text-slate-500 dark:text-gray-400">
                           {formatDate(article.published_at)}
                         </span>
                       </div>
@@ -593,7 +593,7 @@ export default function DataPipelinesPage() {
                       </a>
 
                       {(article.summary || article.content) && (
-                        <p className="text-gray-400 line-clamp-2 mb-3">
+                        <p className="text-slate-500 dark:text-gray-400 line-clamp-2 mb-3">
                           {article.summary || article.content}
                         </p>
                       )}
@@ -611,15 +611,15 @@ export default function DataPipelinesPage() {
 
                       {/* NLP Features: Entities and Keywords */}
                       {(articleEntities[article.id]?.length > 0 || articleKeywords[article.id]?.length > 0) && (
-                        <div className="mt-4 space-y-3 pt-3 border-t border-gray-700/50">
+                        <div className="mt-4 space-y-3 pt-3 border-t border-slate-200 dark:border-slate-700/50">
                           {/* Entities Section */}
                           {articleEntities[article.id]?.length > 0 && (
                             <div>
                               <div className="flex items-center gap-2 mb-2">
-                                <span className="text-xs font-semibold text-gray-400 uppercase">
+                                <span className="text-xs font-semibold text-slate-500 dark:text-gray-400 uppercase">
                                   Named Entities
                                 </span>
-                                <span className="text-xs text-gray-500">
+                                <span className="text-xs text-slate-400 dark:text-gray-500">
                                   ({articleEntities[article.id].length})
                                 </span>
                               </div>
@@ -640,10 +640,10 @@ export default function DataPipelinesPage() {
                           {articleKeywords[article.id]?.length > 0 && (
                             <div>
                               <div className="flex items-center gap-2 mb-2">
-                                <span className="text-xs font-semibold text-gray-400 uppercase">
+                                <span className="text-xs font-semibold text-slate-500 dark:text-gray-400 uppercase">
                                   Key Topics
                                 </span>
-                                <span className="text-xs text-gray-500">
+                                <span className="text-xs text-slate-400 dark:text-gray-500">
                                   ({articleKeywords[article.id].length})
                                 </span>
                               </div>
@@ -667,8 +667,8 @@ export default function DataPipelinesPage() {
 
                       {/* Loading indicator for NLP data */}
                       {loadingNLP[article.id] && (
-                        <div className="mt-4 pt-3 border-t border-gray-700/50">
-                          <span className="text-xs text-gray-500 italic">
+                        <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700/50">
+                          <span className="text-xs text-slate-400 dark:text-gray-500 italic">
                             Loading NLP analysis...
                           </span>
                         </div>
@@ -688,7 +688,7 @@ export default function DataPipelinesPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card variant="bordered">
             <h3 className="text-xl font-semibold mb-3">Backend (FastAPI)</h3>
-            <p className="text-gray-400 mb-4">
+            <p className="text-slate-500 dark:text-gray-400 mb-4">
               High-performance Python API with async support, automatic OpenAPI documentation, and data validation.
             </p>
             <div className="flex flex-wrap gap-2">
@@ -700,7 +700,7 @@ export default function DataPipelinesPage() {
 
           <Card variant="bordered">
             <h3 className="text-xl font-semibold mb-3">Database</h3>
-            <p className="text-gray-400 mb-4">
+            <p className="text-slate-500 dark:text-gray-400 mb-4">
               PostgreSQL with optimized schemas and indexes for efficient data storage and retrieval.
             </p>
             <div className="flex flex-wrap gap-2">
@@ -711,7 +711,7 @@ export default function DataPipelinesPage() {
 
           <Card variant="bordered">
             <h3 className="text-xl font-semibold mb-3">Data Collection</h3>
-            <p className="text-gray-400 mb-4">
+            <p className="text-slate-500 dark:text-gray-400 mb-4">
               Integration with Reddit API for real-time data collection with rate limiting and error handling.
             </p>
             <div className="flex flex-wrap gap-2">
@@ -722,7 +722,7 @@ export default function DataPipelinesPage() {
 
           <Card variant="bordered">
             <h3 className="text-xl font-semibold mb-3">Deployment</h3>
-            <p className="text-gray-400 mb-4">
+            <p className="text-slate-500 dark:text-gray-400 mb-4">
               Deployed on Railway with automatic builds from GitHub and zero-downtime deployments.
             </p>
             <div className="flex flex-wrap gap-2">

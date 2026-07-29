@@ -14,7 +14,7 @@ export default function ComputerVisionPage() {
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Computer Vision
           </h1>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+          <p className="text-xl text-slate-500 dark:text-gray-400 max-w-3xl mx-auto">
             Real-time object detection and face recognition using webcam with advanced AI models powered by TensorFlow.js and Google MediaPipe.
           </p>
         </div>
@@ -46,7 +46,7 @@ export default function ComputerVisionPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card variant="bordered">
             <h3 className="text-xl font-semibold mb-3">TensorFlow.js</h3>
-            <p className="text-gray-400 mb-4">
+            <p className="text-slate-500 dark:text-gray-400 mb-4">
               Machine learning library that runs in the browser, enabling real-time inference without server calls.
             </p>
             <div className="flex flex-wrap gap-2">
@@ -58,7 +58,7 @@ export default function ComputerVisionPage() {
 
           <Card variant="bordered">
             <h3 className="text-xl font-semibold mb-3">WebRTC & Canvas</h3>
-            <p className="text-gray-400 mb-4">
+            <p className="text-slate-500 dark:text-gray-400 mb-4">
               Browser APIs for camera access and real-time graphics rendering for bounding box visualization.
             </p>
             <div className="flex flex-wrap gap-2">
@@ -70,7 +70,7 @@ export default function ComputerVisionPage() {
 
           <Card variant="bordered">
             <h3 className="text-xl font-semibold mb-3">React Hooks</h3>
-            <p className="text-gray-400 mb-4">
+            <p className="text-slate-500 dark:text-gray-400 mb-4">
               Custom hooks for managing camera state, model loading, and detection lifecycle with performance optimization.
             </p>
             <div className="flex flex-wrap gap-2">
@@ -82,7 +82,7 @@ export default function ComputerVisionPage() {
 
           <Card variant="bordered">
             <h3 className="text-xl font-semibold mb-3">Performance</h3>
-            <p className="text-gray-400 mb-4">
+            <p className="text-slate-500 dark:text-gray-400 mb-4">
               Real-time FPS monitoring, confidence threshold filtering, and optimized rendering for smooth detection.
             </p>
             <div className="flex flex-wrap gap-2">
@@ -94,7 +94,7 @@ export default function ComputerVisionPage() {
 
           <Card variant="bordered">
             <h3 className="text-xl font-semibold mb-3">YOLOv8 (Server-Side)</h3>
-            <p className="text-gray-400 mb-4">
+            <p className="text-slate-500 dark:text-gray-400 mb-4">
               Advanced object detection using YOLOv8 on the backend for higher accuracy and more robust detection.
             </p>
             <div className="flex flex-wrap gap-2">
@@ -106,7 +106,7 @@ export default function ComputerVisionPage() {
 
           <Card variant="bordered">
             <h3 className="text-xl font-semibold mb-3">Face Detection (MediaPipe)</h3>
-            <p className="text-gray-400 mb-4">
+            <p className="text-slate-500 dark:text-gray-400 mb-4">
               Real-time face detection powered by Google's MediaPipe running entirely in the browser with high performance and accuracy.
             </p>
             <div className="flex flex-wrap gap-2">

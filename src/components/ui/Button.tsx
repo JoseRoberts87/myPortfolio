@@ -19,7 +19,7 @@ export default function Button({
 
   const variantStyles = {
     primary: 'bg-purple-600 hover:bg-purple-700 text-white',
-    secondary: 'bg-slate-700 hover:bg-slate-600 text-white',
+    secondary: 'bg-slate-200 hover:bg-slate-300 text-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-white',
     outline: 'border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white',
     ghost: 'text-purple-600 hover:bg-purple-100 dark:hover:bg-purple-900/20',
   };

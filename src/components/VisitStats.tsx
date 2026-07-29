@@ -78,10 +78,10 @@ export default function VisitStats() {
 
   if (loading) {
     return (
-      <div className="fixed top-20 left-4 z-50 bg-slate-800/90 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-lg min-w-[200px]">
+      <div className="hidden lg:block fixed top-20 left-4 z-50 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-lg p-4 shadow-lg min-w-[200px]">
         <div className="animate-pulse">
-          <div className="h-4 bg-slate-700 rounded w-24 mb-2"></div>
-          <div className="h-3 bg-slate-700 rounded w-16"></div>
+          <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-24 mb-2"></div>
+          <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-16"></div>
         </div>
       </div>
     );
@@ -92,40 +92,42 @@ export default function VisitStats() {
   }
 
   return (
-    <div className="fixed top-20 left-4 z-50 bg-slate-800/90 backdrop-blur-sm border border-slate-700 rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow">
+    <div className="hidden lg:block fixed top-20 left-4 z-50 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow">
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-sm">
           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-          <span className="text-gray-400 font-medium">Live Stats</span>
+          <span className="text-slate-500 dark:text-gray-400 font-medium">Live Stats</span>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1">
-            <p className="text-2xl font-bold text-white">{stats.total_visits.toLocaleString()}</p>
-            <p className="text-xs text-gray-400">Total Visits</p>
+            <p className="text-2xl font-bold text-slate-900 dark:text-white">{stats.total_visits.toLocaleString()}</p>
+            <p className="text-xs text-slate-500 dark:text-gray-400">Total Visits</p>
           </div>
 
           <div className="space-y-1">
-            <p className="text-2xl font-bold text-purple-400">{stats.unique_visitors.toLocaleString()}</p>
-            <p className="text-xs text-gray-400">Visitors</p>
+            <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.unique_visitors.toLocaleString()}</p>
+            <p className="text-xs text-slate-500 dark:text-gray-400">Visitors</p>
           </div>
         </div>
 
-        <div className="pt-2 border-t border-slate-700">
+        <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-400">Last 24h</span>
-            <span className="text-sm font-semibold text-green-400">{stats.recent_visits.toLocaleString()}</span>
+            <span className="text-xs text-slate-500 dark:text-gray-400">Last 24h</span>
+            <span className="text-sm font-semibold text-green-600 dark:text-green-400">{stats.recent_visits.toLocaleString()}</span>
           </div>
         </div>
 
         {stats.top_referrers && stats.top_referrers.length > 0 && (
-          <div className="pt-2 border-t border-slate-700">
-            <p className="text-xs text-gray-400 mb-1">Top Referrer</p>
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-purple-400 truncate max-w-[140px]">
+          <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+            <p className="text-xs text-slate-500 dark:text-gray-400 mb-1">Top Referrer</p>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs text-purple-600 dark:text-purple-400 truncate min-w-0">
                 {new URL(stats.top_referrers[0].referrer).hostname}
               </span>
-              <span className="text-xs text-gray-400">{stats.top_referrers[0].count}</span>
+              <span className="text-xs text-slate-500 dark:text-gray-400 flex-shrink-0">
+                {stats.top_referrers[0].count.toLocaleString()}
+              </span>
             </div>
           </div>
         )}

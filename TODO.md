@@ -1,6 +1,6 @@
 # Portfolio Project - Task Tracker
 
-**Last Updated**: 2025-11-03 (PR #40 - GitHub Integration Complete)
+**Last Updated**: 2026-07-27 (Phase 6 - Resume-Aligned Feature Backlog added)
 
 **Phase 1 Status**: ✅ COMPLETE
 **Phase 2 Status**: ✅ COMPLETE
@@ -275,6 +275,38 @@ _Phase 1 complete! All planned tasks finished._
 - **Prod Environment**: Ready for AWS ECS Fargate deployment
 - **Cost**: ~$115-130/month (dev), ~$120-160/month (prod)
 - **Architecture**: 9 Terraform modules managing VPC, ECS, RDS, ElastiCache, ALB, Route53, ECR, CloudWatch, Security Groups
+
+---
+
+## Phase 6: Resume-Aligned Feature Backlog (2026-07-27)
+
+Generated from the 2026 resume ("Data & AI Architect", 15+ years) to close gaps between the resume and the live site. Tiers reflect impact on the new positioning. A few items (About page, Certifications, LinkedIn) overlap with Phase 4 stubs — repeated here with resume-specific framing so this backlog is self-contained.
+
+### Tier 1 - Match the "Data & AI Architect" Positioning ⭐⭐⭐⭐⭐
+- [ ] **AI Agents / LLM Showcase Page + Live Demo** (biggest gap — resume leads with agentic AI/LLMs; site has none)
+  - [ ] New `/ai-agents` (or `/llm`) route + homepage expertise card
+  - [ ] Live in-browser demo: RAG chat over portfolio content, a tool-using agent, or GenAI content generation (OpenAI/StabilityAI tie-in)
+- [ ] **About / Career-Story Page** (also a Phase 4 stub)
+  - [ ] 15+ year arc: Bank of America → Amazon Robotics → Evonik → Very Technology → MojoTech
+  - [ ] GTM + business + technical blend; leadership (managed DS/DE teams, trained juniors)
+- [ ] **Homepage Impact / Results Metrics Band**
+  - [ ] Surface quantified wins: 72% Fortune-500 growth, 90% productivity in 3 weeks, $2M energy savings, 83% downtime reduction, 99.99% uptime / sub-5s IoT latency, "recovered billions"
+
+### Tier 2 - Reflect the Full Stack & Achievements ⭐⭐⭐⭐
+- [ ] **Expand Skills Matrix** (`src/components/SkillsMatrix.tsx`)
+  - [ ] Add an "AI / LLMs / Agents" domain
+  - [ ] Fill missing tech: Java/Spring Boot, Azure (Databricks, Data Factory), Databricks, Kubernetes, Kinesis, MongoDB/MSSQL, Flask/Django
+- [ ] **New Case Studies** (`src/app/case-studies/case-studies-data.ts`)
+  - [ ] Agentic AI workforce (MojoTech — 30% fewer errors, 77% fewer bottlenecks)
+  - [ ] Real-time IoT / event-driven API platform (Very / Amazon Robotics — 99.99% uptime, 83% downtime cut)
+  - [ ] ML forecasting for energy ($2M saved — Evonik)
+- [ ] **Forecasting / Predictive-Maintenance ML Demo** (ML page is NLP/sentiment only today)
+- [ ] **Databricks/Lakehouse + Azure (multi-cloud) content** (Azure currently absent — 0 files)
+
+### Tier 3 - Polish & Recruiter-Facing ⭐⭐⭐
+- [ ] **Certifications Section w/ Badges** — Databricks Certified Data Engineer Professional (2026–2028), AWS Solutions Architect – Associate, TinyML (Harvard edX) (also a Phase 4 stub)
+- [ ] **Contact/Footer: LinkedIn + Location + Availability** — linkedin.com/in/jose-roberts, Providence RI, "Open to Data & AI Architect roles" (also a Phase 4 stub)
+- [ ] **Real-time Streaming / Live Dashboard Demo** — WebSocket/SSE live-updating dashboard; makes "99.99% uptime / sub-5s / Kinesis" tangible
 
 ---
 
