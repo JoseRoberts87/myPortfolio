@@ -286,9 +286,9 @@ Generated from the 2026 resume ("Data & AI Architect", 15+ years) to close gaps 
 - [ ] **AI Agents / LLM Showcase Page + Live Demo** (biggest gap — resume leads with agentic AI/LLMs; site has none)
   - [ ] New `/ai-agents` (or `/llm`) route + homepage expertise card
   - [ ] Live in-browser demo: RAG chat over portfolio content, a tool-using agent, or GenAI content generation (OpenAI/StabilityAI tie-in)
-- [ ] **About / Career-Story Page** (also a Phase 4 stub)
-  - [ ] 15+ year arc: Bank of America → Amazon Robotics → Evonik → Very Technology → MojoTech
-  - [ ] GTM + business + technical blend; leadership (managed DS/DE teams, trained juniors)
+- [x] **About / Career-Story Page** (also a Phase 4 stub)
+  - [x] 15+ year arc: Bank of America → Amazon Robotics → Evonik → Very Technology → MojoTech
+  - [x] GTM + business + technical blend; leadership (managed DS/DE teams, trained juniors)
 - [ ] **Homepage Impact / Results Metrics Band**
   - [ ] Surface quantified wins: 72% Fortune-500 growth, 90% productivity in 3 weeks, $2M energy savings, 83% downtime reduction, 99.99% uptime / sub-5s IoT latency, "recovered billions"
 

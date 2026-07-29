@@ -22,7 +22,7 @@ describe('Header Component', () => {
   it('renders primary nav links with correct hrefs', () => {
     renderWithTheme(<Header />);
     expect(screen.getByRole('link', { name: 'AI Chat' })).toHaveAttribute('href', '/ai-agents');
-    expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/#timeline');
+    expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');
   });
 
   it('renders the "Let\'s talk" CTA linking to the contact section', () => {

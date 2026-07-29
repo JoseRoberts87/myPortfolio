@@ -14,6 +14,7 @@ test.use({
 
 const PAGES = [
   '/',
+  '/about',
   '/web-dev',
   '/data-pipelines',
   '/analytics',
