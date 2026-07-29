@@ -34,6 +34,7 @@ const certifications: Certification[] = [
     issuer: 'Harvard edX',
     period: 'Certified',
     abbr: 'edX',
+    badgeImage: '/badges/edx.png',
   },
 ];
 
