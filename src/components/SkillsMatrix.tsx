@@ -22,32 +22,38 @@ interface SkillCategory {
 
 const skillsData: SkillCategory[] = [
   {
+    domain: 'AI / LLMs / Agents',
+    proficiency: 92,
+    technologies: ['OpenAI', 'LLMs', 'RAG', 'AI Agents', 'Agentic Workflows'],
+    description: 'LLM integration and agentic workflows — RAG systems, tool-using agents, and AI-driven automation',
+  },
+  {
     domain: 'Web Development',
     proficiency: 95,
-    technologies: ['React 19', 'Next.js 16', 'TypeScript', 'Tailwind CSS', 'Jest'],
-    description: 'Full-stack web applications with modern frameworks and comprehensive testing',
+    technologies: ['React 19', 'Next.js 16', 'TypeScript', 'Java / Spring Boot', 'Flask / Django', 'Jest'],
+    description: 'Full-stack applications — React/Next.js frontends with Java/Spring Boot and Python (Flask/Django) backends',
   },
   {
     domain: 'Cloud & DevOps',
     proficiency: 90,
-    technologies: ['AWS', 'Terraform', 'Docker', 'ECS Fargate', 'GitHub Actions'],
-    description: 'Infrastructure as Code, containerization, and automated CI/CD pipelines',
+    technologies: ['AWS', 'Azure', 'Terraform', 'Docker', 'Kubernetes', 'GitHub Actions'],
+    description: 'Multi-cloud infrastructure as code, containerization and orchestration, and automated CI/CD',
   },
   {
     domain: 'Data Pipelines',
-    proficiency: 85,
-    technologies: ['FastAPI', 'PostgreSQL', 'Redis', 'ETL', 'Alembic'],
-    description: 'Real-time data ingestion, processing, and storage solutions',
+    proficiency: 88,
+    technologies: ['Databricks', 'FastAPI', 'Kinesis', 'PostgreSQL', 'MongoDB', 'ETL'],
+    description: 'Real-time ingestion and Lakehouse pipelines with Databricks, Kinesis, and FastAPI',
   },
   {
     domain: 'Data Analytics',
-    proficiency: 80,
-    technologies: ['Pandas', 'SQL', 'Recharts', 'Data Visualization', 'Dashboards'],
-    description: 'Interactive dashboards, data visualization, and business intelligence',
+    proficiency: 82,
+    technologies: ['Pandas', 'SQL', 'MSSQL', 'Recharts', 'Data Visualization', 'Dashboards'],
+    description: 'Interactive dashboards, data visualization, and business intelligence across SQL and NoSQL stores',
   },
   {
     domain: 'Machine Learning',
-    proficiency: 75,
+    proficiency: 78,
     technologies: ['Transformers.js', 'DistilBERT', 'NLP', 'Sentiment Analysis', 'Browser ML'],
     description: 'Client-side ML with NLP, sentiment analysis, and browser-based inference',
   },
@@ -105,16 +111,12 @@ export default function SkillsMatrix() {
     setSelectedDomain(selectedDomain === domain ? null : domain);
   };
 
-  const selectedSkill = selectedDomain
-    ? skillsData.find((s) => s.domain === selectedDomain)
-    : null;
-
   return (
     <Card variant="elevated" padding="lg">
       <div className="mb-6">
         <h2 className="text-3xl font-bold mb-2">Skills Matrix</h2>
         <p className="text-muted">
-          Comprehensive overview of technical expertise across 7 key domains
+          Comprehensive overview of technical expertise across {skillsData.length} key domains
         </p>
       </div>
 
