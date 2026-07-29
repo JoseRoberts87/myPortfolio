@@ -26,8 +26,8 @@ export default function Section({
 
   const backgroundStyles = {
     transparent: '',
-    subtle: 'bg-slate-900/50',
-    dark: 'bg-slate-900',
+    subtle: 'bg-slate-100/60 dark:bg-slate-900/50',
+    dark: 'bg-slate-100 dark:bg-slate-900',
   };
 
   return (

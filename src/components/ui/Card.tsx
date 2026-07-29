@@ -18,9 +18,9 @@ export default function Card({
   const baseStyles = 'rounded-lg transition-all duration-200';
 
   const variantStyles = {
-    default: 'bg-slate-800/50 border border-slate-700',
-    bordered: 'bg-transparent border-2 border-slate-700',
-    elevated: 'bg-slate-800 shadow-lg shadow-purple-500/10',
+    default: 'bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700',
+    bordered: 'bg-transparent border-2 border-slate-200 dark:border-slate-700',
+    elevated: 'bg-white dark:bg-slate-800 shadow-lg shadow-slate-300/40 dark:shadow-purple-500/10',
   };
 
   const paddingStyles = {

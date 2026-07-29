@@ -5,7 +5,7 @@ import type { MLModelState, SentimentPrediction, SentimentResult } from '@/types
 import { MODEL_INFO } from '@/lib/mlModelData';
 
 // Type definition for the pipeline
-type Pipeline = any; // @xenova/transformers types aren't fully typed
+type Pipeline = any; // @huggingface/transformers types aren't fully typed
 
 export function useMLModel() {
   const [state, setState] = useState<MLModelState>({
@@ -32,7 +32,7 @@ export function useMLModel() {
     try {
       console.log('Loading Transformers.js...');
       // Dynamically import transformers.js to avoid SSR issues
-      const { pipeline, env } = await import('@xenova/transformers');
+      const { pipeline, env } = await import('@huggingface/transformers');
 
       // Configure Transformers.js
       env.allowLocalModels = false;

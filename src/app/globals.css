@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* Wire Tailwind v4's `dark:` variant to the `.dark` class toggled by ThemeContext
+   (v4 defaults to prefers-color-scheme, which ignored our manual theme toggle). */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #f8fafc;
   --foreground: #0f172a;
