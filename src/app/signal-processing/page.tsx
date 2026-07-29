@@ -1,4 +1,4 @@
-import { Section, Badge } from '@/components/ui';
+import { Section, PageHero } from '@/components/ui';
 import Image from 'next/image';
 
 export default function SignalProcessingPage() {
@@ -14,27 +14,12 @@ export default function SignalProcessingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-surface-alt">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-              Signal Processing
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
-              Digital signal analysis, frequency domain transforms, and audio processing with NumPy, SciPy, and advanced DSP techniques
-            </p>
-            <div className="flex flex-wrap justify-center gap-3">
-              {technologies.map((tech) => (
-                <Badge key={tech} variant="primary">
-                  {tech}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+    <div className="min-h-screen pt-16">
+      <PageHero
+        title="Signal Processing"
+        tagline="Digital signal analysis, frequency domain transforms, and audio processing with NumPy, SciPy, and advanced DSP techniques."
+        badges={technologies}
+      />
 
       {/* Overview Section */}
       <Section>

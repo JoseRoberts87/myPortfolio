@@ -1,4 +1,4 @@
-import { Section, Badge } from '@/components/ui';
+import { Section, PageHero } from '@/components/ui';
 import SentimentClassifier from '@/components/MachineLearning/SentimentClassifier';
 import ModelMetrics from '@/components/MachineLearning/ModelMetrics';
 import ConfusionMatrix from '@/components/MachineLearning/ConfusionMatrix';
@@ -9,29 +9,14 @@ export default function MachineLearningPage() {
   return (
     <div className="min-h-screen pt-16">
       {/* Hero Section */}
-      <Section padding="xl" background="subtle">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Machine Learning & NLP
-          </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            Interactive sentiment analysis using DistilBERT, featuring real-time predictions, model performance metrics, and explainability visualizations.
-          </p>
-        </div>
+      <PageHero
+        title="Machine Learning & NLP"
+        tagline="Interactive sentiment analysis using DistilBERT, featuring real-time predictions, model performance metrics, and explainability visualizations."
+        badges={['HuggingFace', 'Transformers.js', 'DistilBERT', 'PyTorch', 'NLP', 'Sentiment Analysis', 'TypeScript', 'React']}
+      />
 
-        {/* Tech Stack Badges */}
-        <div className="flex flex-wrap justify-center gap-2 mb-8">
-          <Badge variant="primary">HuggingFace</Badge>
-          <Badge variant="primary">Transformers.js</Badge>
-          <Badge variant="primary">DistilBERT</Badge>
-          <Badge variant="primary">PyTorch</Badge>
-          <Badge variant="primary">NLP</Badge>
-          <Badge variant="primary">Sentiment Analysis</Badge>
-          <Badge variant="primary">TypeScript</Badge>
-          <Badge variant="primary">React</Badge>
-        </div>
-
-        {/* Model Description */}
+      {/* Model Description */}
+      <Section padding="lg">
         <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg p-6">
           <h2 className="text-xl font-semibold mb-3">About the Model</h2>
           <p className="text-gray-700 dark:text-gray-300 mb-4">

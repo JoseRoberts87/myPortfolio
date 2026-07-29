@@ -6,3 +6,4 @@ export { default as Input } from './Input';
 export { default as Textarea } from './Textarea';
 export { default as Container } from './Container';
 export { default as Section } from './Section';
+export { default as PageHero } from './PageHero';

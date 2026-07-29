@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Section, Card, Badge } from '@/components/ui';
+import { Section, Card, Badge, PageHero } from '@/components/ui';
 import {
   getRedditPosts,
   getPipelineStatus,
@@ -195,16 +195,10 @@ export default function DataPipelinesPage() {
 
   return (
     <div className="min-h-screen pt-16">
-      <Section padding="xl" background="subtle">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Data Pipelines
-          </h1>
-          <p className="text-xl text-muted max-w-3xl mx-auto">
-            Real-time social media data ingestion, processing, and storage using FastAPI and PostgreSQL.
-          </p>
-        </div>
-      </Section>
+      <PageHero
+        title="Data Pipelines"
+        tagline="Real-time social media data ingestion, processing, and storage using FastAPI and PostgreSQL."
+      />
 
       {/* Scheduler and Metrics Section */}
       <Section padding="lg">

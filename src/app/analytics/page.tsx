@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Section, Card, Badge } from '@/components/ui';
+import { Section, Card, Badge, PageHero } from '@/components/ui';
 import { getAnalyticsOverview } from '@/lib/api';
 import type { AnalyticsOverview } from '@/types/api';
 import {
@@ -69,33 +69,27 @@ export default function AnalyticsPage() {
 
   return (
     <div className="min-h-screen pt-16">
-      <Section padding="xl" background="subtle">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Analytics Dashboard
-          </h1>
-          <p className="text-xl text-muted max-w-3xl mx-auto mb-6">
-            Comprehensive analytics and insights from Reddit data pipeline
-          </p>
-
-          <div className="flex items-center justify-center gap-2">
-            <span className="text-sm text-muted">Time Range:</span>
-            {[7, 14, 30, 60, 90].map((days) => (
-              <button
-                key={days}
-                onClick={() => setTimeRange(days)}
-                className={`px-4 py-2 rounded-lg transition-colors ${
-                  timeRange === days
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-track text-body hover:bg-slate-300 dark:hover:bg-gray-600'
-                }`}
-              >
-                {days} days
-              </button>
-            ))}
-          </div>
+      <PageHero
+        title="Analytics Dashboard"
+        tagline="Comprehensive analytics and insights from the Reddit data pipeline."
+      >
+        <div className="flex items-center justify-center gap-2">
+          <span className="text-sm text-muted">Time Range:</span>
+          {[7, 14, 30, 60, 90].map((days) => (
+            <button
+              key={days}
+              onClick={() => setTimeRange(days)}
+              className={`px-4 py-2 rounded-lg transition-colors ${
+                timeRange === days
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-track text-body hover:bg-slate-300 dark:hover:bg-gray-600'
+              }`}
+            >
+              {days} days
+            </button>
+          ))}
         </div>
-      </Section>
+      </PageHero>
 
       {loading && !data ? (
         <Section padding="lg">

@@ -1,6 +1,6 @@
 'use client';
 
-import { Section } from '@/components/ui';
+import { Section, PageHero } from '@/components/ui';
 import { useGitHub } from '@/hooks/useGitHub';
 import GitHubProfile from '@/components/GitHub/GitHubProfile';
 import GitHubStats from '@/components/GitHub/GitHubStats';
@@ -17,17 +17,10 @@ export default function GitHubPage() {
 
   return (
     <div className="min-h-screen pt-16">
-      {/* Hero Section */}
-      <Section padding="xl" background="subtle">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            GitHub Activity
-          </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            Explore my open source work, contributions, and active development on GitHub
-          </p>
-        </div>
-      </Section>
+      <PageHero
+        title="GitHub Activity"
+        tagline="Explore my open source work, contributions, and active development on GitHub."
+      />
 
       {/* Loading State */}
       {loading && (
