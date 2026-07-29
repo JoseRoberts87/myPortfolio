@@ -314,7 +314,7 @@ Generated from the 2026 resume ("Data & AI Architect", 15+ years) to close gaps 
 
 - [x] Write unit tests for components (238 tests passing, Jest + React Testing Library)
 - [x] Write integration tests for APIs (62 backend tests passing, 54% coverage)
-- [ ] Add E2E tests (Playwright/Cypress)
+- [x] Add E2E tests (Playwright/Cypress)
 - [x] Set up test coverage reporting (Jest for frontend, pytest-cov for backend)
 - [ ] Perform accessibility audit
 - [ ] Test cross-browser compatibility
