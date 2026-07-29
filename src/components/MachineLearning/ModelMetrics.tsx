@@ -72,8 +72,8 @@ export default function ModelMetrics() {
       {/* Per-Class Metrics */}
       <div>
         <h3 className="text-xl font-bold mb-4">Per-Class Performance</h3>
-        <div className="border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
-          <table className="w-full">
+        <div className="border border-gray-300 dark:border-gray-700 rounded-lg overflow-x-auto">
+          <table className="w-full min-w-[28rem]">
             <thead className="bg-gray-100 dark:bg-gray-800">
               <tr>
                 <th className="px-6 py-3 text-left text-sm font-semibold">Class</th>
