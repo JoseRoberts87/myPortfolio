@@ -19,7 +19,7 @@ const WORK_ITEMS = [
 
 const PRIMARY_LINKS = [
   { name: 'AI Chat', href: '/ai-agents' },
-  { name: 'About', href: '/#timeline' },
+  { name: 'About', href: '/about' },
 ];
 
 export default function Header() {
