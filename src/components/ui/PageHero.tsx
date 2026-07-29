@@ -17,7 +17,10 @@ interface PageHeroProps {
 
 /**
  * Standard hero used across all feature pages: a `subtle` Section with a centered
- * eyebrow / title / tagline, plus an optional badges row and a custom slot.
+ * eyebrow / title / tagline, plus an optional badges row and a custom slot. A fixed
+ * min-height with vertically-centered content keeps every hero the same size
+ * regardless of how much content it carries (sparse title+tagline pages match the
+ * fuller badge/control pages).
  *
  * Consolidates the previously copy-pasted hero blocks so spacing, sizing, and
  * colors stay consistent in one place (see CHANGELOG / issue #81). Page wrappers
@@ -25,8 +28,8 @@ interface PageHeroProps {
  */
 export default function PageHero({ eyebrow, title, tagline, badges, children }: PageHeroProps) {
   return (
-    <Section padding="xl" background="subtle">
-      <div className="text-center">
+    <Section padding="none" background="subtle">
+      <div className="flex min-h-[360px] flex-col justify-center py-16 text-center">
         {eyebrow && (
           <p className="text-accent text-sm font-semibold uppercase tracking-wider mb-3">
             {eyebrow}
