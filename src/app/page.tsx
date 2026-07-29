@@ -2,6 +2,7 @@ import ContactForm from '@/components/ContactForm';
 import SkillsMatrix from '@/components/SkillsMatrix';
 import ResumeDownload from '@/components/ResumeDownload';
 import Timeline from '@/components/Timeline';
+import Certifications from '@/components/Certifications';
 import VisitStats from '@/components/VisitStats';
 import Image from 'next/image';
 
@@ -248,6 +249,13 @@ export default function Home() {
       <section id="skills" className="py-20 bg-slate-50 dark:bg-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SkillsMatrix />
+        </div>
+      </section>
+
+      {/* Certifications Section */}
+      <section id="certifications" className="py-20 bg-surface-alt">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Certifications />
         </div>
       </section>
 
