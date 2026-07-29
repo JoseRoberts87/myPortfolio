@@ -73,7 +73,7 @@ export default function AnalyticsPage() {
         title="Analytics Dashboard"
         tagline="Comprehensive analytics and insights from the Reddit data pipeline."
       >
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex flex-wrap items-center justify-center gap-2">
           <span className="text-sm text-muted">Time Range:</span>
           {[7, 14, 30, 60, 90].map((days) => (
             <button
