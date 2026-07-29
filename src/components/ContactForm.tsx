@@ -153,7 +153,7 @@ export default function ContactForm() {
   return (
     <Card variant="elevated" padding="lg">
       <h2 className="text-3xl font-bold mb-6">Get In Touch</h2>
-      <p className="text-slate-500 dark:text-gray-400 mb-8">
+      <p className="text-muted mb-8">
         Have a question or want to work together? I'd love to hear from you.
       </p>
 

@@ -72,14 +72,14 @@ export default function Header() {
   const desktopLinkClass = (active: boolean) =>
     `px-3 py-2 rounded-md text-sm font-medium transition-colors ${
       active
-        ? 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/10'
-        : 'text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
+        ? 'text-accent bg-purple-50 dark:bg-purple-500/10'
+        : 'text-body hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
     }`;
 
   const mobileLinkClass = (active: boolean) =>
     `block px-3 py-2 rounded-md text-base font-medium transition-colors ${
       active
-        ? 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/10'
+        ? 'text-accent bg-purple-50 dark:bg-purple-500/10'
         : 'text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
     }`;
 
@@ -96,7 +96,7 @@ export default function Header() {
           {/* Brand */}
           <Link
             href="/"
-            className="text-xl font-bold text-slate-900 dark:text-white hover:text-purple-600 dark:hover:text-purple-400 transition-colors flex-shrink-0"
+            className="text-xl font-bold text-foreground hover:text-purple-600 dark:hover:text-purple-400 transition-colors flex-shrink-0"
           >
             Jose Roberts
           </Link>
@@ -124,7 +124,7 @@ export default function Header() {
               </button>
 
               {workOpen && (
-                <div className="absolute left-0 mt-2 w-56 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl py-2">
+                <div className="absolute left-0 mt-2 w-56 rounded-lg bg-surface border border-subtle shadow-xl py-2">
                   {WORK_ITEMS.map((item) => (
                     <Link
                       key={item.href}
@@ -132,8 +132,8 @@ export default function Header() {
                       aria-current={isActive(item.href) ? 'page' : undefined}
                       className={`block px-4 py-2 text-sm transition-colors ${
                         isActive(item.href)
-                          ? 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/10'
-                          : 'text-slate-600 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700/60'
+                          ? 'text-accent bg-purple-50 dark:bg-purple-500/10'
+                          : 'text-body hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700/60'
                       }`}
                     >
                       {item.name}
@@ -200,7 +200,7 @@ export default function Header() {
 
       {/* Mobile drawer */}
       {mobileOpen && (
-        <div className="md:hidden bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 max-h-[calc(100vh-4rem)] overflow-y-auto">
+        <div className="md:hidden bg-surface-alt border-t border-slate-200 dark:border-slate-800 max-h-[calc(100vh-4rem)] overflow-y-auto">
           <div className="px-4 pt-3 pb-4 space-y-1">
             {PRIMARY_LINKS.map((item) => (
               <Link
@@ -213,7 +213,7 @@ export default function Header() {
               </Link>
             ))}
 
-            <p className="px-3 pt-4 pb-1 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-gray-500">
+            <p className="px-3 pt-4 pb-1 text-xs font-semibold uppercase tracking-wider text-faint">
               Work
             </p>
             {WORK_ITEMS.map((item) => (

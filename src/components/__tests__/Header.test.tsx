@@ -1,133 +1,68 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import Header from '../Header';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 
-const renderWithTheme = (component: React.ReactElement) => {
-  return render(<ThemeProvider>{component}</ThemeProvider>);
-};
+// Header uses usePathname() for active-link state; provide a stable value.
+jest.mock('next/navigation', () => ({
+  usePathname: () => '/',
+}));
+
+const renderWithTheme = (ui: React.ReactElement) =>
+  render(<ThemeProvider>{ui}</ThemeProvider>);
 
 describe('Header Component', () => {
-  it('renders the logo/brand name', () => {
+  it('renders the brand name linking home', () => {
     renderWithTheme(<Header />);
-    const logo = screen.getByText('Portfolio');
-    expect(logo).toBeInTheDocument();
+    const brand = screen.getByRole('link', { name: 'Jose Roberts' });
+    expect(brand).toBeInTheDocument();
+    expect(brand).toHaveAttribute('href', '/');
   });
 
-  it('renders all navigation items', () => {
+  it('renders primary nav links with correct hrefs', () => {
     renderWithTheme(<Header />);
-
-    expect(screen.getAllByText('Home').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Web Development').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Data Pipelines').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Analytics').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Machine Learning').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Computer Vision').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Cloud & DevOps').length).toBeGreaterThan(0);
+    expect(screen.getByRole('link', { name: 'AI Chat' })).toHaveAttribute('href', '/ai-agents');
+    expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/#timeline');
   });
 
-  it('has correct href attributes for navigation links', () => {
+  it('renders the "Let\'s talk" CTA linking to the contact section', () => {
     renderWithTheme(<Header />);
-
-    const homeLink = screen.getAllByRole('link', { name: 'Home' })[0];
-    expect(homeLink).toHaveAttribute('href', '/');
-
-    const webDevLink = screen.getAllByRole('link', { name: 'Web Development' })[0];
-    expect(webDevLink).toHaveAttribute('href', '/web-dev');
+    expect(screen.getByRole('link', { name: /let's talk/i })).toHaveAttribute('href', '/#contact');
   });
 
-  it('displays desktop navigation on larger screens', () => {
+  it('reveals the Work dropdown items only after the Work button is clicked', () => {
     renderWithTheme(<Header />);
+    const workButton = screen.getByRole('button', { name: 'Work' });
+    expect(workButton).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByRole('link', { name: 'Web Development' })).not.toBeInTheDocument();
 
-    // Desktop navigation should be present - find the desktop nav container
-    const desktopNavLinks = screen.getAllByRole('link', { name: 'Home' });
-    const desktopNavContainer = desktopNavLinks[0].closest('div')?.parentElement;
-    expect(desktopNavContainer).toHaveClass('hidden', 'md:flex');
+    fireEvent.click(workButton);
+
+    expect(workButton).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('link', { name: 'Web Development' })).toHaveAttribute('href', '/web-dev');
+    expect(screen.getByRole('link', { name: 'Cloud & DevOps' })).toHaveAttribute('href', '/cloud-devops');
   });
 
-  it('toggles mobile menu when hamburger button is clicked', () => {
+  it('toggles the mobile drawer via the menu button', () => {
     renderWithTheme(<Header />);
-
-    // Find the hamburger button
-    const menuButton = screen.getByRole('button', { name: /open main menu/i });
-
-    // Find the mobile menu container (the div with conditional hidden class)
-    // It's the parent of the inner div with the links
-    const mobileNavInner = screen.getAllByText('Home')[1].closest('div');
-    const mobileNav = mobileNavInner?.parentElement;
-
-    // Initially, mobile menu should be hidden
-    expect(mobileNav).toHaveClass('hidden');
-
-    // Click the button to open menu
-    fireEvent.click(menuButton);
-
-    // Mobile menu should now be visible (no longer have hidden class)
-    expect(mobileNav).not.toHaveClass('hidden');
-    expect(mobileNav).toHaveClass('block');
-
-    // Click again to close
-    fireEvent.click(menuButton);
-
-    // Mobile menu should be hidden again
-    expect(mobileNav).toHaveClass('hidden');
-  });
-
-  it('closes mobile menu when a navigation link is clicked', () => {
-    renderWithTheme(<Header />);
-
-    // Open mobile menu
-    const menuButton = screen.getByRole('button', { name: /open main menu/i });
-    fireEvent.click(menuButton);
-
-    // Click a mobile menu link
-    const mobileHomeLink = screen.getAllByRole('link', { name: 'Home' })[1];
-    fireEvent.click(mobileHomeLink);
-
-    // Mobile menu should be closed - find the outer container
-    const mobileNavInner = screen.getAllByText('Home')[1].closest('div');
-    const mobileNav = mobileNavInner?.parentElement;
-    expect(mobileNav).toHaveClass('hidden');
-  });
-
-  it('has proper ARIA attributes for accessibility', () => {
-    renderWithTheme(<Header />);
-
-    const menuButton = screen.getByRole('button', { name: /open main menu/i });
+    const menuButton = screen.getByRole('button', { name: /toggle navigation menu/i });
     expect(menuButton).toHaveAttribute('aria-expanded', 'false');
+    // Work items live only in the (unrendered) desktop dropdown + mobile drawer.
+    expect(screen.queryByRole('link', { name: 'Machine Learning' })).not.toBeInTheDocument();
 
-    // Open menu
     fireEvent.click(menuButton);
     expect(menuButton).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByRole('link', { name: 'Machine Learning' })).toHaveAttribute('href', '/machine-learning');
+
+    fireEvent.click(menuButton);
+    expect(menuButton).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByRole('link', { name: 'Machine Learning' })).not.toBeInTheDocument();
   });
 
-  it('applies fixed positioning and backdrop blur styles', () => {
+  it('applies fixed positioning and backdrop blur to the banner', () => {
     renderWithTheme(<Header />);
-
     const header = screen.getByRole('banner');
     expect(header).toHaveClass('fixed', 'top-0', 'left-0', 'right-0');
     expect(header).toHaveClass('backdrop-blur-sm');
-  });
-
-  it('shows close icon when menu is open', () => {
-    renderWithTheme(<Header />);
-
-    const menuButton = screen.getByRole('button', { name: /open main menu/i });
-
-    // Get the SVG icons
-    const hamburgerIcon = menuButton.querySelector('svg:not(.hidden)');
-    const closeIcon = menuButton.querySelector('svg.hidden');
-
-    expect(hamburgerIcon).not.toHaveClass('hidden');
-    expect(closeIcon).toHaveClass('hidden');
-
-    // Click to open menu
-    fireEvent.click(menuButton);
-
-    // Icons should swap
-    const hamburgerIconAfter = menuButton.querySelector('svg.hidden');
-    const closeIconAfter = menuButton.querySelector('svg:not(.hidden)');
-
-    expect(hamburgerIconAfter).toHaveClass('hidden');
-    expect(closeIconAfter).not.toHaveClass('hidden');
   });
 });

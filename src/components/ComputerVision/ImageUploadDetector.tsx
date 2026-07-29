@@ -94,7 +94,7 @@ export default function ImageUploadDetector() {
         <Badge variant="primary">Server-Side</Badge>
       </div>
 
-      <p className="text-slate-500 dark:text-gray-400 mb-6">
+      <p className="text-muted mb-6">
         Upload an image to detect objects using YOLOv8 - more accurate detection powered by our backend.
       </p>
 
@@ -113,7 +113,7 @@ export default function ImageUploadDetector() {
           className="block w-full p-8 border-2 border-dashed border-slate-300 dark:border-gray-600 rounded-lg hover:border-purple-500 transition-colors cursor-pointer text-center"
         >
           <svg
-            className="w-12 h-12 mx-auto mb-4 text-slate-400 dark:text-gray-500"
+            className="w-12 h-12 mx-auto mb-4 text-faint"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -125,10 +125,10 @@ export default function ImageUploadDetector() {
               d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
             />
           </svg>
-          <p className="text-slate-600 dark:text-gray-300 mb-1">
+          <p className="text-body mb-1">
             Click to upload or drag and drop
           </p>
-          <p className="text-sm text-slate-400 dark:text-gray-500">
+          <p className="text-sm text-faint">
             PNG, JPG, JPEG up to 10MB
           </p>
         </label>
@@ -180,7 +180,7 @@ export default function ImageUploadDetector() {
       {/* Confidence Slider */}
       {selectedFile && !isProcessing && (
         <div className="mb-6">
-          <label className="block text-sm font-medium text-slate-600 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-body mb-2">
             Confidence Threshold: {Math.round(confidence * 100)}%
           </label>
           <input
@@ -190,7 +190,7 @@ export default function ImageUploadDetector() {
             step="0.05"
             value={confidence}
             onChange={(e) => setConfidence(parseFloat(e.target.value))}
-            className="w-full h-2 bg-slate-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-600"
+            className="w-full h-2 bg-track rounded-lg appearance-none cursor-pointer accent-purple-600"
           />
         </div>
       )}
@@ -215,7 +215,7 @@ export default function ImageUploadDetector() {
           <button
             onClick={handleClear}
             disabled={isProcessing}
-            className="px-6 py-3 bg-slate-200 dark:bg-gray-700 hover:bg-slate-300 dark:hover:bg-gray-600 disabled:bg-slate-100 dark:disabled:bg-gray-800 text-slate-900 dark:text-white font-semibold rounded-lg transition-colors disabled:cursor-not-allowed"
+            className="px-6 py-3 bg-track hover:bg-slate-300 dark:hover:bg-gray-600 disabled:bg-slate-100 dark:disabled:bg-gray-800 text-foreground font-semibold rounded-lg transition-colors disabled:cursor-not-allowed"
           >
             Clear
           </button>
@@ -234,19 +234,19 @@ export default function ImageUploadDetector() {
               .map((detection, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-800/50 rounded"
+                  className="flex items-center justify-between p-3 bg-sunken rounded"
                 >
-                  <span className="text-slate-600 dark:text-gray-300 capitalize font-medium">
+                  <span className="text-body capitalize font-medium">
                     {detection.class_name}
                   </span>
                   <div className="flex items-center gap-3">
-                    <div className="w-32 bg-slate-200 dark:bg-gray-700 rounded-full h-2">
+                    <div className="w-32 bg-track rounded-full h-2">
                       <div
                         className="bg-purple-500 h-2 rounded-full transition-all"
                         style={{ width: `${detection.confidence * 100}%` }}
                       ></div>
                     </div>
-                    <span className="text-sm text-slate-500 dark:text-gray-400 w-12 text-right">
+                    <span className="text-sm text-muted w-12 text-right">
                       {Math.round(detection.confidence * 100)}%
                     </span>
                   </div>
@@ -257,9 +257,9 @@ export default function ImageUploadDetector() {
       )}
 
       {/* Info Footer */}
-      <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
-        <div className="flex items-start gap-2 text-sm text-slate-500 dark:text-gray-400">
-          <svg className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+      <div className="mt-6 pt-6 border-t border-subtle">
+        <div className="flex items-start gap-2 text-sm text-muted">
+          <svg className="w-5 h-5 text-accent mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"
               d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"

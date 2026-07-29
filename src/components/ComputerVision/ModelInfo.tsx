@@ -25,30 +25,30 @@ export default function ModelInfo() {
 
       <div className="space-y-4">
         <div>
-          <h3 className="text-lg font-medium text-purple-600 dark:text-purple-400 mb-2">Model Details</h3>
-          <p className="text-slate-500 dark:text-gray-400 mb-3">
+          <h3 className="text-lg font-medium text-accent mb-2">Model Details</h3>
+          <p className="text-muted mb-3">
             COCO-SSD (Single Shot MultiBox Detection) is a pre-trained object detection model
             that can identify and locate 80 different object categories in real-time.
           </p>
 
           <div className="grid grid-cols-2 gap-3 mb-4">
-            <div className="bg-slate-100 dark:bg-slate-800/50 p-3 rounded">
-              <div className="text-sm text-slate-500 dark:text-gray-400">Object Classes</div>
-              <div className="text-xl font-bold text-slate-900 dark:text-white">80</div>
+            <div className="bg-sunken p-3 rounded">
+              <div className="text-sm text-muted">Object Classes</div>
+              <div className="text-xl font-bold text-foreground">80</div>
             </div>
-            <div className="bg-slate-100 dark:bg-slate-800/50 p-3 rounded">
-              <div className="text-sm text-slate-500 dark:text-gray-400">Framework</div>
-              <div className="text-xl font-bold text-slate-900 dark:text-white">TensorFlow.js</div>
+            <div className="bg-sunken p-3 rounded">
+              <div className="text-sm text-muted">Framework</div>
+              <div className="text-xl font-bold text-foreground">TensorFlow.js</div>
             </div>
           </div>
         </div>
 
         <div>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-medium text-purple-600 dark:text-purple-400">Detectable Objects</h3>
+            <h3 className="text-lg font-medium text-accent">Detectable Objects</h3>
             <button
               onClick={() => setShowAllClasses(!showAllClasses)}
-              className="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors"
+              className="text-sm text-accent hover:text-purple-700 dark:hover:text-purple-300 transition-colors"
             >
               {showAllClasses ? 'Show Less' : `View All (${COCO_CLASSES.length})`}
             </button>
@@ -69,8 +69,8 @@ export default function ModelInfo() {
         </div>
 
         <div>
-          <h3 className="text-lg font-medium text-purple-600 dark:text-purple-400 mb-2">Features</h3>
-          <ul className="space-y-2 text-slate-500 dark:text-gray-400">
+          <h3 className="text-lg font-medium text-accent mb-2">Features</h3>
+          <ul className="space-y-2 text-muted">
             <li className="flex items-start gap-2">
               <svg
                 className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0"
@@ -130,9 +130,9 @@ export default function ModelInfo() {
           </ul>
         </div>
 
-        <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
-          <h3 className="text-lg font-medium text-purple-600 dark:text-purple-400 mb-2">Privacy</h3>
-          <p className="text-slate-500 dark:text-gray-400 text-sm">
+        <div className="pt-4 border-t border-subtle">
+          <h3 className="text-lg font-medium text-accent mb-2">Privacy</h3>
+          <p className="text-muted text-sm">
             All processing happens locally in your browser. No video or images are sent to any server.
             Your camera feed is private and secure.
           </p>

@@ -4,14 +4,67 @@
    (v4 defaults to prefers-color-scheme, which ignored our manual theme toggle). */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Theme-aware semantic color tokens.
+   Generates utilities that resolve per light/dark without a `dark:` pairing:
+     text-foreground / text-body / text-muted / text-faint
+     text-accent / text-accent-strong
+     bg-surface / bg-surface-alt / bg-sunken / bg-track / bg-accent-soft
+     border-subtle
+   Each maps to the SAME Tailwind palette color the raw `x dark:y` pairing used,
+   so computed colors are unchanged — this only removes the repetition.
+   The `--sem-*` vars below flip under `html.dark`; `@theme inline` makes the
+   utilities reference them directly so they stay reactive to the theme class. */
+@theme inline {
+  --color-foreground: var(--sem-foreground);
+  --color-body: var(--sem-body);
+  --color-muted: var(--sem-muted);
+  --color-faint: var(--sem-faint);
+  --color-accent: var(--sem-accent);
+  --color-accent-strong: var(--sem-accent-strong);
+  --color-surface: var(--sem-surface);
+  --color-surface-alt: var(--sem-surface-alt);
+  --color-sunken: var(--sem-sunken);
+  --color-track: var(--sem-track);
+  --color-accent-soft: var(--sem-accent-soft);
+  --color-subtle: var(--sem-subtle);
+}
+
 :root {
   --background: #f8fafc;
   --foreground: #0f172a;
+
+  /* semantic tokens — light values (match the light half of each old pairing) */
+  --sem-foreground: var(--color-slate-900);
+  --sem-body: var(--color-slate-600);
+  --sem-muted: var(--color-slate-500);
+  --sem-faint: var(--color-slate-400);
+  --sem-accent: var(--color-purple-600);
+  --sem-accent-strong: var(--color-purple-700);
+  --sem-surface: #ffffff;
+  --sem-surface-alt: #ffffff;
+  --sem-sunken: var(--color-slate-100);
+  --sem-track: var(--color-slate-200);
+  --sem-accent-soft: var(--color-purple-100);
+  --sem-subtle: var(--color-slate-200);
 }
 
 html.dark {
   --background: #020617;
   --foreground: #f1f5f9;
+
+  /* semantic tokens — dark values (match the dark half of each old pairing) */
+  --sem-foreground: #ffffff;
+  --sem-body: var(--color-gray-300);
+  --sem-muted: var(--color-gray-400);
+  --sem-faint: var(--color-gray-500);
+  --sem-accent: var(--color-purple-400);
+  --sem-accent-strong: var(--color-purple-300);
+  --sem-surface: var(--color-slate-800);
+  --sem-surface-alt: var(--color-slate-900);
+  --sem-sunken: color-mix(in oklab, var(--color-slate-800) 50%, transparent);
+  --sem-track: var(--color-gray-700);
+  --sem-accent-soft: color-mix(in oklab, var(--color-purple-900) 50%, transparent);
+  --sem-subtle: var(--color-slate-700);
 }
 
 html {

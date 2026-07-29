@@ -13,7 +13,7 @@ export function PipelineRunHistoryTable({ runs, loading }: PipelineRunHistoryTab
     return (
       <Card variant="elevated" padding="lg">
         <h3 className="text-xl font-semibold mb-6">Pipeline Run History</h3>
-        <div className="text-center py-8 text-slate-500 dark:text-gray-400">Loading run history...</div>
+        <div className="text-center py-8 text-muted">Loading run history...</div>
       </Card>
     );
   }
@@ -57,14 +57,14 @@ export function PipelineRunHistoryTable({ runs, loading }: PipelineRunHistoryTab
       <h3 className="text-xl font-semibold mb-6">Pipeline Run History</h3>
 
       {runs.length === 0 ? (
-        <div className="text-center py-8 text-slate-500 dark:text-gray-400 text-sm">
+        <div className="text-center py-8 text-muted text-sm">
           No pipeline runs yet. Run the pipeline to see execution history.
         </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-200 dark:border-gray-700 text-slate-500 dark:text-gray-400">
+              <tr className="border-b border-slate-200 dark:border-gray-700 text-muted">
                 <th className="text-left py-3 px-2">Status</th>
                 <th className="text-left py-3 px-2">Trigger</th>
                 <th className="text-left py-3 px-2">Started</th>
@@ -97,21 +97,21 @@ export function PipelineRunHistoryTable({ runs, loading }: PipelineRunHistoryTab
                   </td>
 
                   {/* Started At */}
-                  <td className="py-3 px-2 text-slate-600 dark:text-gray-300">
+                  <td className="py-3 px-2 text-body">
                     {formatDate(run.started_at)}
                   </td>
 
                   {/* Duration */}
-                  <td className="py-3 px-2 text-right text-slate-600 dark:text-gray-300">
+                  <td className="py-3 px-2 text-right text-body">
                     {formatDuration(run.duration_seconds)}
                   </td>
 
                   {/* Records */}
                   <td className="py-3 px-2 text-right">
-                    <div className="text-slate-600 dark:text-gray-300">
+                    <div className="text-body">
                       {run.records_processed.toLocaleString()}
                     </div>
-                    <div className="text-xs text-slate-400 dark:text-gray-500">
+                    <div className="text-xs text-faint">
                       {run.records_stored > 0 && `${run.records_stored} new`}
                       {run.records_updated > 0 && ` ${run.records_updated} upd`}
                       {run.records_failed > 0 && ` ${run.records_failed} err`}
@@ -129,7 +129,7 @@ export function PipelineRunHistoryTable({ runs, loading }: PipelineRunHistoryTab
                         {run.data_quality_score.toFixed(0)}%
                       </span>
                     ) : (
-                      <span className="text-slate-400 dark:text-gray-500">-</span>
+                      <span className="text-faint">-</span>
                     )}
                   </td>
                 </tr>
@@ -140,7 +140,7 @@ export function PipelineRunHistoryTable({ runs, loading }: PipelineRunHistoryTab
       )}
 
       {runs.length > 0 && (
-        <div className="mt-4 text-xs text-slate-400 dark:text-gray-500 text-center">
+        <div className="mt-4 text-xs text-faint text-center">
           Showing latest {runs.length} pipeline runs
         </div>
       )}

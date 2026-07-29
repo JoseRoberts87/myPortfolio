@@ -141,7 +141,7 @@ export default function SentimentClassifier() {
           className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
           placeholder="Type or paste text here to analyze sentiment..."
         />
-        <p className="text-sm text-slate-400 dark:text-gray-500 mt-1">{text.length} characters</p>
+        <p className="text-sm text-faint mt-1">{text.length} characters</p>
       </div>
 
       {/* Example Texts */}
@@ -226,7 +226,7 @@ export default function SentimentClassifier() {
               </div>
 
               {/* Inference Time */}
-              <div className="text-center text-sm text-slate-400 dark:text-gray-500">
+              <div className="text-center text-sm text-faint">
                 Inference time: <span className="font-medium">{result.inferenceTime.toFixed(0)}ms</span>
               </div>
             </>

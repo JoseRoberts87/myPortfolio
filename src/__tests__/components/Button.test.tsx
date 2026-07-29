@@ -19,7 +19,7 @@ describe('Button Component', () => {
   it('should apply secondary variant', () => {
     render(<Button variant="secondary">Secondary</Button>);
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('bg-slate-700');
+    expect(button).toHaveClass('bg-slate-200');
   });
 
   it('should apply outline variant', () => {

@@ -36,7 +36,7 @@ export default function GitHubStats({ stats }: GitHubStatsProps) {
       value: stats.accountAge,
       icon: '📅',
       color: 'bg-purple-500/10 border-purple-500/20',
-      textColor: 'text-purple-600 dark:text-purple-400',
+      textColor: 'text-accent',
       suffix: stats.accountAge === 1 ? ' year' : ' years',
     },
   ];

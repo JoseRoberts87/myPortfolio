@@ -9,14 +9,14 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, helperText, fullWidth = false, className = '', ...props }, ref) => {
-    const baseStyles = 'bg-white dark:bg-gray-800 border rounded-lg px-4 py-3 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-gray-400 transition-colors duration-200 focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed';
+    const baseStyles = 'bg-white dark:bg-gray-800 border rounded-lg px-4 py-3 text-foreground placeholder-slate-500 dark:placeholder-gray-400 transition-colors duration-200 focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed';
     const borderColor = error ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-slate-300 dark:border-slate-700 focus:border-purple-500 focus:ring-purple-500/20';
     const widthStyle = fullWidth ? 'w-full' : '';
 
     return (
       <div className={fullWidth ? 'w-full' : ''}>
         {label && (
-          <label className="block text-sm font-medium text-slate-600 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-body mb-2">
             {label}
           </label>
         )}
@@ -29,7 +29,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           <p className="mt-1 text-sm text-red-400">{error}</p>
         )}
         {helperText && !error && (
-          <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">{helperText}</p>
+          <p className="mt-1 text-sm text-muted">{helperText}</p>
         )}
       </div>
     );

@@ -85,16 +85,16 @@ export default function Home() {
 
             {/* Right side - Content */}
             <div className="text-center lg:text-left space-y-6">
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 dark:text-white animate-fade-in">
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground animate-fade-in">
                 Jose Roberts
               </h1>
-              <h2 className="text-3xl md:text-4xl font-semibold text-purple-600 dark:text-purple-400">
+              <h2 className="text-3xl md:text-4xl font-semibold text-accent">
                 Data & AI Architect
               </h2>
-              <p className="text-xl md:text-2xl text-slate-600 dark:text-gray-300">
+              <p className="text-xl md:text-2xl text-body">
                 Showcasing expertise across multiple domains
               </p>
-              <p className="text-lg text-slate-500 dark:text-gray-400 max-w-2xl">
+              <p className="text-lg text-muted max-w-2xl">
                 15+ years architecting data pipelines, AI agents, ML models, and cloud infrastructure
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-4 lg:justify-start justify-center">
@@ -133,7 +133,7 @@ export default function Home() {
       {/* Expertise Areas */}
       <section className="bg-slate-50 dark:bg-slate-800 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl font-bold text-slate-900 dark:text-white text-center mb-12">
+          <h2 className="text-4xl font-bold text-foreground text-center mb-12">
             Areas of Expertise
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -142,10 +142,10 @@ export default function Home() {
                 key={area.id}
                 id={area.id}
                 href={area.link}
-                className="block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-8 rounded-lg hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/20 transition-all scroll-mt-24 group cursor-pointer"
+                className="block bg-surface-alt border border-subtle p-8 rounded-lg hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/20 transition-all scroll-mt-24 group cursor-pointer"
               >
                 <div className="text-4xl mb-4">{area.icon}</div>
-                <h3 className="text-2xl font-semibold text-slate-900 dark:text-white mb-3 group-hover:text-purple-400 transition-colors">{area.title}</h3>
+                <h3 className="text-2xl font-semibold text-foreground mb-3 group-hover:text-purple-400 transition-colors">{area.title}</h3>
                 <p className="text-slate-600 dark:text-gray-400 mb-6">{area.description}</p>
                 <div className="flex items-center gap-2 text-purple-400 text-sm font-medium group-hover:gap-3 transition-all">
                   <span>View Details</span>
@@ -160,10 +160,10 @@ export default function Home() {
       </section>
 
       {/* Case Studies Section */}
-      <section className="py-20 bg-white dark:bg-slate-900">
+      <section className="py-20 bg-surface-alt">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
+            <h2 className="text-4xl font-bold text-foreground mb-4">
               Deep-Dive Case Studies
             </h2>
             <p className="text-xl text-slate-600 dark:text-gray-400 max-w-3xl mx-auto">
@@ -174,10 +174,10 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             <a
               href="/case-studies/computer-vision-object-detection"
-              className="block bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-8 rounded-lg hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/20 transition-all group"
+              className="block bg-surface border border-subtle p-8 rounded-lg hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/20 transition-all group"
             >
               <div className="text-5xl mb-4">👁️</div>
-              <h3 className="text-2xl font-semibold text-slate-900 dark:text-white mb-3 group-hover:text-purple-400 transition-colors">
+              <h3 className="text-2xl font-semibold text-foreground mb-3 group-hover:text-purple-400 transition-colors">
                 Real-Time Object Detection
               </h3>
               <p className="text-slate-600 dark:text-gray-400 mb-4">
@@ -193,10 +193,10 @@ export default function Home() {
 
             <a
               href="/case-studies/nlp-pipeline-architecture"
-              className="block bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-8 rounded-lg hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/20 transition-all group"
+              className="block bg-surface border border-subtle p-8 rounded-lg hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/20 transition-all group"
             >
               <div className="text-5xl mb-4">🤖</div>
-              <h3 className="text-2xl font-semibold text-slate-900 dark:text-white mb-3 group-hover:text-purple-400 transition-colors">
+              <h3 className="text-2xl font-semibold text-foreground mb-3 group-hover:text-purple-400 transition-colors">
                 Multi-Model NLP Pipeline
               </h3>
               <p className="text-slate-600 dark:text-gray-400 mb-4">
@@ -212,10 +212,10 @@ export default function Home() {
 
             <a
               href="/case-studies/data-pipeline-orchestration"
-              className="block bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-8 rounded-lg hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/20 transition-all group"
+              className="block bg-surface border border-subtle p-8 rounded-lg hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/20 transition-all group"
             >
               <div className="text-5xl mb-4">⚙️</div>
-              <h3 className="text-2xl font-semibold text-slate-900 dark:text-white mb-3 group-hover:text-purple-400 transition-colors">
+              <h3 className="text-2xl font-semibold text-foreground mb-3 group-hover:text-purple-400 transition-colors">
                 Multi-Source Data Pipeline
               </h3>
               <p className="text-slate-600 dark:text-gray-400 mb-4">
@@ -255,7 +255,7 @@ export default function Home() {
       <section id="github-preview" className="py-20 bg-slate-50 dark:bg-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
+            <h2 className="text-4xl font-bold text-foreground mb-4">
               Active Development on GitHub
             </h2>
             <p className="text-xl text-slate-600 dark:text-gray-400">
@@ -265,21 +265,21 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             {/* Public Repos */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-6 text-center hover:border-purple-500 transition-colors">
+            <div className="bg-surface-alt border border-subtle rounded-lg p-6 text-center hover:border-purple-500 transition-colors">
               <div className="text-4xl mb-3">📚</div>
               <div className="text-3xl font-bold text-purple-400 mb-2">30+</div>
               <div className="text-slate-600 dark:text-gray-400">Public Repositories</div>
             </div>
 
             {/* Contributions */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-6 text-center hover:border-purple-500 transition-colors">
+            <div className="bg-surface-alt border border-subtle rounded-lg p-6 text-center hover:border-purple-500 transition-colors">
               <div className="text-4xl mb-3">💻</div>
               <div className="text-3xl font-bold text-purple-400 mb-2">500+</div>
               <div className="text-slate-600 dark:text-gray-400">Contributions This Year</div>
             </div>
 
             {/* Languages */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-6 text-center hover:border-purple-500 transition-colors">
+            <div className="bg-surface-alt border border-subtle rounded-lg p-6 text-center hover:border-purple-500 transition-colors">
               <div className="text-4xl mb-3">🔧</div>
               <div className="text-3xl font-bold text-purple-400 mb-2">10+</div>
               <div className="text-slate-600 dark:text-gray-400">Programming Languages</div>
@@ -311,14 +311,14 @@ export default function Home() {
       </section>
 
       {/* Resume Download Section */}
-      <section id="resume" className="py-20 bg-white dark:bg-slate-900">
+      <section id="resume" className="py-20 bg-surface-alt">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <ResumeDownload />
         </div>
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 bg-white dark:bg-slate-900">
+      <section id="contact" className="py-20 bg-surface-alt">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <ContactForm />
         </div>

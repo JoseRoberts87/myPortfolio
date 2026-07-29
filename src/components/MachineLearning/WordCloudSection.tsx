@@ -94,7 +94,7 @@ export default function WordCloudSection() {
         <div className="min-h-96">
           <SimpleWordCloud words={words} color={color} />
         </div>
-        <p className="text-sm text-slate-400 dark:text-gray-500 text-center mt-4">
+        <p className="text-sm text-faint text-center mt-4">
           Size indicates relative importance in sentiment classification. Hover over words to see their importance scores.
         </p>
       </div>
@@ -110,7 +110,7 @@ export default function WordCloudSection() {
           {topFeatures.map((feature, index) => (
             <div key={feature.word} className="flex items-center justify-between px-6 py-3 hover:bg-gray-50 dark:hover:bg-gray-800/50">
               <div className="flex items-center gap-3">
-                <span className="text-sm font-semibold text-slate-400 dark:text-gray-500 w-6">#{index + 1}</span>
+                <span className="text-sm font-semibold text-faint w-6">#{index + 1}</span>
                 <span className={`font-medium ${selectedSentiment === 'positive' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                   {feature.word}
                 </span>

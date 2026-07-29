@@ -118,7 +118,7 @@ export default function GitHubActivity({ events }: GitHubActivityProps) {
                 href={getRepoUrl(event.repo.name)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-purple-600 dark:text-purple-400 hover:underline inline-block mb-1"
+                className="text-sm text-accent hover:underline inline-block mb-1"
               >
                 {event.repo.name}
               </a>
