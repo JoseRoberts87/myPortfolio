@@ -313,7 +313,9 @@ npm run test:e2e:ui     # Interactive Playwright UI mode
 Playwright builds and starts the app automatically before running. To run
 against an already-running server instead, set `PLAYWRIGHT_BASE_URL`
 (e.g. `PLAYWRIGHT_BASE_URL=http://localhost:3000 npm run test:e2e`). Covers
-navigation, feature pages, the contact form, and the theme toggle.
+navigation, feature pages, the contact form, the theme toggle, and mobile
+(iPhone-class viewport: no horizontal overflow on any page, plus the
+hamburger drawer and theme toggle).
 
 ### Backend Tests
 ```bash

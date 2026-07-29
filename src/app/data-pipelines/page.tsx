@@ -400,13 +400,13 @@ export default function DataPipelinesPage() {
           </button>
         </div>
 
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
           <h2 className="text-3xl font-bold">
             {activeTab === 'reddit' ? 'Recent Posts' : 'Recent Articles'}
           </h2>
 
           {/* Sentiment Filter */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm text-muted">Filter by sentiment:</span>
             <button
               onClick={() => setSentimentFilter(null)}
