@@ -10,6 +10,7 @@ export default function Footer() {
       { name: 'Analytics', href: '/analytics' },
       { name: 'Machine Learning', href: '/machine-learning' },
       { name: 'Computer Vision', href: '/computer-vision' },
+      { name: 'Signal Processing', href: '/signal-processing' },
       { name: 'Cloud & DevOps', href: '/cloud-devops' },
     ],
     social: [
@@ -93,6 +94,16 @@ export default function Footer() {
             <h4 className="text-lg font-semibold text-foreground">Resources</h4>
             <ul className="space-y-2">
               <li>
+                <Link href="/case-studies" className="text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white text-sm transition-colors">
+                  Case Studies
+                </Link>
+              </li>
+              <li>
+                <Link href="/github" className="text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white text-sm transition-colors">
+                  GitHub Activity
+                </Link>
+              </li>
+              <li>
                 <a
                   href="https://www.linkedin.com/in/jose-roberts"
                   target="_blank"
@@ -103,12 +114,12 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <Link href="#contact" className="text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white text-sm transition-colors">
+                <Link href="/#contact" className="text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white text-sm transition-colors">
                   Contact
                 </Link>
               </li>
               <li>
-                <Link href="#resume" className="text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white text-sm transition-colors">
+                <Link href="/#resume" className="text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white text-sm transition-colors">
                   Resume
                 </Link>
               </li>

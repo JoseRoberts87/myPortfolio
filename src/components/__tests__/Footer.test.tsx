@@ -22,6 +22,7 @@ describe('Footer Component', () => {
     expect(screen.getByRole('link', { name: 'Analytics' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Machine Learning' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Computer Vision' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Signal Processing' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Cloud & DevOps' })).toBeInTheDocument();
   });
 
@@ -56,8 +57,17 @@ describe('Footer Component', () => {
 
     // The dead "Documentation" -> /docs (404) link was removed.
     expect(screen.queryByRole('link', { name: 'Documentation' })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Case Studies' })).toHaveAttribute('href', '/case-studies');
+    expect(screen.getByRole('link', { name: 'GitHub Activity' })).toHaveAttribute('href', '/github');
     expect(screen.getByRole('link', { name: 'Contact' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Resume' })).toBeInTheDocument();
+  });
+
+  it('uses absolute home anchors for Contact and Resume so they work from any page', () => {
+    render(<Footer />);
+    // Bare "#contact"/"#resume" only resolve on the homepage; "/#..." works everywhere.
+    expect(screen.getByRole('link', { name: 'Contact' })).toHaveAttribute('href', '/#contact');
+    expect(screen.getByRole('link', { name: 'Resume' })).toHaveAttribute('href', '/#resume');
   });
 
   it('displays current year in copyright', () => {
