@@ -511,7 +511,7 @@ class NLPPipeline:
         '**Client-Side Sentiment Analysis**:',
         'TensorFlow.js implementation for browser-based inference:',
         '• Load distilbert model converted to TensorFlow.js format',
-        '• Tokenize text using @xenova/transformers (browser-compatible)',
+        '• Tokenize text using @huggingface/transformers (browser-compatible)',
         '• Run inference locally (no server round-trip)',
         '• Display word-level attention for interpretability',
       ],
@@ -519,7 +519,7 @@ class NLPPipeline:
         language: 'typescript',
         code: `// Browser-based sentiment analysis with TensorFlow.js
 import * as tf from '@tensorflow/tfjs';
-import { pipeline } from '@xenova/transformers';
+import { pipeline } from '@huggingface/transformers';
 
 export const useSentimentAnalysis = () => {
   const [classifier, setClassifier] = useState<any>(null);
