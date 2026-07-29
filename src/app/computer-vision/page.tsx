@@ -1,6 +1,6 @@
 'use client';
 
-import { Section, Card, Badge } from '@/components/ui';
+import { Section, Card, Badge, PageHero } from '@/components/ui';
 import ObjectDetector from '@/components/ComputerVision/ObjectDetector';
 import FaceDetector from '@/components/ComputerVision/FaceDetector';
 import ModelInfo from '@/components/ComputerVision/ModelInfo';
@@ -9,16 +9,10 @@ import ImageUploadDetector from '@/components/ComputerVision/ImageUploadDetector
 export default function ComputerVisionPage() {
   return (
     <div className="min-h-screen pt-16">
-      <Section padding="xl" background="subtle">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Computer Vision
-          </h1>
-          <p className="text-xl text-muted max-w-3xl mx-auto">
-            Real-time object detection and face recognition using webcam with advanced AI models powered by TensorFlow.js and Google MediaPipe.
-          </p>
-        </div>
-      </Section>
+      <PageHero
+        title="Computer Vision"
+        tagline="Real-time object detection and face recognition using webcam with advanced AI models powered by TensorFlow.js and Google MediaPipe."
+      />
 
       {/* Main Object Detector */}
       <Section padding="lg">

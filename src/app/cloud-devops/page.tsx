@@ -1,19 +1,13 @@
-import { Section, Card, Badge } from '@/components/ui';
+import { Section, Card, Badge, PageHero } from '@/components/ui';
 import Image from 'next/image';
 
 export default function CloudDevOpsPage() {
   return (
     <div className="min-h-screen pt-16">
-      <Section padding="xl" background="subtle">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Cloud & DevOps
-          </h1>
-          <p className="text-xl text-muted max-w-3xl mx-auto">
-            Production-grade AWS infrastructure with ECS Fargate, managed with Terraform and automated CI/CD pipelines.
-          </p>
-        </div>
-      </Section>
+      <PageHero
+        title="Cloud & DevOps"
+        tagline="Production-grade AWS infrastructure with ECS Fargate, managed with Terraform and automated CI/CD pipelines."
+      />
 
       <Section padding="lg">
         <Card variant="elevated" padding="lg">

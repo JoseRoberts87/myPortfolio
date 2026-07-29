@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Section, Card, Badge } from '@/components/ui';
+import { Section, Card, Badge, PageHero } from '@/components/ui';
 
 export const metadata = {
   title: 'Case Studies | Jose Roberts Portfolio',
@@ -72,41 +72,32 @@ export default function CaseStudiesPage() {
 
   return (
     <div className="min-h-screen pt-16">
-      {/* Hero Section */}
-      <Section padding="xl" background="subtle">
-        <div className="text-center mb-12">
-          <div className="inline-block mb-4">
-            <Badge variant="primary" size="lg">Case Studies</Badge>
+      <PageHero
+        eyebrow="Case Studies"
+        title="Deep-Dive Technical Case Studies"
+        tagline="Explore how I approach complex technical problems, make architectural decisions, and learn from real-world implementation challenges."
+      >
+        <div className="flex flex-wrap justify-center gap-4 text-sm text-faint">
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>Problem-Solving Approach</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            Deep-Dive Technical Case Studies
-          </h1>
-          <p className="text-xl text-muted max-w-3xl mx-auto mb-8">
-            Explore how I approach complex technical problems, make architectural decisions,
-            and learn from real-world implementation challenges.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4 text-sm text-faint">
-            <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span>Problem-Solving Approach</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-              </svg>
-              <span>Technical Decisions</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              <span>Lessons Learned</span>
-            </div>
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+            </svg>
+            <span>Technical Decisions</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <span>Lessons Learned</span>
           </div>
         </div>
-      </Section>
+      </PageHero>
 
       {/* Case Studies Grid */}
       <Section padding="xl">

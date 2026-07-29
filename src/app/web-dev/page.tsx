@@ -1,4 +1,4 @@
-import { Section, Card, Badge } from '@/components/ui';
+import { Section, Card, Badge, PageHero } from '@/components/ui';
 
 export default function WebDevelopmentPage() {
   const projects = [
@@ -22,16 +22,10 @@ export default function WebDevelopmentPage() {
 
   return (
     <div className="min-h-screen pt-16">
-      <Section padding="xl" background="subtle">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Web Development
-          </h1>
-          <p className="text-xl text-muted max-w-3xl mx-auto">
-            Building modern, responsive web applications with cutting-edge technologies and best practices.
-          </p>
-        </div>
-      </Section>
+      <PageHero
+        title="Web Development"
+        tagline="Full-stack applications built with Next.js, React, TypeScript, and Tailwind CSS — server components, responsive design, and comprehensive Jest test coverage."
+      />
 
       <Section padding="lg">
         <h2 className="text-3xl font-bold mb-8">Projects</h2>
