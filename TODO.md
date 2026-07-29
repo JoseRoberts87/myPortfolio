@@ -305,7 +305,7 @@ Generated from the 2026 resume ("Data & AI Architect", 15+ years) to close gaps 
 
 ### Tier 3 - Polish & Recruiter-Facing ⭐⭐⭐
 - [ ] **Certifications Section w/ Badges** — Databricks Certified Data Engineer Professional (2026–2028), AWS Solutions Architect – Associate, TinyML (Harvard edX) (also a Phase 4 stub)
-- [ ] **Contact/Footer: LinkedIn + Location + Availability** — linkedin.com/in/jose-roberts, Providence RI, "Open to Data & AI Architect roles" (also a Phase 4 stub)
+- [x] **Contact/Footer: LinkedIn + Location + Availability** — linkedin.com/in/jose-roberts, Providence RI, "Open to Data & AI Architect roles" (also a Phase 4 stub)
 - [ ] **Real-time Streaming / Live Dashboard Demo** — WebSocket/SSE live-updating dashboard; makes "99.99% uptime / sub-5s / Kinesis" tangible
 
 ---

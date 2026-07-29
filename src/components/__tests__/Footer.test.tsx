@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import Footer from '../Footer';
 
 describe('Footer Component', () => {
@@ -26,32 +26,36 @@ describe('Footer Component', () => {
   });
 
   it('renders social media links with correct attributes', () => {
+    const { container } = render(<Footer />);
+    const social = within(container.querySelector('.flex.space-x-4') as HTMLElement);
+
+    const githubLink = social.getByRole('link', { name: 'GitHub' });
+    const linkedinLink = social.getByRole('link', { name: 'LinkedIn' });
+
+    // Real profile URLs (not the previous generic placeholders)
+    expect(githubLink).toHaveAttribute('href', 'https://github.com/JoseRoberts87');
+    expect(linkedinLink).toHaveAttribute('href', 'https://www.linkedin.com/in/jose-roberts');
+
+    for (const link of [githubLink, linkedinLink]) {
+      expect(link).toHaveAttribute('target', '_blank');
+      expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+    }
+
+    // The placeholder Twitter link was removed.
+    expect(social.queryByRole('link', { name: 'Twitter' })).not.toBeInTheDocument();
+  });
+
+  it('displays location and availability', () => {
     render(<Footer />);
-
-    const githubLink = screen.getByRole('link', { name: 'GitHub' });
-    const linkedinLink = screen.getByRole('link', { name: 'LinkedIn' });
-    const twitterLink = screen.getByRole('link', { name: 'Twitter' });
-
-    // Check links are present
-    expect(githubLink).toBeInTheDocument();
-    expect(linkedinLink).toBeInTheDocument();
-    expect(twitterLink).toBeInTheDocument();
-
-    // Check they open in new tab
-    expect(githubLink).toHaveAttribute('target', '_blank');
-    expect(linkedinLink).toHaveAttribute('target', '_blank');
-    expect(twitterLink).toHaveAttribute('target', '_blank');
-
-    // Check security attributes
-    expect(githubLink).toHaveAttribute('rel', 'noopener noreferrer');
-    expect(linkedinLink).toHaveAttribute('rel', 'noopener noreferrer');
-    expect(twitterLink).toHaveAttribute('rel', 'noopener noreferrer');
+    expect(screen.getByText('Providence, RI')).toBeInTheDocument();
+    expect(screen.getByText(/Open to Data & AI Architect roles/)).toBeInTheDocument();
   });
 
   it('renders resources section with links', () => {
     render(<Footer />);
 
-    expect(screen.getByRole('link', { name: 'Documentation' })).toBeInTheDocument();
+    // The dead "Documentation" -> /docs (404) link was removed.
+    expect(screen.queryByRole('link', { name: 'Documentation' })).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Contact' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Resume' })).toBeInTheDocument();
   });
@@ -89,16 +93,11 @@ describe('Footer Component', () => {
   });
 
   it('renders SVG icons for social media', () => {
-    render(<Footer />);
+    const { container } = render(<Footer />);
+    const social = within(container.querySelector('.flex.space-x-4') as HTMLElement);
 
-    const githubLink = screen.getByRole('link', { name: 'GitHub' });
-    const linkedinLink = screen.getByRole('link', { name: 'LinkedIn' });
-    const twitterLink = screen.getByRole('link', { name: 'Twitter' });
-
-    // Check each link contains an SVG
-    expect(githubLink.querySelector('svg')).toBeInTheDocument();
-    expect(linkedinLink.querySelector('svg')).toBeInTheDocument();
-    expect(twitterLink.querySelector('svg')).toBeInTheDocument();
+    expect(social.getByRole('link', { name: 'GitHub' }).querySelector('svg')).toBeInTheDocument();
+    expect(social.getByRole('link', { name: 'LinkedIn' }).querySelector('svg')).toBeInTheDocument();
   });
 
   it('has hover effects on links', () => {
