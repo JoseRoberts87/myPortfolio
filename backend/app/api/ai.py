@@ -13,7 +13,8 @@ from redis import asyncio as aioredis
 from app.core.config import settings
 from app.core.llm import llm_status
 from app.core.logging_config import get_logger
-from app.schemas.ai import ChatRequest, ChatResponse
+from app.schemas.ai import AgentResponse, ChatRequest, ChatResponse
+from app.services.agent_service import agent_service
 from app.services.portfolio_knowledge import KNOWLEDGE_CHUNKS
 from app.services.rag_service import rag_service
 
@@ -101,6 +102,55 @@ async def chat(payload: ChatRequest, request: Request) -> ChatResponse:
         extra={"question": question[:120], "tokens": result["tokens_used"]},
     )
     return ChatResponse(**result)
+
+
+@router.post(
+    "/agent",
+    response_model=AgentResponse,
+    summary="Ask the tool-using portfolio agent",
+    description="Ask a question and watch an LLM agent decide which tools to call "
+    "(portfolio search, calculator, current date), execute them, and synthesize a "
+    "grounded answer — returning its full tool-call trace.",
+)
+async def agent(payload: ChatRequest, request: Request) -> AgentResponse:
+    if not settings.AI_CHAT_ENABLED or not agent_service.enabled:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="The AI agent is not configured. Start a local Ollama server "
+            "or set OPENAI_API_KEY to enable it.",
+        )
+
+    question = payload.question.strip()
+    if not question:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Question cannot be empty.")
+    if len(question) > settings.AI_MAX_QUESTION_CHARS:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            f"Question too long (max {settings.AI_MAX_QUESTION_CHARS} characters).",
+        )
+
+    await _enforce_rate_limit(request)
+
+    try:
+        result = await agent_service.run(question)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.error(f"AI agent error: {exc}")
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="The AI agent is temporarily unavailable. Please try again.",
+        )
+
+    logger.info(
+        "AI agent answered",
+        extra={
+            "question": question[:120],
+            "steps": len(result["steps"]),
+            "tokens": result["tokens_used"],
+        },
+    )
+    return AgentResponse(**result)
 
 
 @router.get("/health", summary="AI assistant status")

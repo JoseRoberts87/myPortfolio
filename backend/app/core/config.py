@@ -73,6 +73,8 @@ class Settings(BaseSettings):
     AI_MAX_ANSWER_TOKENS: int = 500  # Cap completion tokens (cost guard)
     AI_RETRIEVAL_TOP_K: int = 4  # Knowledge chunks retrieved per query
     AI_RATE_LIMIT_PER_HOUR: int = 20  # Per-IP requests per hour
+    AI_AGENT_MAX_STEPS: int = 5  # Max tool-calling iterations for the agent demo
+    AI_AGENT_SEARCH_TOP_K: int = 3  # Chunks the agent's search_portfolio tool returns
 
     model_config = SettingsConfigDict(
         env_file=".env",

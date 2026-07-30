@@ -1,7 +1,7 @@
 """
-Schemas for the AI assistant ("Ask my portfolio" RAG chat).
+Schemas for the AI assistant ("Ask my portfolio" RAG chat + tool-using agent).
 """
-from typing import List
+from typing import Any, Dict, List
 
 from pydantic import BaseModel, Field
 
@@ -31,5 +31,22 @@ class ChatResponse(BaseModel):
 
     answer: str
     sources: List[Source] = []
+    model: str
+    tokens_used: int = 0
+
+
+class AgentStep(BaseModel):
+    """One tool call the agent made while working toward its answer."""
+
+    tool: str
+    arguments: Dict[str, Any] = {}
+    result: str
+
+
+class AgentResponse(BaseModel):
+    """The agent's final answer plus the trace of tools it used to get there."""
+
+    answer: str
+    steps: List[AgentStep] = []
     model: str
     tokens_used: int = 0
