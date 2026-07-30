@@ -20,6 +20,9 @@ export default function GitHubProfile({ user }: GitHubProfileProps) {
               src={user.avatar_url}
               alt={user.name || user.login}
               fill
+              // Avatar renders at 128px (w-32) / 160px (md:w-40); without this
+              // the optimizer assumes 100vw and fetches an oversized variant.
+              sizes="(max-width: 768px) 128px, 160px"
               className="rounded-full object-cover border-4 border-purple-500/30"
               priority
             />

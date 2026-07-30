@@ -1,5 +1,4 @@
 import { Section, Card, Badge, PageHero } from '@/components/ui';
-import Image from 'next/image';
 
 export default function CloudDevOpsPage() {
   return (

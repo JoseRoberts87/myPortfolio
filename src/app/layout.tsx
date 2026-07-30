@@ -31,13 +31,13 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
     siteName: "Jose Roberts — Portfolio",
-    images: [{ url: "/profile-photo.png", width: 800, height: 800, alt: "Jose Roberts" }],
+    images: [{ url: "/profile-photo.jpg", width: 800, height: 1200, alt: "Jose Roberts" }],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/profile-photo.png"],
+    images: ["/profile-photo.jpg"],
   },
 };
 
