@@ -1,0 +1,47 @@
+name: Backend Tests
+
+# Runs the backend test suite on pull requests (and on demand). Deploys live in
+# backend-deploy.yml, which runs on push to main — so PRs get a test gate
+# without a skipped "Build and Deploy" check appearing on them.
+on:
+  pull_request:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-test.yml'
+      - '.github/workflows/backend-deploy.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        working-directory: ./backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov pytest-asyncio
+
+      - name: Run tests
+        working-directory: ./backend
+        env:
+          # app.core.config instantiates Settings() at import time, which requires
+          # these fields. The test suite uses an in-memory SQLite DB and mocks the
+          # Reddit API, so these are placeholders purely to satisfy config loading.
+          DATABASE_URL: "sqlite:///:memory:"
+          REDDIT_CLIENT_ID: "test-client-id"
+          REDDIT_CLIENT_SECRET: "test-client-secret"
+          REDDIT_USER_AGENT: "test-user-agent"
+        run: |
+          pytest --cov=app --cov-report=term-missing
