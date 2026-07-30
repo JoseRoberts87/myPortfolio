@@ -37,9 +37,10 @@ describe('SkillsMatrix Component', () => {
     expect(screen.getByTestId('radar')).toBeInTheDocument();
   });
 
-  it('should display all 7 skill domains', () => {
+  it('should display all 8 skill domains', () => {
     render(<SkillsMatrix />);
 
+    expect(screen.getByText('AI / LLMs / Agents')).toBeInTheDocument();
     expect(screen.getByText('Web Development')).toBeInTheDocument();
     expect(screen.getByText('Cloud & DevOps')).toBeInTheDocument();
     expect(screen.getByText('Data Pipelines')).toBeInTheDocument();
@@ -52,11 +53,14 @@ describe('SkillsMatrix Component', () => {
   it('should display proficiency percentages for each domain', () => {
     render(<SkillsMatrix />);
 
+    expect(screen.getByText('92%')).toBeInTheDocument(); // AI / LLMs / Agents
     expect(screen.getByText('95%')).toBeInTheDocument(); // Web Development
     expect(screen.getByText('90%')).toBeInTheDocument(); // Cloud & DevOps
-    expect(screen.getByText('85%')).toBeInTheDocument(); // Data Pipelines
-    expect(screen.getAllByText('80%')).toHaveLength(2); // Data Analytics & Computer Vision
-    expect(screen.getAllByText('75%')).toHaveLength(2); // Machine Learning & Signal Processing
+    expect(screen.getByText('88%')).toBeInTheDocument(); // Data Pipelines
+    expect(screen.getByText('82%')).toBeInTheDocument(); // Data Analytics
+    expect(screen.getByText('78%')).toBeInTheDocument(); // Machine Learning
+    expect(screen.getByText('80%')).toBeInTheDocument(); // Computer Vision
+    expect(screen.getByText('75%')).toBeInTheDocument(); // Signal Processing
   });
 
   it('should have Domain Breakdown section', () => {
@@ -68,12 +72,12 @@ describe('SkillsMatrix Component', () => {
   it('should display summary statistics', () => {
     render(<SkillsMatrix />);
 
-    // 7 technical domains
-    expect(screen.getByText('7')).toBeInTheDocument();
+    // 8 technical domains
+    expect(screen.getByText('8')).toBeInTheDocument();
     expect(screen.getByText('Technical Domains')).toBeInTheDocument();
 
-    // Average proficiency (95+90+85+80+75+80+75)/7 = 82.86 ≈ 83%
-    expect(screen.getByText('83%')).toBeInTheDocument();
+    // Average proficiency (92+95+90+88+82+78+80+75)/8 = 85%
+    expect(screen.getByText('85%')).toBeInTheDocument();
     expect(screen.getByText('Average Proficiency')).toBeInTheDocument();
 
     // Technologies count
@@ -85,7 +89,7 @@ describe('SkillsMatrix Component', () => {
 
     // Initially, descriptions should not be visible
     expect(
-      screen.queryByText(/Full-stack web applications with modern frameworks/i)
+      screen.queryByText(/Full-stack applications/i)
     ).not.toBeInTheDocument();
 
     // Click on Web Development domain
@@ -96,7 +100,7 @@ describe('SkillsMatrix Component', () => {
 
     // Description should now be visible
     expect(
-      screen.getByText(/Full-stack web applications with modern frameworks/i)
+      screen.getByText(/Full-stack applications/i)
     ).toBeInTheDocument();
   });
 
@@ -113,7 +117,8 @@ describe('SkillsMatrix Component', () => {
     expect(screen.getByText('React 19')).toBeInTheDocument();
     expect(screen.getByText('Next.js 16')).toBeInTheDocument();
     expect(screen.getByText('TypeScript')).toBeInTheDocument();
-    expect(screen.getByText('Tailwind CSS')).toBeInTheDocument();
+    expect(screen.getByText('Java / Spring Boot')).toBeInTheDocument();
+    expect(screen.getByText('Flask / Django')).toBeInTheDocument();
     expect(screen.getByText('Jest')).toBeInTheDocument();
   });
 
@@ -128,7 +133,7 @@ describe('SkillsMatrix Component', () => {
 
     // Verify expanded
     expect(
-      screen.getByText(/Full-stack web applications with modern frameworks/i)
+      screen.getByText(/Full-stack applications/i)
     ).toBeInTheDocument();
 
     // Click again to collapse
@@ -138,7 +143,7 @@ describe('SkillsMatrix Component', () => {
 
     // Description should be hidden again
     expect(
-      screen.queryByText(/Full-stack web applications with modern frameworks/i)
+      screen.queryByText(/Full-stack applications/i)
     ).not.toBeInTheDocument();
   });
 
@@ -152,7 +157,7 @@ describe('SkillsMatrix Component', () => {
     }
 
     expect(
-      screen.getByText(/Full-stack web applications with modern frameworks/i)
+      screen.getByText(/Full-stack applications/i)
     ).toBeInTheDocument();
 
     // Click Cloud & DevOps - this should collapse Web Development
@@ -163,7 +168,7 @@ describe('SkillsMatrix Component', () => {
 
     // Web Development should be collapsed now
     expect(
-      screen.queryByText(/Full-stack web applications with modern frameworks/i)
+      screen.queryByText(/Full-stack applications/i)
     ).not.toBeInTheDocument();
     // Cloud & DevOps should be expanded
     expect(
@@ -202,9 +207,10 @@ describe('SkillsMatrix Component', () => {
     }
 
     expect(screen.getByText('AWS')).toBeInTheDocument();
+    expect(screen.getByText('Azure')).toBeInTheDocument();
     expect(screen.getByText('Terraform')).toBeInTheDocument();
     expect(screen.getByText('Docker')).toBeInTheDocument();
-    expect(screen.getByText('ECS Fargate')).toBeInTheDocument();
+    expect(screen.getByText('Kubernetes')).toBeInTheDocument();
     expect(screen.getByText('GitHub Actions')).toBeInTheDocument();
   });
 
@@ -216,11 +222,27 @@ describe('SkillsMatrix Component', () => {
       fireEvent.click(dataPipelinesDomain);
     }
 
+    expect(screen.getByText('Databricks')).toBeInTheDocument();
     expect(screen.getByText('FastAPI')).toBeInTheDocument();
+    expect(screen.getByText('Kinesis')).toBeInTheDocument();
     expect(screen.getByText('PostgreSQL')).toBeInTheDocument();
-    expect(screen.getByText('Redis')).toBeInTheDocument();
+    expect(screen.getByText('MongoDB')).toBeInTheDocument();
     expect(screen.getByText('ETL')).toBeInTheDocument();
-    expect(screen.getByText('Alembic')).toBeInTheDocument();
+  });
+
+  it('should display the new AI / LLMs / Agents domain and its technologies', () => {
+    render(<SkillsMatrix />);
+
+    const aiDomain = screen.getByText('AI / LLMs / Agents').closest('.p-4');
+    expect(aiDomain).toBeInTheDocument();
+    if (aiDomain) {
+      fireEvent.click(aiDomain);
+    }
+
+    expect(screen.getByText('OpenAI')).toBeInTheDocument();
+    expect(screen.getByText('RAG')).toBeInTheDocument();
+    expect(screen.getByText('AI Agents')).toBeInTheDocument();
+    expect(screen.getByText('Agentic Workflows')).toBeInTheDocument();
   });
 
   it('should display all Machine Learning technologies when expanded', () => {
