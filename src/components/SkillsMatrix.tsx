@@ -24,7 +24,7 @@ const skillsData: SkillCategory[] = [
   {
     domain: 'AI / LLMs / Agents',
     proficiency: 92,
-    technologies: ['OpenAI', 'LLMs', 'RAG', 'AI Agents', 'Agentic Workflows'],
+    technologies: ['OpenAI', 'LLMs', 'RAG', 'AI Agents', 'Agentic Workflows', 'Claude Code'],
     description: 'LLM integration and agentic workflows — RAG systems, tool-using agents, and AI-driven automation',
   },
   {
@@ -36,7 +36,7 @@ const skillsData: SkillCategory[] = [
   {
     domain: 'Cloud & DevOps',
     proficiency: 90,
-    technologies: ['AWS', 'Azure', 'Terraform', 'Docker', 'Kubernetes', 'GitHub Actions'],
+    technologies: ['AWS', 'Azure', 'GCP', 'Terraform', 'Docker', 'Kubernetes', 'GitHub Actions'],
     description: 'Multi-cloud infrastructure as code, containerization and orchestration, and automated CI/CD',
   },
   {
@@ -48,7 +48,7 @@ const skillsData: SkillCategory[] = [
   {
     domain: 'Data Analytics',
     proficiency: 82,
-    technologies: ['Pandas', 'SQL', 'MSSQL', 'Recharts', 'Data Visualization', 'Dashboards'],
+    technologies: ['Pandas', 'SQL', 'MSSQL', 'MySQL', 'Recharts', 'Data Visualization', 'Dashboards'],
     description: 'Interactive dashboards, data visualization, and business intelligence across SQL and NoSQL stores',
   },
   {

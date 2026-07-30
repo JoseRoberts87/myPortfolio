@@ -25,7 +25,7 @@ describe('Timeline Component', () => {
     it('should render education items', () => {
       render(<Timeline />);
 
-      expect(screen.getByText('Master of Science in Computer Science - Software Engineering')).toBeInTheDocument();
+      expect(screen.getByText('Master of Science in Computer Science')).toBeInTheDocument();
       expect(screen.getByText('Bachelor of Arts in Political Science')).toBeInTheDocument();
     });
 
@@ -97,7 +97,7 @@ describe('Timeline Component', () => {
     it('should display education organizations', () => {
       render(<Timeline variant="education" />);
 
-      expect(screen.getByText('CTU Online')).toBeInTheDocument();
+      expect(screen.getByText('Colorado Technical University Online')).toBeInTheDocument();
       expect(screen.getByText('University of Rhode Island')).toBeInTheDocument();
       expect(screen.getByText('Amazon Web Services')).toBeInTheDocument();
       expect(screen.getByText('Harvard edX')).toBeInTheDocument();
@@ -106,7 +106,7 @@ describe('Timeline Component', () => {
     it('should display education periods', () => {
       render(<Timeline variant="education" />);
 
-      expect(screen.getAllByText('Graduated').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('2016 - 2017').length).toBeGreaterThan(0);
       expect(screen.getAllByText('Certified').length).toBeGreaterThan(0);
     });
 
@@ -114,7 +114,7 @@ describe('Timeline Component', () => {
       render(<Timeline variant="education" />);
 
       expect(
-        screen.getByText('Advanced studies in software engineering, algorithms, and system design.')
+        screen.getByText('Advanced studies in computer science, algorithms, and system design.')
       ).toBeInTheDocument();
     });
 
@@ -122,7 +122,7 @@ describe('Timeline Component', () => {
       render(<Timeline variant="education" />);
 
       expect(screen.getByText('GPA: 3.95/4.0')).toBeInTheDocument();
-      expect(screen.getByText(/Specialized in Software Engineering/i)).toBeInTheDocument();
+      expect(screen.getByText(/Focus on scalable system architecture/i)).toBeInTheDocument();
     });
   });
 
@@ -165,7 +165,7 @@ describe('Timeline Component', () => {
       render(<Timeline variant="experience" />);
 
       expect(
-        screen.getByText(/Built an agentic workforce that automated workflows and managed tasks/i)
+        screen.getByText(/Developed an agentic workforce that automated workflows and managed tasks/i)
       ).toBeInTheDocument();
       expect(
         screen.getByText(/Consulted on the design of an AI-first system/i)
@@ -288,7 +288,7 @@ describe('Timeline Component', () => {
         screen.getByText('Led teams of engineers emphasizing product ownership and scalable solutions integrating LLMs and generative AI.')
       ).toBeInTheDocument();
       expect(
-        screen.getByText('Advanced studies in software engineering, algorithms, and system design.')
+        screen.getByText('Advanced studies in computer science, algorithms, and system design.')
       ).toBeInTheDocument();
     });
   });
