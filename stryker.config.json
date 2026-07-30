@@ -1,0 +1,25 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "_comment": "Mutation testing (on-demand, not per-PR — it's slow). Scoped to the pure-logic modules where mutation score has the most signal: lib/ and hooks/. Run with `npm run test:mutation`.",
+  "packageManager": "npm",
+  "testRunner": "jest",
+  "jest": {
+    "projectType": "custom",
+    "configFile": "jest.config.ts",
+    "enableFindRelatedTests": true
+  },
+  "coverageAnalysis": "perTest",
+  "mutate": [
+    "src/lib/**/*.ts",
+    "src/hooks/**/*.ts",
+    "!src/lib/mlModelData.ts",
+    "!src/**/*.test.*",
+    "!src/**/__tests__/**"
+  ],
+  "reporters": ["html", "clear-text", "progress"],
+  "htmlReporter": { "fileName": "reports/mutation/index.html" },
+  "clearTextReporter": { "maxTestsToLog": 3 },
+  "concurrency": 4,
+  "timeoutMS": 20000,
+  "thresholds": { "high": 80, "low": 60, "break": null }
+}
