@@ -12,6 +12,7 @@ on:
       - 'jest.config.ts'
       - 'jest.setup.ts'
       - 'tsconfig.json'
+      - 'scripts/coverage-ratchet.mjs'
       - '.github/workflows/frontend-tests.yml'
   pull_request:
     paths:
@@ -22,6 +23,7 @@ on:
       - 'jest.config.ts'
       - 'jest.setup.ts'
       - 'tsconfig.json'
+      - 'scripts/coverage-ratchet.mjs'
       - '.github/workflows/frontend-tests.yml'
   workflow_dispatch:
 
@@ -46,6 +48,11 @@ jobs:
 
       - name: Run Jest with coverage
         run: npm run test:coverage -- --ci
+
+      # Fails if coverage dropped below the committed floor or the floor has
+      # drifted stale (rose enough that it should be ratcheted). See #140.
+      - name: Enforce coverage ratchet
+        run: npm run coverage:check
 
       - name: Upload coverage report
         if: ${{ !cancelled() }}
