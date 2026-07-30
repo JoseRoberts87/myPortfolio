@@ -7,6 +7,10 @@ on:
     paths:
       - 'backend/**'
       - '.github/workflows/backend-deploy.yml'
+  pull_request:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-deploy.yml'
   workflow_dispatch:
     inputs:
       environment:
@@ -52,6 +56,9 @@ jobs:
   build-and-deploy:
     name: Build and Deploy to ${{ github.event.inputs.environment || 'dev' }}
     needs: test
+    # Pull requests only run the test job above; deploys stay push-to-main /
+    # manual-dispatch only so PRs never trigger an ECR/ECS deployment.
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.environment || 'dev' }}
 
