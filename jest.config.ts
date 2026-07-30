@@ -27,16 +27,18 @@ const config: Config = {
     '!src/**/*.stories.{js,jsx,ts,tsx}',
     '!src/**/__tests__/**',
   ],
-  // Enforced coverage floor, set just below the current measured numbers so it
-  // fails on regressions without being knife-edge. Ratchet these up as coverage
-  // grows. Current (after data-page integration tests #135): ~76.3% stmts/lines,
-  // 81.6% branch, 71.7% funcs. Branch/func floors held (thin margin, barely moved).
+  // json-summary feeds scripts/coverage-ratchet.mjs (coverage/coverage-summary.json).
+  coverageReporters: ['text', 'lcov', 'json-summary'],
+  // Enforced coverage floor. DO NOT hand-edit these numbers — they are managed by
+  // the ratchet (scripts/coverage-ratchet.mjs): `npm run coverage:ratchet` raises
+  // them to just below current coverage, and CI (`coverage:check`) fails if
+  // coverage drops below the floor or the floor drifts stale. Ratchet only goes up.
   coverageThreshold: {
     global: {
-      statements: 75,
-      branches: 80,
-      functions: 70,
-      lines: 75,
+      statements: 78,
+      branches: 83,
+      functions: 81,
+      lines: 78,
     },
   },
 };
