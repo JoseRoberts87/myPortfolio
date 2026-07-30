@@ -50,6 +50,14 @@ jobs:
 
       - name: Run tests
         working-directory: ./backend
+        env:
+          # app.core.config instantiates Settings() at import time, which requires
+          # these fields. The test suite uses an in-memory SQLite DB and mocks the
+          # Reddit API, so these are placeholders purely to satisfy config loading.
+          DATABASE_URL: sqlite:///:memory:
+          REDDIT_CLIENT_ID: test-client-id
+          REDDIT_CLIENT_SECRET: test-client-secret
+          REDDIT_USER_AGENT: test-user-agent
         run: |
           pytest --cov=app --cov-report=term-missing
 
