@@ -82,3 +82,6 @@ terraform/.terraform/
 # Stryker mutation testing
 .stryker-tmp/
 reports/mutation/
+
+backend/htmlcov/
+backend/.coverage

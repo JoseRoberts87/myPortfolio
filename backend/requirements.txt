@@ -55,3 +55,6 @@ pillow==11.0.0
 # Task Scheduling & Retry Logic
 apscheduler==3.10.4
 tenacity==9.0.0
+
+# LLM / AI (provider-agnostic: Ollama locally via its OpenAI-compatible API, OpenAI in prod)
+openai==1.57.0
