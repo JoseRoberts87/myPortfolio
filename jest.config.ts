@@ -29,14 +29,14 @@ const config: Config = {
   ],
   // Enforced coverage floor, set just below the current measured numbers so it
   // fails on regressions without being knife-edge. Ratchet these up as coverage
-  // grows (see issues #108–#110). Current: ~31.6% stmts/lines, 74.6% branch,
-  // 37.7% funcs.
+  // grows. Current (after component/hook/lib tests #108–#110): ~50.2% stmts/lines,
+  // 79.8% branch, 63.5% funcs.
   coverageThreshold: {
     global: {
-      statements: 31,
-      branches: 72,
-      functions: 36,
-      lines: 31,
+      statements: 49,
+      branches: 78,
+      functions: 62,
+      lines: 49,
     },
   },
 };
