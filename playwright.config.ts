@@ -45,6 +45,19 @@ export default defineConfig({
           : {}),
       },
     },
+    // Cross-browser coverage on the other two engines. mobile.spec.ts is
+    // excluded here because it relies on the `isMobile` emulation flag, which
+    // only Chromium supports — that suite stays chromium-only.
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+      testIgnore: /mobile\.spec\.ts/,
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+      testIgnore: /mobile\.spec\.ts/,
+    },
   ],
 
   // Start the app before running the tests, unless we're pointed at an
