@@ -66,6 +66,17 @@ describe('drawFaceOverlays', () => {
     const canvas = makeCanvas(null);
     expect(drawFaceOverlays(canvas, [face] as never, { width: 10, height: 10 })).toBeUndefined();
   });
+
+  it('does not resize when the canvas already matches the display size', () => {
+    const ctx = makeCtx();
+    // Canvas already 200x100 and displaySize 200x100 -> the resize branch is skipped.
+    const canvas = makeCanvas(ctx, 200, 100);
+    drawFaceOverlays(canvas, [face] as never, { width: 200, height: 100 });
+    expect(canvas.width).toBe(200);
+    expect(canvas.height).toBe(100);
+    // Still draws with the same computed coordinates.
+    expect(ctx.strokeRect).toHaveBeenCalledWith(60, 20, 80, 60);
+  });
 });
 
 describe('clearCanvas', () => {
