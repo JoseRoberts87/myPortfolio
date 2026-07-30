@@ -276,6 +276,9 @@ describe('ContactForm Component', () => {
   });
 
   it('should handle network error', async () => {
+    // The component logs the caught error via console.error; silence it so the
+    // expected error path doesn't add noise to the test output (restored by afterEach).
+    jest.spyOn(console, 'error').mockImplementation(() => {});
     (global.fetch as jest.Mock).mockRejectedValueOnce(new Error('Network error'));
 
     render(<ContactForm />);
