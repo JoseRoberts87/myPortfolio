@@ -3,57 +3,32 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Container from '@/components/ui/Container';
 
+// Return the root element's className for a given size prop, so tests assert
+// the prop→output CONTRACT (distinct max-width per size) without hardcoding
+// the Tailwind token values.
+const rootClass = (size?: 'sm' | 'md' | 'lg' | 'xl' | 'full') => {
+  const { container } = render(<Container size={size}>Content</Container>);
+  return (container.firstChild as HTMLElement).className;
+};
+
 describe('Container Component', () => {
-  it('should render container with children', () => {
+  it('renders its children', () => {
     render(<Container>Test Content</Container>);
     expect(screen.getByText('Test Content')).toBeInTheDocument();
   });
 
-  it('should apply default size (lg)', () => {
-    const { container } = render(<Container>Content</Container>);
-    const divElement = container.firstChild;
-    expect(divElement).toHaveClass('max-w-7xl');
+  it('maps each size to a distinct class', () => {
+    // Behavior contract: every size value produces a different max-width output.
+    const classes = (['sm', 'md', 'lg', 'xl', 'full'] as const).map(rootClass);
+    expect(new Set(classes).size).toBe(classes.length);
   });
 
-  it('should apply custom size - sm', () => {
-    const { container } = render(<Container size="sm">Content</Container>);
-    const divElement = container.firstChild;
-    expect(divElement).toHaveClass('max-w-3xl');
+  it('defaults to the same output as size="lg"', () => {
+    expect(rootClass(undefined)).toBe(rootClass('lg'));
   });
 
-  it('should apply custom size - md', () => {
-    const { container } = render(<Container size="md">Content</Container>);
-    const divElement = container.firstChild;
-    expect(divElement).toHaveClass('max-w-5xl');
-  });
-
-  it('should apply custom size - lg', () => {
-    const { container } = render(<Container size="lg">Content</Container>);
-    const divElement = container.firstChild;
-    expect(divElement).toHaveClass('max-w-7xl');
-  });
-
-  it('should apply custom size - xl', () => {
-    const { container } = render(<Container size="xl">Content</Container>);
-    const divElement = container.firstChild;
-    expect(divElement).toHaveClass('max-w-[1400px]');
-  });
-
-  it('should apply custom size - full', () => {
-    const { container } = render(<Container size="full">Content</Container>);
-    const divElement = container.firstChild;
-    expect(divElement).toHaveClass('max-w-full');
-  });
-
-  it('should apply custom className', () => {
+  it('forwards a custom className', () => {
     const { container } = render(<Container className="custom-container">Content</Container>);
-    const divElement = container.firstChild;
-    expect(divElement).toHaveClass('custom-container');
-  });
-
-  it('should have proper base styles', () => {
-    const { container } = render(<Container>Content</Container>);
-    const divElement = container.firstChild;
-    expect(divElement).toHaveClass('mx-auto', 'px-4');
+    expect(container.firstChild).toHaveClass('custom-container');
   });
 });

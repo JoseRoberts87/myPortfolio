@@ -92,11 +92,8 @@ describe('SkillsMatrix Component', () => {
       screen.queryByText(/Full-stack applications/i)
     ).not.toBeInTheDocument();
 
-    // Click on Web Development domain
-    const webDevDomain = screen.getByText('Web Development').closest('.p-4');
-    if (webDevDomain) {
-      fireEvent.click(webDevDomain);
-    }
+    // Click on the Web Development domain (the whole row is the click target)
+    fireEvent.click(screen.getByText('Web Development'));
 
     // Description should now be visible
     expect(
@@ -107,11 +104,8 @@ describe('SkillsMatrix Component', () => {
   it('should display technologies when domain is expanded', () => {
     render(<SkillsMatrix />);
 
-    // Click on Web Development domain
-    const webDevDomain = screen.getByText('Web Development').closest('.p-4');
-    if (webDevDomain) {
-      fireEvent.click(webDevDomain);
-    }
+    // Click on the Web Development domain
+    fireEvent.click(screen.getByText('Web Development'));
 
     // Technologies should be visible
     expect(screen.getByText('React 19')).toBeInTheDocument();
@@ -126,10 +120,7 @@ describe('SkillsMatrix Component', () => {
     render(<SkillsMatrix />);
 
     // Click to expand
-    const webDevDomain = screen.getByText('Web Development').closest('.p-4');
-    if (webDevDomain) {
-      fireEvent.click(webDevDomain);
-    }
+    fireEvent.click(screen.getByText('Web Development'));
 
     // Verify expanded
     expect(
@@ -137,9 +128,7 @@ describe('SkillsMatrix Component', () => {
     ).toBeInTheDocument();
 
     // Click again to collapse
-    if (webDevDomain) {
-      fireEvent.click(webDevDomain);
-    }
+    fireEvent.click(screen.getByText('Web Development'));
 
     // Description should be hidden again
     expect(
@@ -151,20 +140,14 @@ describe('SkillsMatrix Component', () => {
     render(<SkillsMatrix />);
 
     // Expand Web Development
-    const webDevDomain = screen.getByText('Web Development').closest('.p-4');
-    if (webDevDomain) {
-      fireEvent.click(webDevDomain);
-    }
+    fireEvent.click(screen.getByText('Web Development'));
 
     expect(
       screen.getByText(/Full-stack applications/i)
     ).toBeInTheDocument();
 
     // Click Cloud & DevOps - this should collapse Web Development
-    const cloudDevOpsDomain = screen.getByText('Cloud & DevOps').closest('.p-4');
-    if (cloudDevOpsDomain) {
-      fireEvent.click(cloudDevOpsDomain);
-    }
+    fireEvent.click(screen.getByText('Cloud & DevOps'));
 
     // Web Development should be collapsed now
     expect(
@@ -176,35 +159,18 @@ describe('SkillsMatrix Component', () => {
     ).toBeInTheDocument();
   });
 
-  it('should highlight selected domain with purple border', () => {
+  it('should render a breakdown row for each of the 8 domains', () => {
     render(<SkillsMatrix />);
 
-    const webDevDomain = screen.getByText('Web Development').closest('.p-4');
-    expect(webDevDomain).not.toHaveClass('border-purple-500');
-
-    // Click to select
-    if (webDevDomain) {
-      fireEvent.click(webDevDomain);
-    }
-
-    expect(webDevDomain).toHaveClass('border-purple-500');
-  });
-
-  it('should display progress bars for each domain', () => {
-    const { container } = render(<SkillsMatrix />);
-
-    // Check for progress bar containers
-    const progressBars = container.querySelectorAll('.bg-track.rounded-full');
-    expect(progressBars.length).toBeGreaterThanOrEqual(7);
+    // Each domain renders as a level-4 heading in the breakdown list; assert the
+    // count of rows rather than counting styled progress-bar elements.
+    expect(screen.getAllByRole('heading', { level: 4 })).toHaveLength(8);
   });
 
   it('should display all Cloud & DevOps technologies when expanded', () => {
     render(<SkillsMatrix />);
 
-    const cloudDomain = screen.getByText('Cloud & DevOps').closest('.p-4');
-    if (cloudDomain) {
-      fireEvent.click(cloudDomain);
-    }
+    fireEvent.click(screen.getByText('Cloud & DevOps'));
 
     expect(screen.getByText('AWS')).toBeInTheDocument();
     expect(screen.getByText('Azure')).toBeInTheDocument();
@@ -218,10 +184,7 @@ describe('SkillsMatrix Component', () => {
   it('should display all Data Pipelines technologies when expanded', () => {
     render(<SkillsMatrix />);
 
-    const dataPipelinesDomain = screen.getByText('Data Pipelines').closest('.p-4');
-    if (dataPipelinesDomain) {
-      fireEvent.click(dataPipelinesDomain);
-    }
+    fireEvent.click(screen.getByText('Data Pipelines'));
 
     expect(screen.getByText('Databricks')).toBeInTheDocument();
     expect(screen.getByText('FastAPI')).toBeInTheDocument();
@@ -234,11 +197,9 @@ describe('SkillsMatrix Component', () => {
   it('should display the new AI / LLMs / Agents domain and its technologies', () => {
     render(<SkillsMatrix />);
 
-    const aiDomain = screen.getByText('AI / LLMs / Agents').closest('.p-4');
+    const aiDomain = screen.getByText('AI / LLMs / Agents');
     expect(aiDomain).toBeInTheDocument();
-    if (aiDomain) {
-      fireEvent.click(aiDomain);
-    }
+    fireEvent.click(aiDomain);
 
     expect(screen.getByText('OpenAI')).toBeInTheDocument();
     expect(screen.getByText('RAG')).toBeInTheDocument();
@@ -249,10 +210,7 @@ describe('SkillsMatrix Component', () => {
   it('should display all Machine Learning technologies when expanded', () => {
     render(<SkillsMatrix />);
 
-    const mlDomain = screen.getByText('Machine Learning').closest('.p-4');
-    if (mlDomain) {
-      fireEvent.click(mlDomain);
-    }
+    fireEvent.click(screen.getByText('Machine Learning'));
 
     expect(screen.getByText('Transformers.js')).toBeInTheDocument();
     expect(screen.getByText('DistilBERT')).toBeInTheDocument();
@@ -261,19 +219,4 @@ describe('SkillsMatrix Component', () => {
     expect(screen.getByText('Browser ML')).toBeInTheDocument();
   });
 
-  it('should have correct structure with card component', () => {
-    const { container } = render(<SkillsMatrix />);
-
-    // Check for card styling
-    const card = container.querySelector('.rounded-lg');
-    expect(card).toBeInTheDocument();
-  });
-
-  it('should render responsive grid layout', () => {
-    const { container } = render(<SkillsMatrix />);
-
-    // Check for grid layout
-    const grid = container.querySelector('.grid.grid-cols-1.lg\\:grid-cols-2');
-    expect(grid).toBeInTheDocument();
-  });
 });

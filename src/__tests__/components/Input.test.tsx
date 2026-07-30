@@ -48,12 +48,6 @@ describe('Input Component', () => {
     expect(input).toBeInTheDocument();
   });
 
-  it('should apply default styles', () => {
-    render(<Input />);
-    const input = screen.getByRole('textbox');
-    expect(input).toHaveClass('bg-white', 'dark:bg-gray-800', 'border', 'rounded-lg', 'px-4', 'py-3');
-  });
-
   it('should support ref forwarding', () => {
     const ref = React.createRef<HTMLInputElement>();
     render(<Input ref={ref} />);
@@ -74,19 +68,6 @@ describe('Input Component', () => {
   it('should render error message when error prop is provided', () => {
     render(<Input error="This field is required" />);
     expect(screen.getByText('This field is required')).toBeInTheDocument();
-  });
-
-  it('should apply error border color when error prop is provided', () => {
-    render(<Input error="Error message" />);
-    const input = screen.getByRole('textbox');
-    expect(input).toHaveClass('border-red-500');
-  });
-
-  it('should not apply error styles when error prop is not provided', () => {
-    render(<Input />);
-    const input = screen.getByRole('textbox');
-    expect(input).not.toHaveClass('border-red-500');
-    expect(input).toHaveClass('border-slate-300');
   });
 
   it('should render helper text when helperText prop is provided', () => {

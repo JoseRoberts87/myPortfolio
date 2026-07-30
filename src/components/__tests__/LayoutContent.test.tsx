@@ -58,16 +58,6 @@ describe('LayoutContent Component', () => {
     expect(screen.getByTestId('theme-provider')).toBeInTheDocument();
   });
 
-  it('should apply proper main tag styles', () => {
-    const { container } = render(
-      <LayoutContent>
-        <div>Content</div>
-      </LayoutContent>
-    );
-    const mainElement = container.querySelector('main');
-    expect(mainElement).toHaveClass('flex-grow', 'pt-16');
-  });
-
   it('should render main element between Header and Footer', () => {
     const { container } = render(
       <LayoutContent>

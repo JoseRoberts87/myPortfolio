@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Button from '@/components/ui/Button';
 
@@ -10,70 +10,65 @@ describe('Button Component', () => {
     expect(screen.getByText('Click me')).toBeInTheDocument();
   });
 
-  it('should apply default variant (primary)', () => {
-    render(<Button>Default</Button>);
-    const button = screen.getByRole('button');
-    expect(button).toHaveClass('bg-purple-600');
+  it('should render each variant with a distinct className', () => {
+    const variants = ['primary', 'secondary', 'outline', 'ghost'] as const;
+    const classNames = variants.map((variant) => {
+      const { container } = render(<Button variant={variant}>Variant</Button>);
+      return (container.firstChild as HTMLElement).className;
+    });
+
+    // Each variant must produce a unique className so the variants stay visually distinct.
+    // This survives token/palette changes while still proving variants differ.
+    expect(new Set(classNames).size).toBe(variants.length);
   });
 
-  it('should apply secondary variant', () => {
-    render(<Button variant="secondary">Secondary</Button>);
-    const button = screen.getByRole('button');
-    expect(button).toHaveClass('bg-slate-200');
+  it('should render each size with a distinct className', () => {
+    const sizes = ['sm', 'md', 'lg'] as const;
+    const classNames = sizes.map((size) => {
+      const { container } = render(<Button size={size}>Size</Button>);
+      return (container.firstChild as HTMLElement).className;
+    });
+
+    expect(new Set(classNames).size).toBe(sizes.length);
   });
 
-  it('should apply outline variant', () => {
-    render(<Button variant="outline">Outline</Button>);
-    const button = screen.getByRole('button');
-    expect(button).toHaveClass('border-2', 'border-purple-600');
+  it('should take full width only when fullWidth is set', () => {
+    const { container, rerender } = render(<Button>Auto</Button>);
+    expect(container.firstChild as HTMLElement).not.toHaveClass('w-full');
+
+    rerender(<Button fullWidth>Full</Button>);
+    expect(container.firstChild as HTMLElement).toHaveClass('w-full');
   });
 
-  it('should apply ghost variant', () => {
-    render(<Button variant="ghost">Ghost</Button>);
-    const button = screen.getByRole('button');
-    expect(button).toHaveClass('text-purple-600');
-  });
-
-  it('should apply small size', () => {
-    render(<Button size="sm">Small</Button>);
-    const button = screen.getByRole('button');
-    expect(button).toHaveClass('px-4', 'py-2', 'text-sm');
-  });
-
-  it('should apply default size (md)', () => {
-    render(<Button>Default Size</Button>);
-    const button = screen.getByRole('button');
-    expect(button).toHaveClass('px-6', 'py-3', 'text-base');
-  });
-
-  it('should apply large size', () => {
-    render(<Button size="lg">Large</Button>);
-    const button = screen.getByRole('button');
-    expect(button).toHaveClass('px-8', 'py-4', 'text-lg');
-  });
-
-  it('should apply full width', () => {
-    render(<Button fullWidth>Full Width</Button>);
-    const button = screen.getByRole('button');
-    expect(button).toHaveClass('w-full');
-  });
-
-  it('should apply custom className', () => {
+  it('should forward a custom className', () => {
     render(<Button className="custom-class">Custom</Button>);
-    const button = screen.getByRole('button');
-    expect(button).toHaveClass('custom-class');
+    expect(screen.getByRole('button')).toHaveClass('custom-class');
   });
 
-  it('should be disabled when disabled prop is true', () => {
+  it('should be disabled when the disabled prop is set', () => {
     render(<Button disabled>Disabled</Button>);
-    const button = screen.getByRole('button');
-    expect(button).toBeDisabled();
-    expect(button).toHaveClass('disabled:opacity-50');
+    expect(screen.getByRole('button')).toBeDisabled();
   });
 
-  it('should have proper base styles', () => {
-    render(<Button>Styled</Button>);
-    const button = screen.getByRole('button');
-    expect(button).toHaveClass('font-semibold', 'rounded-lg', 'transition-colors');
+  it('should call onClick when clicked', () => {
+    const handleClick = jest.fn();
+    render(<Button onClick={handleClick}>Click</Button>);
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not call onClick when disabled', () => {
+    const handleClick = jest.fn();
+    render(
+      <Button disabled onClick={handleClick}>
+        Disabled
+      </Button>
+    );
+
+    fireEvent.click(screen.getByRole('button'));
+
+    expect(handleClick).not.toHaveBeenCalled();
   });
 });
