@@ -37,20 +37,19 @@ describe('VisitStats', () => {
     void errorSpy;
   });
 
-  it('shows the loading skeleton before the fetch resolves', async () => {
+  it('shows the loading state before the fetch resolves, then the stats', async () => {
     // Both the track POST and the stats GET resolve to the fixture.
     (global.fetch as jest.Mock).mockResolvedValue(okJson(statsFixture));
 
-    const { container } = render(<VisitStats />);
+    render(<VisitStats />);
 
     // Synchronously after mount the fetch promises are still pending, so the
-    // animated skeleton renders and no real stats are shown yet.
-    expect(container.querySelector('.animate-pulse')).toBeInTheDocument();
+    // loading placeholder is showing and no real stats are rendered yet.
     expect(screen.queryByText('Live Stats')).not.toBeInTheDocument();
 
-    // Flush the post-fetch state update so the test leaves no pending work
-    // (avoids act() warnings).
-    await screen.findByText('Live Stats');
+    // Once the fetch resolves we transition out of the loading branch and the
+    // stats label appears.
+    expect(await screen.findByText('Live Stats')).toBeInTheDocument();
   });
 
   it('renders the stats once the fetch resolves', async () => {

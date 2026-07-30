@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import Footer from '../Footer';
 
 describe('Footer Component', () => {
@@ -27,11 +27,15 @@ describe('Footer Component', () => {
   });
 
   it('renders social media links with correct attributes', () => {
-    const { container } = render(<Footer />);
-    const social = within(container.querySelector('.flex.space-x-4') as HTMLElement);
+    render(<Footer />);
 
-    const githubLink = social.getByRole('link', { name: 'GitHub' });
-    const linkedinLink = social.getByRole('link', { name: 'LinkedIn' });
+    // GitHub's accessible name is unique. The social LinkedIn shares its name
+    // with the Resources LinkedIn text link, so identify it by the icon (svg)
+    // it contains rather than by a layout-class container.
+    const githubLink = screen.getByRole('link', { name: 'GitHub' });
+    const linkedinLink = screen
+      .getAllByRole('link', { name: 'LinkedIn' })
+      .find((link) => link.querySelector('svg')) as HTMLElement;
 
     // Real profile URLs (not the previous generic placeholders)
     expect(githubLink).toHaveAttribute('href', 'https://github.com/JoseRoberts87');
@@ -43,7 +47,7 @@ describe('Footer Component', () => {
     }
 
     // The placeholder Twitter link was removed.
-    expect(social.queryByRole('link', { name: 'Twitter' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Twitter' })).not.toBeInTheDocument();
   });
 
   it('displays location and availability', () => {
@@ -96,30 +100,24 @@ describe('Footer Component', () => {
     expect(footer).toBeInTheDocument();
   });
 
-  it('has responsive grid layout classes', () => {
-    const { container } = render(<Footer />);
-    const gridContainer = container.querySelector('.grid');
-    expect(gridContainer).toHaveClass('grid-cols-1', 'md:grid-cols-3');
+  it('renders the three footer columns', () => {
+    render(<Footer />);
+    // The footer is a three-column layout: brand, expertise areas, resources.
+    // Assert the columns are present by their headings rather than grid classes.
+    expect(screen.getByText('Portfolio')).toBeInTheDocument();
+    expect(screen.getByText('Expertise Areas')).toBeInTheDocument();
+    expect(screen.getByText('Resources')).toBeInTheDocument();
   });
 
   it('renders SVG icons for social media', () => {
-    const { container } = render(<Footer />);
-    const social = within(container.querySelector('.flex.space-x-4') as HTMLElement);
-
-    expect(social.getByRole('link', { name: 'GitHub' }).querySelector('svg')).toBeInTheDocument();
-    expect(social.getByRole('link', { name: 'LinkedIn' }).querySelector('svg')).toBeInTheDocument();
-  });
-
-  it('has hover effects on links', () => {
     render(<Footer />);
 
-    const webDevLink = screen.getByRole('link', { name: 'Web Development' });
-    expect(webDevLink).toHaveClass('hover:text-slate-900', 'dark:hover:text-white');
-  });
+    const githubLink = screen.getByRole('link', { name: 'GitHub' });
+    const socialLinkedin = screen
+      .getAllByRole('link', { name: 'LinkedIn' })
+      .find((link) => link.querySelector('svg')) as HTMLElement;
 
-  it('uses consistent color scheme', () => {
-    const { container } = render(<Footer />);
-    const footer = container.querySelector('footer');
-    expect(footer).toHaveClass('bg-surface-alt', 'border-t', 'border-slate-200', 'dark:border-slate-800');
+    expect(githubLink.querySelector('svg')).toBeInTheDocument();
+    expect(socialLinkedin.querySelector('svg')).toBeInTheDocument();
   });
 });

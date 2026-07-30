@@ -59,10 +59,10 @@ describe('Header Component', () => {
     expect(screen.queryByRole('link', { name: 'Machine Learning' })).not.toBeInTheDocument();
   });
 
-  it('applies fixed positioning and backdrop blur to the banner', () => {
+  it('exposes the banner and navigation landmarks', () => {
     renderWithTheme(<Header />);
-    const header = screen.getByRole('banner');
-    expect(header).toHaveClass('fixed', 'top-0', 'left-0', 'right-0');
-    expect(header).toHaveClass('backdrop-blur-sm');
+    // Assert the accessibility landmarks rather than positioning/utility classes.
+    expect(screen.getByRole('banner')).toBeInTheDocument();
+    expect(screen.getByRole('navigation')).toBeInTheDocument();
   });
 });

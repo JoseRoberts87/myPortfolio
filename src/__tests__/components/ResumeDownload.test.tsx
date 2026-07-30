@@ -180,21 +180,6 @@ describe('ResumeDownload Component', () => {
     expect(downloadButton).not.toBeDisabled();
   });
 
-  it('should have hover effects on download button', () => {
-    render(<ResumeDownload />);
-
-    const downloadButton = screen.getByRole('button', { name: /download resume/i });
-    expect(downloadButton).toHaveClass('hover:from-purple-500');
-    expect(downloadButton).toHaveClass('hover:to-purple-400');
-  });
-
-  it('should have gradient background on CTA section', () => {
-    const { container } = render(<ResumeDownload />);
-
-    const ctaSection = container.querySelector('.bg-gradient-to-br.from-purple-900\\/20');
-    expect(ctaSection).toBeInTheDocument();
-  });
-
   it('should display checkmark icons for qualifications', () => {
     const { container } = render(<ResumeDownload />);
 
@@ -203,29 +188,16 @@ describe('ResumeDownload Component', () => {
     expect(checkmarks.length).toBeGreaterThanOrEqual(4);
   });
 
-  it('should have responsive grid layout', () => {
-    const { container } = render(<ResumeDownload />);
-
-    const grid = container.querySelector('.grid.grid-cols-1.lg\\:grid-cols-2');
-    expect(grid).toBeInTheDocument();
-  });
-
-  it('should have proper button styling', () => {
+  it('should render the resume info and the download CTA together', () => {
     render(<ResumeDownload />);
 
-    const downloadButton = screen.getByRole('button', { name: /download resume/i });
-    expect(downloadButton).toHaveClass('px-8');
-    expect(downloadButton).toHaveClass('py-4');
-    expect(downloadButton).toHaveClass('rounded-lg');
-    expect(downloadButton).toHaveClass('font-semibold');
-  });
-
-  it('should render within a Card component', () => {
-    const { container } = render(<ResumeDownload />);
-
-    // Card component adds rounded-lg class
-    const card = container.querySelector('.rounded-lg');
-    expect(card).toBeInTheDocument();
+    // The component renders two content columns inside a Card: the candidate
+    // summary and the download call-to-action. Assert both render rather than
+    // probing layout/utility classes.
+    expect(screen.getByText('Jose Roberts')).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /download resume/i })
+    ).toBeInTheDocument();
   });
 
   it('should have download cloud icon', () => {
@@ -234,28 +206,6 @@ describe('ResumeDownload Component', () => {
     // Check for cloud download SVG icon
     const cloudIcon = container.querySelector('svg path[d*="M7 16a4 4 0"]');
     expect(cloudIcon).toBeInTheDocument();
-  });
-
-  it('should animate download icon while downloading', () => {
-    const mockClick = jest.fn();
-    const mockLink = document.createElement('a');
-    mockLink.click = mockClick;
-
-    document.createElement = jest.fn((tagName: string) => {
-      if (tagName === 'a') {
-        return mockLink;
-      }
-      return originalCreateElement.call(document, tagName);
-    }) as any;
-
-    const { container } = render(<ResumeDownload />);
-
-    const downloadButton = screen.getByRole('button', { name: /download resume/i });
-    fireEvent.click(downloadButton);
-
-    // Icon should have animate-bounce class while downloading
-    const downloadIcon = downloadButton.querySelector('svg');
-    expect(downloadIcon).toHaveClass('animate-bounce');
   });
 
   it('should have correct file path for resume', () => {

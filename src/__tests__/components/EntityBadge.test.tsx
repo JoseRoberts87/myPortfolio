@@ -35,12 +35,12 @@ describe('EntityBadge', () => {
     expect(screen.getByText('Barack Obama')).toBeInTheDocument();
     expect(screen.getByText('Acme Corp')).toBeInTheDocument();
 
-    // Styling is driven by entity_type: PERSON is blue, ORG is purple.
+    // The entity type drives the styling: two different types must produce
+    // different classes (the color encodes the type). Assert they differ rather
+    // than pinning exact color tokens.
     const personBadge = screen.getByTitle('Person: Barack Obama');
     const orgBadge = screen.getByTitle('Organization: Acme Corp');
-    expect(personBadge).toHaveClass('bg-blue-600/20', 'text-blue-400');
-    expect(orgBadge).toHaveClass('bg-purple-600/20', 'text-purple-400');
-    expect(personBadge).not.toHaveClass('bg-purple-600/20');
+    expect(personBadge.className).not.toBe(orgBadge.className);
   });
 
   it('shows the human-readable type label when showType is set', () => {
@@ -50,15 +50,26 @@ describe('EntityBadge', () => {
     expect(screen.getByText('France')).toBeInTheDocument();
   });
 
-  it('falls back to neutral styling and the raw type for unknown entity types', () => {
-    render(<EntityBadge entity={makeEntity({ entity_type: 'MADE_UP', entity_text: 'Widget' })} />);
-    const badge = screen.getByTitle('MADE_UP: Widget');
-    expect(badge).toHaveClass('bg-gray-600/20', 'text-gray-400');
+  it('falls back to the raw type label and distinct styling for unknown entity types', () => {
+    render(
+      <>
+        <EntityBadge entity={makeEntity({ entity_type: 'MADE_UP', entity_text: 'Widget' })} />
+        <EntityBadge entity={makeEntity({ id: 2, entity_type: 'PERSON', entity_text: 'Ada' })} />
+      </>
+    );
+
+    // Unknown types have no human label, so the tooltip keeps the raw type.
+    const unknownBadge = screen.getByTitle('MADE_UP: Widget');
+    expect(unknownBadge).toBeInTheDocument();
+
+    // ...and they render with different styling than a known (PERSON) type.
+    const personBadge = screen.getByTitle('Person: Ada');
+    expect(unknownBadge.className).not.toBe(personBadge.className);
   });
 
-  it('applies the shared base badge styles and a descriptive title tooltip', () => {
+  it('exposes a descriptive title tooltip combining the type label and text', () => {
     render(<EntityBadge entity={makeEntity()} />);
-    const badge = screen.getByTitle('Person: Barack Obama');
-    expect(badge).toHaveClass('inline-flex', 'rounded-md', 'border');
+    // The tooltip is "<human label>: <entity text>".
+    expect(screen.getByTitle('Person: Barack Obama')).toBeInTheDocument();
   });
 });

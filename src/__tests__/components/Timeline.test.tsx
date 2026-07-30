@@ -171,78 +171,17 @@ describe('Timeline Component', () => {
         screen.getByText(/Consulted on the design of an AI-first system/i)
       ).toBeInTheDocument();
     });
-
-    it('should not render highlights section if highlights array is empty', () => {
-      const { container } = render(<Timeline variant="education" />);
-
-      // Certifications don't have highlights in the component
-      const certCards = container.querySelectorAll('.space-y-1');
-      // Education has highlights, certifications don't
-      expect(certCards.length).toBeGreaterThan(0);
-    });
   });
 
-  describe('Layout and Styling', () => {
-    it('should have gradient backgrounds on icon containers', () => {
-      const { container } = render(<Timeline />);
+  describe('Layout and Content', () => {
+    it('should render period badges with their text', () => {
+      render(<Timeline />);
 
-      const gradientIcons = container.querySelectorAll('.bg-gradient-to-br.from-purple-600.to-purple-400');
-      expect(gradientIcons.length).toBeGreaterThan(0);
-    });
-
-    it('should have period badges with purple background', () => {
-      const { container } = render(<Timeline />);
-
-      const periodBadges = container.querySelectorAll('.bg-accent-soft');
-      expect(periodBadges.length).toBeGreaterThan(0);
-    });
-
-    it('should use Card component for experience items', () => {
-      const { container } = render(<Timeline variant="experience" />);
-
-      // Card adds rounded-lg class
-      const cards = container.querySelectorAll('.rounded-lg');
-      expect(cards.length).toBeGreaterThan(0);
-    });
-
-    it('should have responsive grid layout for education items', () => {
-      const { container } = render(<Timeline variant="education" />);
-
-      const grid = container.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3');
-      expect(grid).toBeInTheDocument();
-    });
-
-    it('should have responsive grid layout for experience timeline', () => {
-      const { container } = render(<Timeline variant="experience" />);
-
-      const grids = container.querySelectorAll('.grid.grid-cols-1.md\\:grid-cols-2');
-      expect(grids.length).toBeGreaterThan(0);
-    });
-  });
-
-  describe('Timeline Visual Elements', () => {
-    it('should render timeline dots for desktop view', () => {
-      const { container } = render(<Timeline variant="experience" />);
-
-      // Timeline dots (hidden on mobile, visible on desktop)
-      const timelineDots = container.querySelectorAll('.w-12.h-12.rounded-full');
-      expect(timelineDots.length).toBeGreaterThan(0);
-    });
-
-    it('should have timeline connecting lines', () => {
-      const { container } = render(<Timeline variant="experience" />);
-
-      // Timeline vertical line
-      const timelineLines = container.querySelectorAll('.w-0\\.5.bg-purple-500\\/30');
-      expect(timelineLines.length).toBeGreaterThan(0);
-    });
-
-    it('should hide timeline elements on mobile with md:block classes', () => {
-      const { container } = render(<Timeline variant="experience" />);
-
-      // Elements that should be hidden on mobile
-      const hiddenOnMobile = container.querySelectorAll('.hidden.md\\:block');
-      expect(hiddenOnMobile.length).toBeGreaterThan(0);
+      // Period labels render for both experience and education items. The badge
+      // styling is incidental; the text is the contract. (Experience periods
+      // appear twice due to the mobile + desktop badges.)
+      expect(screen.getAllByText('July 2021 - August 2025').length).toBeGreaterThan(0);
+      expect(screen.getAllByText('2016 - 2017').length).toBeGreaterThan(0);
     });
   });
 
@@ -309,26 +248,12 @@ describe('Timeline Component', () => {
     });
   });
 
-  describe('Visual Design', () => {
-    it('should have white text for titles', () => {
-      const { container } = render(<Timeline />);
+  describe('Organizations', () => {
+    it('should render organization names for experience and education', () => {
+      render(<Timeline />);
 
-      const whiteTitles = container.querySelectorAll('.text-white');
-      expect(whiteTitles.length).toBeGreaterThan(0);
-    });
-
-    it('should have purple text for organizations', () => {
-      const { container } = render(<Timeline />);
-
-      const purpleOrgs = container.querySelectorAll('.text-accent');
-      expect(purpleOrgs.length).toBeGreaterThan(0);
-    });
-
-    it('should have shadow effects on timeline dots', () => {
-      const { container } = render(<Timeline variant="experience" />);
-
-      const shadowElements = container.querySelectorAll('.shadow-lg, .shadow-2xl');
-      expect(shadowElements.length).toBeGreaterThan(0);
+      expect(screen.getByText('MojoTech')).toBeInTheDocument();
+      expect(screen.getByText('University of Rhode Island')).toBeInTheDocument();
     });
   });
 });

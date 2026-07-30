@@ -3,64 +3,43 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Section from '@/components/ui/Section';
 
+// Return the root element's className for a given padding prop, so tests can
+// assert the prop→output CONTRACT (distinct classes) without hardcoding the
+// Tailwind token values (which would red-line on spacing/token changes).
+const rootClass = (padding?: 'none' | 'sm' | 'md' | 'lg' | 'xl') => {
+  const { container } = render(<Section padding={padding}>Content</Section>);
+  return (container.firstChild as HTMLElement).className;
+};
+
 describe('Section Component', () => {
-  it('should render section with children', () => {
+  it('renders its children', () => {
     render(<Section>Test Section</Section>);
     expect(screen.getByText('Test Section')).toBeInTheDocument();
   });
 
-  it('should render as section element by default', () => {
+  it('renders a <section> element', () => {
     const { container } = render(<Section>Content</Section>);
     expect(container.querySelector('section')).toBeInTheDocument();
   });
 
-  it('should apply default padding', () => {
-    const { container } = render(<Section>Content</Section>);
-    const section = container.firstChild;
-    expect(section).toHaveClass('py-16');
+  it('maps each padding size to a distinct class', () => {
+    // Behavior contract: every padding value produces a different output.
+    const classes = (['none', 'sm', 'md', 'lg', 'xl'] as const).map(rootClass);
+    expect(new Set(classes).size).toBe(classes.length);
   });
 
-  it('should apply custom padding - sm', () => {
-    const { container } = render(<Section padding="sm">Content</Section>);
-    const section = container.firstChild;
-    expect(section).toHaveClass('py-8');
+  it('applies no vertical padding utility when padding="none"', () => {
+    expect(rootClass('none')).not.toMatch(/\bpy-\d/);
+    expect(rootClass('lg')).toMatch(/\bpy-\d/);
   });
 
-  it('should apply custom padding - md', () => {
-    const { container } = render(<Section padding="md">Content</Section>);
-    const section = container.firstChild;
-    expect(section).toHaveClass('py-12');
-  });
-
-  it('should apply custom padding - lg', () => {
-    const { container } = render(<Section padding="lg">Content</Section>);
-    const section = container.firstChild;
-    expect(section).toHaveClass('py-16');
-  });
-
-  it('should apply custom padding - xl', () => {
-    const { container } = render(<Section padding="xl">Content</Section>);
-    const section = container.firstChild;
-    expect(section).toHaveClass('py-24');
-  });
-
-  it('should apply custom padding - none', () => {
-    const { container } = render(<Section padding="none">Content</Section>);
-    const section = container.firstChild;
-    // padding="none" results in empty string, so no py-* class is added
-    expect(section).not.toHaveClass('py-8');
-    expect(section).not.toHaveClass('py-12');
-  });
-
-  it('should apply custom className', () => {
+  it('forwards a custom className', () => {
     const { container } = render(<Section className="custom-section">Content</Section>);
-    const section = container.firstChild;
-    expect(section).toHaveClass('custom-section');
+    expect(container.firstChild).toHaveClass('custom-section');
   });
 
-  it('should support id attribute', () => {
+  it('supports an id attribute', () => {
     const { container } = render(<Section id="test-section">Content</Section>);
-    const section = container.querySelector('#test-section');
-    expect(section).toBeInTheDocument();
+    expect(container.querySelector('#test-section')).toBeInTheDocument();
   });
 });

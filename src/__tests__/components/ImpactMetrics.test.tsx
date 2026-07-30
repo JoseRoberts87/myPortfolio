@@ -28,8 +28,15 @@ describe('ImpactMetrics', () => {
   });
 
   it('renders one card per metric', () => {
-    const { container } = render(<ImpactMetrics />);
-    // Each metric card is a bordered rounded tile in the grid.
-    expect(container.querySelectorAll('.grid > div')).toHaveLength(6);
+    render(<ImpactMetrics />);
+    // Each of the six metric cards contributes its own supporting detail line;
+    // asserting all six render proves one card per metric without counting DOM
+    // nodes by layout class.
+    expect(screen.getByText(/Analytics-platform growth via Databricks/i)).toBeInTheDocument();
+    expect(screen.getByText(/AI-first system delivered in 3 weeks/i)).toBeInTheDocument();
+    expect(screen.getByText(/ML forecasting model in one year/i)).toBeInTheDocument();
+    expect(screen.getByText(/Predictive maintenance/i)).toBeInTheDocument();
+    expect(screen.getByText(/Real-time IoT platform/i)).toBeInTheDocument();
+    expect(screen.getByText(/Deposit-account analytics/i)).toBeInTheDocument();
   });
 });

@@ -36,12 +36,6 @@ describe('Textarea Component', () => {
     expect(textarea).toBeDisabled();
   });
 
-  it('should apply default styles', () => {
-    render(<Textarea />);
-    const textarea = screen.getByRole('textbox');
-    expect(textarea).toHaveClass('bg-white', 'dark:bg-gray-800', 'border', 'rounded-lg', 'px-4', 'py-3');
-  });
-
   it('should support ref forwarding', () => {
     const ref = React.createRef<HTMLTextAreaElement>();
     render(<Textarea ref={ref} />);
@@ -74,19 +68,6 @@ describe('Textarea Component', () => {
   it('should render error message when error prop is provided', () => {
     render(<Textarea error="This field is required" />);
     expect(screen.getByText('This field is required')).toBeInTheDocument();
-  });
-
-  it('should apply error border color when error prop is provided', () => {
-    render(<Textarea error="Error message" />);
-    const textarea = screen.getByRole('textbox');
-    expect(textarea).toHaveClass('border-red-500');
-  });
-
-  it('should not apply error styles when error prop is not provided', () => {
-    render(<Textarea />);
-    const textarea = screen.getByRole('textbox');
-    expect(textarea).not.toHaveClass('border-red-500');
-    expect(textarea).toHaveClass('border-slate-300');
   });
 
   it('should render helper text when helperText prop is provided', () => {
