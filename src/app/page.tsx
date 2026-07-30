@@ -3,6 +3,7 @@ import SkillsMatrix from '@/components/SkillsMatrix';
 import ResumeDownload from '@/components/ResumeDownload';
 import Timeline from '@/components/Timeline';
 import Certifications from '@/components/Certifications';
+import ImpactMetrics from '@/components/ImpactMetrics';
 import VisitStats from '@/components/VisitStats';
 import Image from 'next/image';
 
@@ -128,6 +129,13 @@ export default function Home() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Impact Metrics Band */}
+      <section id="impact" className="py-20 bg-surface-alt">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <ImpactMetrics />
         </div>
       </section>
 
