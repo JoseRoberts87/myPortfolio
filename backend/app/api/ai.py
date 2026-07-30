@@ -13,8 +13,15 @@ from redis import asyncio as aioredis
 from app.core.config import settings
 from app.core.llm import llm_status
 from app.core.logging_config import get_logger
-from app.schemas.ai import AgentResponse, ChatRequest, ChatResponse
+from app.schemas.ai import (
+    AgentResponse,
+    ChatRequest,
+    ChatResponse,
+    GenerateRequest,
+    GenerateResponse,
+)
 from app.services.agent_service import agent_service
+from app.services.content_service import content_service
 from app.services.portfolio_knowledge import KNOWLEDGE_CHUNKS
 from app.services.rag_service import rag_service
 
@@ -151,6 +158,46 @@ async def agent(payload: ChatRequest, request: Request) -> AgentResponse:
         },
     )
     return AgentResponse(**result)
+
+
+@router.post(
+    "/generate",
+    response_model=GenerateResponse,
+    summary="Generate tailored content grounded in the resume",
+    description="Generate a cover letter, elevator pitch, or LinkedIn intro tailored "
+    "to a target role — grounded in Jose's resume so it never invents experience.",
+)
+async def generate(payload: GenerateRequest, request: Request) -> GenerateResponse:
+    if not settings.AI_CHAT_ENABLED or not content_service.enabled:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="The content generator is not configured. Start a local Ollama "
+            "server or set OPENAI_API_KEY to enable it.",
+        )
+
+    if len(payload.brief) > settings.AI_MAX_QUESTION_CHARS * 4:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Brief is too long.")
+
+    await _enforce_rate_limit(request)
+
+    try:
+        result = await content_service.generate(
+            payload.brief, payload.format, payload.tone
+        )
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.error(f"AI content generation error: {exc}")
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="The content generator is temporarily unavailable. Please try again.",
+        )
+
+    logger.info(
+        "AI content generated",
+        extra={"format": payload.format, "tone": payload.tone, "tokens": result["tokens_used"]},
+    )
+    return GenerateResponse(**result)
 
 
 @router.get("/health", summary="AI assistant status")

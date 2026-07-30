@@ -50,3 +50,31 @@ class AgentResponse(BaseModel):
     steps: List[AgentStep] = []
     model: str
     tokens_used: int = 0
+
+
+class GenerateRequest(BaseModel):
+    """A brief for the tailored-content generator (e.g. a role or job description)."""
+
+    brief: str = Field(
+        default="",
+        max_length=2000,
+        description="A target role or job description to tailor the content to. Optional.",
+        examples=["Senior AI Engineer focused on RAG systems and agentic workflows"],
+    )
+    format: str = Field(
+        default="elevator_pitch",
+        description="cover_letter | elevator_pitch | linkedin_intro",
+    )
+    tone: str = Field(
+        default="professional",
+        description="professional | conversational | punchy",
+    )
+
+
+class GenerateResponse(BaseModel):
+    """Generated content grounded in Jose's resume, with the sources it drew on."""
+
+    content: str
+    sources: List[Source] = []
+    model: str
+    tokens_used: int = 0
