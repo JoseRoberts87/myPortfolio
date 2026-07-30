@@ -48,7 +48,7 @@ export function PipelineMetricsDashboard({ metrics, loading }: PipelineMetricsDa
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Total Runs */}
         <div className="text-center">
-          <div className="text-3xl font-bold text-blue-400">{metrics.total_runs}</div>
+          <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">{metrics.total_runs}</div>
           <div className="text-sm text-muted mt-1">Total Runs</div>
           <div className="text-xs text-faint mt-1">
             {metrics.successful_runs} success, {metrics.failed_runs} failed
@@ -98,7 +98,7 @@ export function PipelineMetricsDashboard({ metrics, loading }: PipelineMetricsDa
                 <span className="text-muted">Status:</span>
                 <span className={`ml-2 font-semibold ${
                   metrics.last_run.status === 'success' ? 'text-green-400' :
-                  metrics.last_run.status === 'failed' ? 'text-red-400' :
+                  metrics.last_run.status === 'failed' ? 'text-red-600 dark:text-red-400' :
                   'text-yellow-400'
                 }`}>
                   {metrics.last_run.status}

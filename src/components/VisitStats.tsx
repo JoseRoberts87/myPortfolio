@@ -114,7 +114,7 @@ export default function VisitStats() {
         <div className="pt-2 border-t border-subtle">
           <div className="flex items-center justify-between">
             <span className="text-xs text-muted">Last 24h</span>
-            <span className="text-sm font-semibold text-green-600 dark:text-green-400">{stats.recent_visits.toLocaleString()}</span>
+            <span className="text-sm font-semibold text-green-700 dark:text-green-400">{stats.recent_visits.toLocaleString()}</span>
           </div>
         </div>
 

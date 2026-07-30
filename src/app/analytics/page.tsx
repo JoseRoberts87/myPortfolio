@@ -102,7 +102,7 @@ export default function AnalyticsPage() {
               <Badge variant="error" size="lg" className="mb-4">
                 Error
               </Badge>
-              <p className="text-red-400">{error}</p>
+              <p className="text-red-600 dark:text-red-400">{error}</p>
               <button
                 onClick={loadAnalytics}
                 className="mt-4 px-4 py-2 bg-track hover:bg-slate-300 dark:hover:bg-gray-600 rounded-lg transition-colors"
@@ -120,7 +120,7 @@ export default function AnalyticsPage() {
               <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                 <Card variant="bordered" padding="lg">
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-blue-400">
+                    <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
                       {data.engagement_metrics.avg_score.toFixed(0)}
                     </div>
                     <div className="text-muted mt-1 text-sm">Avg Score</div>

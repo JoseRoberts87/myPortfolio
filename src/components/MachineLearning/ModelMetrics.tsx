@@ -32,7 +32,7 @@ export default function ModelMetrics() {
       precision: MODEL_METRICS.precision.positive,
       recall: MODEL_METRICS.recall.positive,
       f1Score: MODEL_METRICS.f1Score.positive,
-      color: 'text-green-600 dark:text-green-400',
+      color: 'text-green-700 dark:text-green-400',
     },
     {
       class: 'Negative',
@@ -155,7 +155,7 @@ export default function ModelMetrics() {
           <div className="space-y-4">
             <div>
               <div className="flex justify-between text-sm mb-2">
-                <span className="text-green-600 dark:text-green-400 font-medium">Positive</span>
+                <span className="text-green-700 dark:text-green-400 font-medium">Positive</span>
                 <span className="text-gray-600 dark:text-gray-400">
                   {(DATASET_INFO.classDistribution.positive * 100).toFixed(1)}%
                 </span>

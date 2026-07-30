@@ -29,7 +29,7 @@ export default function GitHubStats({ stats }: GitHubStatsProps) {
       value: stats.totalForks,
       icon: '🍴',
       color: 'bg-green-500/10 border-green-500/20',
-      textColor: 'text-green-600 dark:text-green-400',
+      textColor: 'text-green-700 dark:text-green-400',
     },
     {
       label: 'Years Active',

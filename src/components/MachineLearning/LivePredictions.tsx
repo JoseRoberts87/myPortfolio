@@ -104,7 +104,7 @@ export default function LivePredictions() {
   const getSentimentColor = (label: string) => {
     switch (label) {
       case 'positive':
-        return 'text-green-600 dark:text-green-400';
+        return 'text-green-700 dark:text-green-400';
       case 'negative':
         return 'text-red-600 dark:text-red-400';
       default:

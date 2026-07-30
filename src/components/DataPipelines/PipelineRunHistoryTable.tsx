@@ -124,7 +124,7 @@ export function PipelineRunHistoryTable({ runs, loading }: PipelineRunHistoryTab
                       <span className={`font-semibold ${
                         run.data_quality_score >= 90 ? 'text-green-400' :
                         run.data_quality_score >= 70 ? 'text-yellow-400' :
-                        'text-red-400'
+                        'text-red-600 dark:text-red-400'
                       }`}>
                         {run.data_quality_score.toFixed(0)}%
                       </span>

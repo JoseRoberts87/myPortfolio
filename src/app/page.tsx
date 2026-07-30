@@ -156,7 +156,7 @@ export default function Home() {
                 <div className="text-4xl mb-4">{area.icon}</div>
                 <h3 className="text-2xl font-semibold text-foreground mb-3 group-hover:text-purple-400 transition-colors">{area.title}</h3>
                 <p className="text-slate-600 dark:text-gray-400 mb-6">{area.description}</p>
-                <div className="flex items-center gap-2 text-purple-400 text-sm font-medium group-hover:gap-3 transition-all">
+                <div className="flex items-center gap-2 text-accent text-sm font-medium group-hover:gap-3 transition-all">
                   <span>View Details</span>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -192,7 +192,7 @@ export default function Home() {
               <p className="text-slate-600 dark:text-gray-400 mb-4">
                 Building a multi-model computer vision system with YOLOv8 and TensorFlow.js
               </p>
-              <div className="flex items-center gap-2 text-purple-400 text-sm font-medium group-hover:gap-3 transition-all">
+              <div className="flex items-center gap-2 text-accent text-sm font-medium group-hover:gap-3 transition-all">
                 <span>Read Case Study</span>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -211,7 +211,7 @@ export default function Home() {
               <p className="text-slate-600 dark:text-gray-400 mb-4">
                 Sentiment analysis, NER, and keyword extraction with production-grade error handling
               </p>
-              <div className="flex items-center gap-2 text-purple-400 text-sm font-medium group-hover:gap-3 transition-all">
+              <div className="flex items-center gap-2 text-accent text-sm font-medium group-hover:gap-3 transition-all">
                 <span>Read Case Study</span>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -230,7 +230,7 @@ export default function Home() {
               <p className="text-slate-600 dark:text-gray-400 mb-4">
                 Automated ingestion from multiple APIs with robust error handling and observability
               </p>
-              <div className="flex items-center gap-2 text-purple-400 text-sm font-medium group-hover:gap-3 transition-all">
+              <div className="flex items-center gap-2 text-accent text-sm font-medium group-hover:gap-3 transition-all">
                 <span>Read Case Study</span>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -283,21 +283,21 @@ export default function Home() {
             {/* Public Repos */}
             <div className="bg-surface-alt border border-subtle rounded-lg p-6 text-center hover:border-purple-500 transition-colors">
               <div className="text-4xl mb-3">📚</div>
-              <div className="text-3xl font-bold text-purple-400 mb-2">30+</div>
+              <div className="text-3xl font-bold text-accent mb-2">30+</div>
               <div className="text-slate-600 dark:text-gray-400">Public Repositories</div>
             </div>
 
             {/* Contributions */}
             <div className="bg-surface-alt border border-subtle rounded-lg p-6 text-center hover:border-purple-500 transition-colors">
               <div className="text-4xl mb-3">💻</div>
-              <div className="text-3xl font-bold text-purple-400 mb-2">500+</div>
+              <div className="text-3xl font-bold text-accent mb-2">500+</div>
               <div className="text-slate-600 dark:text-gray-400">Contributions This Year</div>
             </div>
 
             {/* Languages */}
             <div className="bg-surface-alt border border-subtle rounded-lg p-6 text-center hover:border-purple-500 transition-colors">
               <div className="text-4xl mb-3">🔧</div>
-              <div className="text-3xl font-bold text-purple-400 mb-2">10+</div>
+              <div className="text-3xl font-bold text-accent mb-2">10+</div>
               <div className="text-slate-600 dark:text-gray-400">Programming Languages</div>
             </div>
           </div>
