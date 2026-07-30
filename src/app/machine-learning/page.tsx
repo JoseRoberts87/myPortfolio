@@ -1,5 +1,6 @@
 import { Section, PageHero } from '@/components/ui';
 import SentimentClassifier from '@/components/MachineLearning/SentimentClassifier';
+import PredictiveMaintenance from '@/components/MachineLearning/PredictiveMaintenance';
 import ModelMetrics from '@/components/MachineLearning/ModelMetrics';
 import ConfusionMatrix from '@/components/MachineLearning/ConfusionMatrix';
 import WordCloudSection from '@/components/MachineLearning/WordCloudSection';
@@ -11,8 +12,8 @@ export default function MachineLearningPage() {
       {/* Hero Section */}
       <PageHero
         title="Machine Learning & NLP"
-        tagline="Interactive sentiment analysis using DistilBERT, featuring real-time predictions, model performance metrics, and explainability visualizations."
-        badges={['HuggingFace', 'Transformers.js', 'DistilBERT', 'PyTorch', 'NLP', 'Sentiment Analysis', 'TypeScript', 'React']}
+        tagline="Browser-based ML — interactive DistilBERT sentiment analysis plus a time-series forecasting demo for predictive maintenance, with real-time predictions and explainability visualizations."
+        badges={['HuggingFace', 'DistilBERT', 'NLP', 'Sentiment Analysis', 'Time-Series Forecasting', 'Predictive Maintenance', 'TypeScript', 'React']}
       />
 
       {/* Model Description */}
@@ -46,6 +47,11 @@ export default function MachineLearningPage() {
       {/* Interactive Sentiment Classifier */}
       <Section padding="lg">
         <SentimentClassifier />
+      </Section>
+
+      {/* Predictive Maintenance Forecasting */}
+      <Section padding="lg" background="subtle">
+        <PredictiveMaintenance />
       </Section>
 
       {/* Model Performance Metrics */}
