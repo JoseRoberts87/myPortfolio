@@ -25,8 +25,8 @@ describe('ThemeToggle', () => {
 
   it('resolves to light mode on mount given no saved preference (matchMedia mock)', () => {
     renderWithTheme();
-    // jest.setup mocks matchMedia -> matches:false and localStorage -> empty,
-    // so the provider's mount effect settles on the light theme.
+    // jest.setup mocks matchMedia -> matches:false and clears localStorage
+    // before each test, so the provider's mount effect settles on light.
     expect(document.documentElement.classList.contains('dark')).toBe(false);
     expect(screen.getByRole('button')).toHaveAttribute('aria-label', 'Switch to dark mode');
   });

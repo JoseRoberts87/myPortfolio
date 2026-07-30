@@ -4,9 +4,8 @@
  * `global.fetch` is replaced with a jest mock in every test and fed
  * GitHub-Response-like objects via the `mockResponse` helper below.
  *
- * NOTE: the shared `jest.setup.ts` installs a no-op `localStorage` mock
- * (all methods are empty `jest.fn()`s). The cache tests need a real,
- * working store, so we install an in-memory `localStorage` for this file.
+ * localStorage is jsdom's real store, cleared before every test by the shared
+ * `jest.setup.ts` — no per-file store install needed.
  */
 
 import {
@@ -25,30 +24,6 @@ import type {
   GitHubEvent,
   GitHubData,
 } from '@/types/github';
-
-// --- Real in-memory localStorage (overrides the no-op mock in jest.setup.ts) ---
-const memoryStore: Record<string, string> = {};
-const memoryLocalStorage: Storage = {
-  getItem: (key: string) => (key in memoryStore ? memoryStore[key] : null),
-  setItem: (key: string, value: string) => {
-    memoryStore[key] = String(value);
-  },
-  removeItem: (key: string) => {
-    delete memoryStore[key];
-  },
-  clear: () => {
-    for (const key of Object.keys(memoryStore)) delete memoryStore[key];
-  },
-  key: (index: number) => Object.keys(memoryStore)[index] ?? null,
-  get length() {
-    return Object.keys(memoryStore).length;
-  },
-} as Storage;
-Object.defineProperty(global, 'localStorage', {
-  value: memoryLocalStorage,
-  writable: true,
-  configurable: true,
-});
 
 // --- Response helper (as specified by the task) ---
 const mockResponse = (
@@ -128,7 +103,7 @@ function makeEvent(overrides: Partial<GitHubEvent> = {}): GitHubEvent {
 
 beforeEach(() => {
   (global.fetch as jest.Mock) = jest.fn();
-  localStorage.clear();
+  // localStorage is cleared by the shared jest.setup beforeEach.
   jest.spyOn(console, 'log').mockImplementation(() => {});
   jest.spyOn(console, 'warn').mockImplementation(() => {});
   jest.spyOn(console, 'error').mockImplementation(() => {});
