@@ -62,7 +62,7 @@ export default function Footer() {
                 </svg>
                 Providence, RI
               </p>
-              <p className="flex items-center gap-2 text-sm font-medium text-green-600 dark:text-green-400">
+              <p className="flex items-center gap-2 text-sm font-medium text-green-700 dark:text-green-400">
                 <span className="relative flex h-2.5 w-2.5 flex-shrink-0" aria-hidden="true">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75"></span>
                   <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-green-500"></span>

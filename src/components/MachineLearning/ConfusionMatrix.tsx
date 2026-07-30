@@ -62,7 +62,7 @@ export default function ConfusionMatrix() {
               <div className="text-center">
                 <p className="text-sm font-semibold mb-2">Predicted</p>
                 <div className="flex gap-4">
-                  <div className="w-32 text-sm text-green-600 dark:text-green-400 font-medium">Positive</div>
+                  <div className="w-32 text-sm text-green-700 dark:text-green-400 font-medium">Positive</div>
                   <div className="w-32 text-sm text-red-600 dark:text-red-400 font-medium">Negative</div>
                 </div>
               </div>
@@ -73,7 +73,7 @@ export default function ConfusionMatrix() {
               <div>
                 <p className="text-sm font-semibold mb-2">Actual</p>
                 <div className="space-y-4">
-                  <div className="h-32 flex items-center justify-end pr-4 text-sm text-green-600 dark:text-green-400 font-medium">
+                  <div className="h-32 flex items-center justify-end pr-4 text-sm text-green-700 dark:text-green-400 font-medium">
                     Positive
                   </div>
                   <div className="h-32 flex items-center justify-end pr-4 text-sm text-red-600 dark:text-red-400 font-medium">
@@ -138,13 +138,13 @@ export default function ConfusionMatrix() {
           <div className="space-y-3 text-sm">
             <div className="flex justify-between">
               <span className="text-gray-600 dark:text-gray-400">True Positives</span>
-              <span className="font-medium text-green-600 dark:text-green-400">
+              <span className="font-medium text-green-700 dark:text-green-400">
                 {matrix[0][0].count} ({matrix[0][0].percentage.toFixed(1)}%)
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600 dark:text-gray-400">True Negatives</span>
-              <span className="font-medium text-green-600 dark:text-green-400">
+              <span className="font-medium text-green-700 dark:text-green-400">
                 {matrix[1][1].count} ({matrix[1][1].percentage.toFixed(1)}%)
               </span>
             </div>

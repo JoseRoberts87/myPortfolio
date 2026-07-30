@@ -230,7 +230,7 @@ export default function DataPipelinesPage() {
             <button
               onClick={handleRunPipeline}
               disabled={runningPipeline || loading}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors"
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors text-white"
             >
               {runningPipeline ? 'Running...' : 'Run Pipeline'}
             </button>
@@ -243,7 +243,7 @@ export default function DataPipelinesPage() {
               <Badge variant="error" size="lg" className="mb-4">
                 Error
               </Badge>
-              <p className="text-red-400">{error}</p>
+              <p className="text-red-600 dark:text-red-400">{error}</p>
               <button
                 onClick={loadData}
                 className="mt-4 px-4 py-2 bg-track hover:bg-slate-300 dark:hover:bg-gray-600 rounded-lg transition-colors"
@@ -254,7 +254,7 @@ export default function DataPipelinesPage() {
           ) : status ? (
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-400">{status.total_posts}</div>
+                <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">{status.total_posts}</div>
                 <div className="text-muted mt-1">Total Posts</div>
               </div>
               <div className="text-center">
@@ -317,7 +317,7 @@ export default function DataPipelinesPage() {
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-sm text-body">😞 Negative</span>
-                    <span className="text-sm font-semibold text-red-400">
+                    <span className="text-sm font-semibold text-red-600 dark:text-red-400">
                       {status.sentiment_stats.negative} ({Math.round((status.sentiment_stats.negative / status.sentiment_stats.analyzed) * 100)}%)
                     </span>
                   </div>
@@ -372,7 +372,7 @@ export default function DataPipelinesPage() {
             }}
             className={`px-6 py-3 font-semibold transition-colors border-b-2 ${
               activeTab === 'reddit'
-                ? 'text-blue-400 border-blue-400'
+                ? 'text-blue-600 border-blue-600 dark:text-blue-400 dark:border-blue-400'
                 : 'text-muted border-transparent hover:text-slate-600 dark:hover:text-gray-300'
             }`}
           >
@@ -386,7 +386,7 @@ export default function DataPipelinesPage() {
             }}
             className={`px-6 py-3 font-semibold transition-colors border-b-2 ${
               activeTab === 'articles'
-                ? 'text-blue-400 border-blue-400'
+                ? 'text-blue-600 border-blue-600 dark:text-blue-400 dark:border-blue-400'
                 : 'text-muted border-transparent hover:text-slate-600 dark:hover:text-gray-300'
             }`}
           >
@@ -462,7 +462,7 @@ export default function DataPipelinesPage() {
                 <button
                   onClick={handleRunPipeline}
                   disabled={runningPipeline}
-                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors"
+                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors text-white"
                 >
                   {runningPipeline ? 'Running Pipeline...' : 'Run Pipeline Now'}
                 </button>
@@ -537,7 +537,7 @@ export default function DataPipelinesPage() {
                 <button
                   onClick={handleRunPipeline}
                   disabled={runningPipeline}
-                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors"
+                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors text-white"
                 >
                   {runningPipeline ? 'Syncing Articles...' : 'Sync News Now'}
                 </button>

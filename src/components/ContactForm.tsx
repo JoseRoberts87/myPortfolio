@@ -167,7 +167,7 @@ export default function ContactForm() {
 
       {/* Availability, location, and direct links */}
       <div className="mb-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
-        <span className="inline-flex items-center gap-2 font-medium text-green-600 dark:text-green-400">
+        <span className="inline-flex items-center gap-2 font-medium text-green-700 dark:text-green-400">
           <span className="relative flex h-2.5 w-2.5" aria-hidden="true">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75"></span>
             <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-green-500"></span>

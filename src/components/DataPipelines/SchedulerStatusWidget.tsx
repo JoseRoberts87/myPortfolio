@@ -58,7 +58,7 @@ export function SchedulerStatusWidget({ schedulerStatus, loading }: SchedulerSta
         {/* Scheduler Info */}
         <div className="grid grid-cols-2 gap-4 text-center">
           <div>
-            <div className="text-2xl font-bold text-blue-400">{schedulerStatus.total_jobs}</div>
+            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{schedulerStatus.total_jobs}</div>
             <div className="text-sm text-muted">Active Jobs</div>
           </div>
           <div>
@@ -84,7 +84,7 @@ export function SchedulerStatusWidget({ schedulerStatus, loading }: SchedulerSta
                   </div>
                   <div className="flex items-center justify-between text-xs text-muted">
                     <span>Function: {job.name}</span>
-                    <span className="text-blue-400">
+                    <span className="text-blue-600 dark:text-blue-400">
                       Next run: {formatNextRunTime(job.next_run_time)}
                     </span>
                   </div>

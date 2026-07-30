@@ -62,7 +62,7 @@ export default function SentimentClassifier() {
   const getSentimentColor = (label: string) => {
     switch (label) {
       case 'positive':
-        return 'text-green-600 dark:text-green-400';
+        return 'text-green-700 dark:text-green-400';
       case 'negative':
         return 'text-red-600 dark:text-red-400';
       default:
@@ -109,7 +109,7 @@ export default function SentimentClassifier() {
           </div>
         )}
         {status === 'ready' && (
-          <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+          <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
@@ -195,7 +195,7 @@ export default function SentimentClassifier() {
                 {/* Positive */}
                 <div>
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="text-green-600 dark:text-green-400">Positive</span>
+                    <span className="text-green-700 dark:text-green-400">Positive</span>
                     <span className="text-gray-600 dark:text-gray-400">
                       {(result.confidences.positive * 100).toFixed(1)}%
                     </span>

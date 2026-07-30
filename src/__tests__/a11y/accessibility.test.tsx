@@ -21,6 +21,11 @@ import LayoutContent from '@/components/LayoutContent';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Textarea from '@/components/ui/Textarea';
+import Badge from '@/components/ui/Badge';
+import Card from '@/components/ui/Card';
+import Container from '@/components/ui/Container';
+import Section from '@/components/ui/Section';
+import PageHero from '@/components/ui/PageHero';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 
 expect.extend(toHaveNoViolations);
@@ -70,6 +75,60 @@ describe('accessibility (axe)', () => {
   it('Textarea (with label + helper text) has no detectable violations', async () => {
     const { container } = render(
       <Textarea label="Message" helperText="Max 500 characters" fullWidth />
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it('Badge variants have no detectable violations', async () => {
+    const { container } = render(
+      <>
+        <Badge variant="primary">primary</Badge>
+        <Badge variant="secondary">secondary</Badge>
+        <Badge variant="success">success</Badge>
+        <Badge variant="warning">warning</Badge>
+        <Badge variant="error">error</Badge>
+        <Badge variant="info">info</Badge>
+      </>
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it('Card has no detectable violations', async () => {
+    const { container } = render(
+      <Card variant="elevated">
+        <h2>Card title</h2>
+        <p>Card body content.</p>
+      </Card>
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it('Container has no detectable violations', async () => {
+    const { container } = render(
+      <Container>
+        <p>Contained content.</p>
+      </Container>
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it('Section has no detectable violations', async () => {
+    const { container } = render(
+      <Section background="subtle">
+        <p>Section content.</p>
+      </Section>
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it('PageHero has no detectable violations', async () => {
+    const { container } = render(
+      <PageHero
+        eyebrow="Feature"
+        title="Page title"
+        tagline="A short supporting tagline."
+        badges={['Alpha', 'Beta']}
+      />
     );
     expect(await axe(container)).toHaveNoViolations();
   });

@@ -46,7 +46,7 @@ export default function WordCloudSection() {
 
   const words = selectedSentiment === 'positive' ? POSITIVE_WORDS : NEGATIVE_WORDS;
   const color = selectedSentiment === 'positive'
-    ? 'text-green-600 dark:text-green-400'
+    ? 'text-green-700 dark:text-green-400'
     : 'text-red-600 dark:text-red-400';
 
   // Get top features for the selected sentiment
@@ -111,7 +111,7 @@ export default function WordCloudSection() {
             <div key={feature.word} className="flex items-center justify-between px-6 py-3 hover:bg-gray-50 dark:hover:bg-gray-800/50">
               <div className="flex items-center gap-3">
                 <span className="text-sm font-semibold text-faint w-6">#{index + 1}</span>
-                <span className={`font-medium ${selectedSentiment === 'positive' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                <span className={`font-medium ${selectedSentiment === 'positive' ? 'text-green-700 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                   {feature.word}
                 </span>
               </div>

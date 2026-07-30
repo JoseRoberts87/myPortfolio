@@ -33,11 +33,18 @@
   --background: #f8fafc;
   --foreground: #0f172a;
 
-  /* semantic tokens — light values (match the light half of each old pairing) */
+  /* semantic tokens — light values.
+     body/muted/faint were darkened one step (slate 600/500/400 -> 700/600/500)
+     so de-emphasized text clears the WCAG AA 4.5:1 ratio on light and lightly
+     tinted card backgrounds; slate-400 sat around 2.9:1 and slate-500 dipped
+     below 4.5:1 on off-white surfaces. */
   --sem-foreground: var(--color-slate-900);
-  --sem-body: var(--color-slate-600);
-  --sem-muted: var(--color-slate-500);
-  --sem-faint: var(--color-slate-400);
+  --sem-body: var(--color-slate-700);
+  --sem-muted: var(--color-slate-600);
+  /* faint matches muted in light mode: slate-500 still dipped below 4.5:1 on
+     off-white (#f4f7fa) surfaces, and slate-600 is the lightest slate that
+     clears AA there. The two stay visually distinct in dark mode. */
+  --sem-faint: var(--color-slate-600);
   --sem-accent: var(--color-purple-600);
   --sem-accent-strong: var(--color-purple-700);
   --sem-surface: #ffffff;
