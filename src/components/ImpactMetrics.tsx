@@ -11,7 +11,7 @@ const metrics: Metric[] = [
   {
     value: '72%',
     label: 'Fortune 500 growth',
-    detail: 'AI agents across a client’s work streams (MojoTech)',
+    detail: 'Analytics-platform growth via Databricks + AI agents (MojoTech)',
   },
   {
     value: '90%',
