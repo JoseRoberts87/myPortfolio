@@ -5,9 +5,40 @@ import LayoutContent from "@/components/LayoutContent";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist", display: "swap" });
 
+const SITE_URL = "https://www.therpiproject.com";
+const TITLE = "Jose Roberts — Data & AI Architect";
+const DESCRIPTION =
+  "Data & AI Architect with 15+ years building data platforms and production AI systems across finance, consumer services, and industrial IoT. Databricks Certified Data Engineer Professional with deep AWS, Python, and Spark experience.";
+
 export const metadata: Metadata = {
-  title: "Portfolio | Skills Showcase",
-  description: "Showcasing expertise in Web Development, Data Pipelines, Analytics, Machine Learning, and Computer Vision",
+  metadataBase: new URL(SITE_URL),
+  title: TITLE,
+  description: DESCRIPTION,
+  keywords: [
+    "Jose Roberts",
+    "Data & AI Architect",
+    "Databricks",
+    "AWS",
+    "Machine Learning",
+    "LLMs",
+    "AI Agents",
+    "Data Engineering",
+  ],
+  authors: [{ name: "Jose Roberts" }],
+  openGraph: {
+    type: "website",
+    url: SITE_URL,
+    title: TITLE,
+    description: DESCRIPTION,
+    siteName: "Jose Roberts — Portfolio",
+    images: [{ url: "/profile-photo.png", width: 800, height: 800, alt: "Jose Roberts" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+    images: ["/profile-photo.png"],
+  },
 };
 
 export default function RootLayout({

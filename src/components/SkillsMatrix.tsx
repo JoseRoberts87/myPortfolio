@@ -42,8 +42,8 @@ const skillsData: SkillCategory[] = [
   {
     domain: 'Data Pipelines',
     proficiency: 88,
-    technologies: ['Databricks', 'FastAPI', 'Kinesis', 'PostgreSQL', 'MongoDB', 'ETL'],
-    description: 'Real-time ingestion and Lakehouse pipelines with Databricks, Kinesis, and FastAPI',
+    technologies: ['Databricks', 'Spark', 'FastAPI', 'Kinesis', 'PostgreSQL', 'MongoDB', 'ETL'],
+    description: 'Real-time ingestion and Lakehouse pipelines with Databricks, Spark, Kinesis, and FastAPI',
   },
   {
     domain: 'Data Analytics',
