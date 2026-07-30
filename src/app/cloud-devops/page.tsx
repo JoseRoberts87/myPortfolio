@@ -38,25 +38,25 @@ export default function CloudDevOpsPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <Card variant="bordered" padding="md">
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary-500 mb-1">2</div>
+                <div className="text-3xl font-bold text-accent mb-1">2</div>
                 <div className="text-sm text-muted">Availability Zones</div>
               </div>
             </Card>
             <Card variant="bordered" padding="md">
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary-500 mb-1">9</div>
+                <div className="text-3xl font-bold text-accent mb-1">9</div>
                 <div className="text-sm text-muted">AWS Services</div>
               </div>
             </Card>
             <Card variant="bordered" padding="md">
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary-500 mb-1">66</div>
+                <div className="text-3xl font-bold text-accent mb-1">66</div>
                 <div className="text-sm text-muted">Resources</div>
               </div>
             </Card>
             <Card variant="bordered" padding="md">
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary-500 mb-1">100%</div>
+                <div className="text-3xl font-bold text-accent mb-1">100%</div>
                 <div className="text-sm text-muted">IaC Coverage</div>
               </div>
             </Card>
@@ -206,7 +206,7 @@ export default function CloudDevOpsPage() {
                   href="https://github.com/JoseRoberts87/myPortfolio/blob/main/docs/architecture.md"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary-500 hover:text-primary-600 text-sm font-medium"
+                  className="text-accent hover:text-accent-strong text-sm font-medium"
                 >
                   View on GitHub →
                 </a>
@@ -224,7 +224,7 @@ export default function CloudDevOpsPage() {
                   href="https://github.com/JoseRoberts87/myPortfolio/blob/main/DEPLOYMENT.md"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary-500 hover:text-primary-600 text-sm font-medium"
+                  className="text-accent hover:text-accent-strong text-sm font-medium"
                 >
                   View on GitHub →
                 </a>
@@ -242,7 +242,7 @@ export default function CloudDevOpsPage() {
                   href="https://github.com/JoseRoberts87/myPortfolio/tree/main/terraform"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary-500 hover:text-primary-600 text-sm font-medium"
+                  className="text-accent hover:text-accent-strong text-sm font-medium"
                 >
                   View on GitHub →
                 </a>
