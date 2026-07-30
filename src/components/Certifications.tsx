@@ -18,7 +18,7 @@ const certifications: Certification[] = [
   {
     name: 'Databricks Certified Data Engineer Professional',
     issuer: 'Databricks',
-    period: '2026 – 2028',
+    period: 'May 2026 – May 2028',
     abbr: 'DB',
     badgeImage: '/badges/databricks-dep.png',
   },

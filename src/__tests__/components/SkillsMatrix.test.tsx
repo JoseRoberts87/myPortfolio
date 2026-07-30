@@ -208,6 +208,7 @@ describe('SkillsMatrix Component', () => {
 
     expect(screen.getByText('AWS')).toBeInTheDocument();
     expect(screen.getByText('Azure')).toBeInTheDocument();
+    expect(screen.getByText('GCP')).toBeInTheDocument();
     expect(screen.getByText('Terraform')).toBeInTheDocument();
     expect(screen.getByText('Docker')).toBeInTheDocument();
     expect(screen.getByText('Kubernetes')).toBeInTheDocument();

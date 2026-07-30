@@ -94,10 +94,10 @@ export default function Home() {
                 Data & AI Architect
               </h2>
               <p className="text-xl md:text-2xl text-body">
-                Showcasing expertise across multiple domains
+                Building data platforms &amp; production AI systems
               </p>
               <p className="text-lg text-muted max-w-2xl">
-                15+ years architecting data pipelines, AI agents, ML models, and cloud infrastructure
+                15+ years across finance, consumer services &amp; industrial IoT — Databricks-certified, with deep AWS, Python &amp; Spark experience
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-4 lg:justify-start justify-center">
                 <a
