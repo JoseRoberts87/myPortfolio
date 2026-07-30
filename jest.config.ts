@@ -27,6 +27,18 @@ const config: Config = {
     '!src/**/*.stories.{js,jsx,ts,tsx}',
     '!src/**/__tests__/**',
   ],
+  // Enforced coverage floor, set just below the current measured numbers so it
+  // fails on regressions without being knife-edge. Ratchet these up as coverage
+  // grows (see issues #108–#110). Current: ~31.6% stmts/lines, 74.6% branch,
+  // 37.7% funcs.
+  coverageThreshold: {
+    global: {
+      statements: 31,
+      branches: 72,
+      functions: 36,
+      lines: 31,
+    },
+  },
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
