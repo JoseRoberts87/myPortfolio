@@ -78,3 +78,7 @@ terraform/.terraform/
 
 # Railway
 .railway/
+
+# Stryker mutation testing
+.stryker-tmp/
+reports/mutation/
