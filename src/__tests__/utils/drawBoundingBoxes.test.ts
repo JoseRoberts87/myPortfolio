@@ -65,6 +65,44 @@ describe('drawBoundingBoxes', () => {
     const canvas = makeCanvas(null);
     expect(drawBoundingBoxes(canvas, [person] as never)).toBeUndefined();
   });
+
+  it('uses the class-specific color for a known class', () => {
+    const ctx = makeCtx();
+    drawBoundingBoxes(makeCanvas(ctx), [person] as never);
+    // 'person' maps to #FF6B6B; strokeStyle is set to it and not overwritten.
+    expect(ctx.strokeStyle).toBe('#FF6B6B');
+  });
+
+  it('falls back to the default purple for an unknown class', () => {
+    const ctx = makeCtx();
+    const alien = { class: 'ufo', score: 0.9, bbox: [1, 2, 3, 4] };
+    drawBoundingBoxes(makeCanvas(ctx), [alien] as never);
+    expect(ctx.strokeStyle).toBe('#A855F7');
+  });
+
+  it('treats minConfidence: 0 as the 0.5 default (falsy fallback)', () => {
+    const ctx = makeCtx();
+    // 0 is falsy, so `opts.minConfidence || 0.5` resolves to 0.5 — the 0.3
+    // detection is still filtered out, only the 0.9 one is drawn.
+    const count = drawBoundingBoxes(makeCanvas(ctx), [person, lowConfidence] as never, {
+      minConfidence: 0,
+    });
+    expect(count).toBe(1);
+  });
+
+  it('falls back to default lineWidth/font/padding when passed falsy values', () => {
+    const ctx = makeCtx();
+    drawBoundingBoxes(makeCanvas(ctx), [person] as never, {
+      lineWidth: 0,
+      font: '',
+      textPadding: 0,
+    });
+    // Falsy opts resolve to their defaults (lineWidth 2, font 16px sans-serif,
+    // padding 4) — so the label background still uses padding 4: (10,-4,58,24).
+    expect(ctx.lineWidth).toBe(2);
+    expect(ctx.font).toBe('16px sans-serif');
+    expect(ctx.fillRect).toHaveBeenCalledWith(10, -4, 58, 24);
+  });
 });
 
 describe('clearCanvas', () => {
