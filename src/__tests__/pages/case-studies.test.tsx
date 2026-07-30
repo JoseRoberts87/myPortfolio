@@ -19,13 +19,48 @@ describe('Case Studies Index Page', () => {
     ).toBeInTheDocument();
   });
 
-  it('should render all three case study cards', () => {
+  it('should render the technical-demo case study cards', () => {
     render(<CaseStudiesPage />);
 
     // Check for case study titles
     expect(screen.getByText('Real-Time Object Detection')).toBeInTheDocument();
     expect(screen.getByText('Multi-Model NLP Pipeline')).toBeInTheDocument();
     expect(screen.getByText('Multi-Source Data Pipeline')).toBeInTheDocument();
+  });
+
+  it('should render the marquee resume-win case study cards', () => {
+    render(<CaseStudiesPage />);
+
+    expect(screen.getByText('Agentic AI Workforce')).toBeInTheDocument();
+    expect(screen.getByText('Real-Time IoT Data Platform')).toBeInTheDocument();
+    expect(screen.getByText('ML Energy Forecasting')).toBeInTheDocument();
+  });
+
+  it('should render marquee categories and headline metrics', () => {
+    render(<CaseStudiesPage />);
+
+    expect(screen.getByText('AI & Agents')).toBeInTheDocument();
+    expect(screen.getByText('Real-Time Systems')).toBeInTheDocument();
+    expect(screen.getByText('Predictive Analytics')).toBeInTheDocument();
+
+    // Headline metric values from the resume wins
+    expect(screen.getByText('77%')).toBeInTheDocument();
+    expect(screen.getByText('99.99%')).toBeInTheDocument();
+    expect(screen.getByText('$2M')).toBeInTheDocument();
+  });
+
+  it('should link marquee cards to their detail pages', () => {
+    render(<CaseStudiesPage />);
+
+    expect(
+      screen.getByRole('link', { name: /Agentic AI Workforce/i })
+    ).toHaveAttribute('href', '/case-studies/agentic-ai-workforce');
+    expect(
+      screen.getByRole('link', { name: /Real-Time IoT Data Platform/i })
+    ).toHaveAttribute('href', '/case-studies/realtime-iot-platform');
+    expect(
+      screen.getByRole('link', { name: /ML Energy Forecasting/i })
+    ).toHaveAttribute('href', '/case-studies/energy-forecasting-ml');
   });
 
   it('should render case study subtitles', () => {
@@ -72,16 +107,18 @@ describe('Case Studies Index Page', () => {
   it('should render read time for each case study', () => {
     render(<CaseStudiesPage />);
 
-    expect(screen.getByText('8 min read')).toBeInTheDocument();
+    // Some read times are shared across cards (two 8-min reads, two 9-min reads)
+    expect(screen.getAllByText('8 min read')).toHaveLength(2);
+    expect(screen.getAllByText('9 min read')).toHaveLength(2);
     expect(screen.getByText('10 min read')).toBeInTheDocument();
-    expect(screen.getByText('9 min read')).toBeInTheDocument();
+    expect(screen.getByText('7 min read')).toBeInTheDocument();
   });
 
   it('should render "Read Case Study" CTAs', () => {
     render(<CaseStudiesPage />);
 
     const ctaButtons = screen.getAllByText('Read Case Study');
-    expect(ctaButtons).toHaveLength(3);
+    expect(ctaButtons).toHaveLength(6);
   });
 
   it('should render links to individual case studies', () => {
