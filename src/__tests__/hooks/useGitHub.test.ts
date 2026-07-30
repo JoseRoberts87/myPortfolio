@@ -112,7 +112,7 @@ describe('useGitHub', () => {
 
   beforeEach(() => {
     mockFetch.mockReset();
-    localStorage.clear();
+    // localStorage is cleared by the shared jest.setup beforeEach.
     // Silence the hook's expected console.error on the failure path.
     errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
   });
