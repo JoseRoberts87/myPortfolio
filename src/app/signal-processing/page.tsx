@@ -1,5 +1,4 @@
 import { Section, PageHero } from '@/components/ui';
-import Image from 'next/image';
 
 export default function SignalProcessingPage() {
   const technologies = [

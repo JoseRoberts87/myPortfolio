@@ -75,9 +75,13 @@ export default function Home() {
                 <div className="absolute -inset-4 bg-gradient-to-r from-purple-600 to-purple-400 rounded-full blur-2xl opacity-30"></div>
                 <div className="relative w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-purple-500/50 shadow-2xl">
                   <Image
-                    src="/profile-photo.png"
+                    src="/profile-photo.jpg"
                     alt="Jose Roberts - Data & AI Architect"
                     fill
+                    // The avatar renders at 256px (w-64) / 320px (md:w-80); tell
+                    // the optimizer so it serves a right-sized variant instead of
+                    // a full-width one for the LCP image.
+                    sizes="(max-width: 768px) 256px, 320px"
                     className="object-cover"
                     priority
                   />
