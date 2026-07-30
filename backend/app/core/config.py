@@ -75,6 +75,8 @@ class Settings(BaseSettings):
     AI_RATE_LIMIT_PER_HOUR: int = 20  # Per-IP requests per hour
     AI_AGENT_MAX_STEPS: int = 5  # Max tool-calling iterations for the agent demo
     AI_AGENT_SEARCH_TOP_K: int = 3  # Chunks the agent's search_portfolio tool returns
+    AI_GEN_MAX_TOKENS: int = 600  # Cap completion tokens for the content generator
+    AI_GEN_TOP_K: int = 4  # Knowledge chunks grounding the generated content
 
     model_config = SettingsConfigDict(
         env_file=".env",
