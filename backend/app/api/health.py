@@ -170,7 +170,7 @@ async def readiness_probe() -> JSONResponse:
     summary="Liveness probe",
     description="Kubernetes liveness probe - checks if app is alive",
 )
-async def liveness_probe() -> Dict[str, str]:
+async def liveness_probe() -> Dict[str, Any]:
     """
     Liveness probe for Kubernetes
 

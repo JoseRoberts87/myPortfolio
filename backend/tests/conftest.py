@@ -5,6 +5,7 @@ Provides shared fixtures for all tests
 import pytest
 from unittest.mock import Mock, MagicMock, patch
 from sqlalchemy import create_engine
+from sqlalchemy.pool import StaticPool
 from sqlalchemy.orm import sessionmaker, Session
 from fastapi.testclient import TestClient
 from datetime import datetime, timedelta
@@ -23,7 +24,11 @@ def test_engine():
     """Create a fresh test database engine for each test"""
     engine = create_engine(
         TEST_DATABASE_URL,
-        connect_args={"check_same_thread": False}
+        connect_args={"check_same_thread": False},
+        # A single shared connection so the schema created here is visible to
+        # requests served by TestClient (which runs the app in another thread).
+        # Without this, in-memory SQLite gives each thread its own empty DB.
+        poolclass=StaticPool,
     )
     Base.metadata.create_all(bind=engine)
     yield engine
@@ -65,9 +70,12 @@ def client(test_engine):
 
     app.dependency_overrides[get_db] = override_get_db
 
-    # Disable lifespan to prevent production DB initialization
-    with TestClient(app, raise_server_exceptions=False) as test_client:
-        yield test_client
+    # Intentionally do NOT enter the lifespan context: startup would launch the
+    # APScheduler (an asyncio scheduler). Across the many per-test clients that
+    # churns the event loop and makes later requests fail with "Event loop is
+    # closed". The endpoints under test don't depend on startup, so skip it.
+    test_client = TestClient(app, raise_server_exceptions=False)
+    yield test_client
 
     app.dependency_overrides.clear()
 

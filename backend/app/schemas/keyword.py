@@ -32,7 +32,7 @@ class KeywordListResponse(BaseModel):
     keywords: list[KeywordResponse]
     total: int = Field(..., ge=0, description="Total number of keywords matching filters")
     page: int = Field(..., ge=1, description="Current page number")
-    page_size: int = Field(..., ge=1, le=100, description="Number of keywords per page")
+    page_size: int = Field(..., ge=1, description="Number of keywords per page")
     total_pages: int = Field(..., ge=0, description="Total number of pages")
 
 

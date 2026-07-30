@@ -65,11 +65,16 @@ async def list_keywords(
         # Apply pagination
         keywords = query.offset(offset).limit(limit).all()
 
+        # Map limit/offset onto the page-based response schema.
+        page = (offset // limit) + 1 if limit else 1
+        total_pages = (total + limit - 1) // limit if limit else 0
+
         return KeywordListResponse(
             keywords=keywords,
             total=total,
-            limit=limit,
-            offset=offset,
+            page=page,
+            page_size=limit,
+            total_pages=total_pages,
         )
 
     except Exception as e:
