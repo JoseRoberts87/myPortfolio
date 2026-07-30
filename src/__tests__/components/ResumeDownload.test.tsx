@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ResumeDownload from '@/components/ResumeDownload';
 
@@ -8,10 +8,17 @@ describe('ResumeDownload Component', () => {
 
   beforeEach(() => {
     originalCreateElement = document.createElement;
+    // handleDownload schedules a setTimeout that flips state after 1s. Fake
+    // timers keep that deferred update from firing outside act() after a test
+    // completes (the source of the React act() warning).
+    jest.useFakeTimers();
   });
 
   afterEach(() => {
     document.createElement = originalCreateElement;
+    // Discards any pending fake timers WITHOUT running them (running them here
+    // would flip state outside act()); then restore real timers + mocks.
+    jest.useRealTimers();
     jest.restoreAllMocks();
   });
 
@@ -145,9 +152,7 @@ describe('ResumeDownload Component', () => {
     expect(downloadButton).toBeDisabled();
   });
 
-  it('should reset button state after download completes', async () => {
-    jest.useFakeTimers();
-
+  it('should reset button state after download completes', () => {
     const mockClick = jest.fn();
     const mockLink = document.createElement('a');
     mockLink.click = mockClick;
@@ -166,15 +171,13 @@ describe('ResumeDownload Component', () => {
 
     expect(screen.getByText('Downloading...')).toBeInTheDocument();
 
-    // Fast-forward time by 1000ms
-    jest.advanceTimersByTime(1000);
-
-    await waitFor(() => {
-      expect(screen.getByText('Download Resume')).toBeInTheDocument();
-      expect(downloadButton).not.toBeDisabled();
+    // Advance the reset timer inside act() so the deferred setState settles cleanly.
+    act(() => {
+      jest.advanceTimersByTime(1000);
     });
 
-    jest.useRealTimers();
+    expect(screen.getByText('Download Resume')).toBeInTheDocument();
+    expect(downloadButton).not.toBeDisabled();
   });
 
   it('should have hover effects on download button', () => {
