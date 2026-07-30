@@ -8,6 +8,7 @@ import ThemeToggle from './ThemeToggle';
 const WORK_ITEMS = [
   { name: 'Web Development', href: '/web-dev' },
   { name: 'Data Pipelines', href: '/data-pipelines' },
+  { name: 'Real-Time Streaming', href: '/streaming' },
   { name: 'Analytics', href: '/analytics' },
   { name: 'Machine Learning', href: '/machine-learning' },
   { name: 'Computer Vision', href: '/computer-vision' },

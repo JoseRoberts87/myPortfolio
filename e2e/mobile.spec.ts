@@ -17,6 +17,7 @@ const PAGES = [
   '/about',
   '/web-dev',
   '/data-pipelines',
+  '/streaming',
   '/analytics',
   '/machine-learning',
   '/computer-vision',
