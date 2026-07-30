@@ -53,6 +53,556 @@ export interface CaseStudy {
 
 export const caseStudies: CaseStudy[] = [
   {
+    slug: 'agentic-ai-workforce',
+    title: 'Agentic AI Workforce',
+    subtitle: 'Coordinated LLM Agents that Automate Enterprise Operations',
+    description: 'How I designed an agentic workforce on Databricks that automates workflows and manages tasks for a Fortune 500 client — cutting operational errors 30% and bottlenecks 77% while growing their analytics platform 72%.',
+    icon: '🧠',
+    category: 'AI & Agents',
+    technologies: ['Databricks', 'AWS', 'LLMs', 'Agentic AI', 'RAG', 'Python', 'Model Serving'],
+    metrics: [
+      { label: 'Fewer Errors', value: '30%', description: 'Reduction in operational errors' },
+      { label: 'Fewer Bottlenecks', value: '77%', description: 'Reduction in workflow bottlenecks' },
+      { label: 'Analytics Growth', value: '72%', description: 'Growth of the client analytics platform' },
+      { label: 'Scale', value: 'Fortune 500', description: 'Enterprise-wide deployment' },
+    ],
+    readTime: '8 min read',
+    publishedDate: '2026-07',
+    challenge: 'A Fortune 500 organization was losing time and accuracy to manual, repetitive workflows, with no visibility into how LLMs were being consumed across teams. The goal: deploy a coordinated workforce of AI agents that execute tasks reliably, with governance and cost transparency — augmenting people rather than replacing them.',
+
+    problemStatement: {
+      title: 'The Problem',
+      content: [
+        'As a Data and AI Architect at MojoTech, I worked directly with a Fortune 500 client whose teams were bottlenecked by manual, repetitive operational work — data hand-offs, status reconciliation, report generation, and routine decisions that each needed a human to shepherd from start to finish.',
+        'Early experiments with LLMs were promising but ungoverned: different teams called different models in different ways, with no shared view of cost, quality, or consumption. Reliability was the blocker — a single hallucinated field or dropped step could corrupt a downstream workflow, so adoption stalled.',
+        'The mandate was to turn ad-hoc LLM usage into a dependable "agentic workforce": agents that could plan and execute multi-step tasks across the business, grounded in the company\'s own data, with the observability and guardrails an enterprise requires.',
+      ],
+      highlights: [
+        'Replace manual, repetitive workflows with reliable automated agents',
+        'Ground agent actions in the company\'s own data, not just model priors',
+        'Give leadership visibility into LLM consumption, cost, and quality',
+        'Keep humans in the loop for judgment and approval steps',
+        'Standardize model selection with objective, task-level benchmarks',
+      ],
+    },
+
+    technicalChallenges: {
+      title: 'Technical Challenges',
+      content: [
+        '**1. Agent Reliability**: LLM agents are probabilistic. Turning "usually right" into "safe to automate" required constraining each agent to a small, well-typed set of tools and validating every output before it touched a downstream system.',
+        '**2. Orchestration Across Work Streams**: Real tasks span multiple systems and teams. Coordinating planner and worker agents — with retries, timeouts, and hand-offs — without creating runaway loops or duplicated work was the core engineering problem.',
+        '**3. LLM Consumption Visibility**: Leadership had no idea which teams used which models, at what cost, or with what quality. I designed agentic data ingestion on Databricks to capture every model call as governed, queryable data.',
+        '**4. Model Selection**: "Which model for which task?" was being answered by opinion. Extraction, summarization, classification, and reasoning each have very different accuracy, cost, and latency trade-offs.',
+        '**5. Governance and Trust**: An enterprise will not automate what it cannot audit. Every agent action needed provenance, and every high-impact step needed a human approval gate.',
+      ],
+      codeExample: {
+        language: 'python',
+        code: `# Illustrative: a constrained worker agent with validated tool output
+class WorkerAgent:
+    def __init__(self, llm, tools: dict[str, Tool], validator: Validator):
+        self.llm = llm                # served via Databricks Model Serving
+        self.tools = tools            # small, typed, allow-listed tool set
+        self.validator = validator
+
+    async def run(self, task: Task) -> Result:
+        for _ in range(MAX_STEPS):              # hard cap prevents runaway loops
+            plan = await self.llm.plan(task, tools=self.tools.keys())
+            tool = self.tools[plan.tool]         # KeyError if off the allow-list
+
+            output = await tool.invoke(plan.args)
+
+            # Never trust raw model output — validate before it propagates
+            verdict = self.validator.check(output, schema=tool.output_schema)
+            if not verdict.ok:
+                task = task.with_feedback(verdict.errors)    # self-correct
+                continue
+
+            if plan.needs_human_approval:
+                await request_approval(task, output)          # human in the loop
+
+            return Result(output=output, provenance=plan.trace)
+        raise AgentExhausted(task)`,
+        caption: 'Illustrative of the constrained-agent pattern: allow-listed tools, output validation, step caps, and human approval gates',
+      },
+    },
+
+    solutionArchitecture: {
+      title: 'Solution Architecture',
+      content: [
+        '**A Databricks-Centered Agentic Platform**: I built the workforce on Databricks and AWS so that agents, the data they act on, and the telemetry they produce all lived in one governed lakehouse.',
+        '',
+        '**1. Agentic Data Ingestion (Observability)**',
+        '• Every LLM and agent call was captured as structured data on Databricks — model, task type, tokens, latency, cost, and outcome.',
+        '• This gave leadership a single, queryable view of LLM consumption across the organization for the first time.',
+        '',
+        '**2. Model-Benchmarking Framework (Selection)**',
+        '• A harness that scored candidate models on representative tasks, so model choice became data-driven rather than anecdotal.',
+        '• Selection balanced accuracy, cost, and latency per task class.',
+        '',
+        '**3. Agent Orchestration (Execution)**',
+        '• A planner agent decomposed a request into steps; worker agents executed each step against a small, typed tool set.',
+        '• RAG grounded agents in the client\'s own data so actions reflected reality, not just model priors.',
+        '',
+        '**4. Integration Layer**',
+        '• Automated data pipelines and APIs on Databricks wired the agents into the client\'s existing work streams, enabling AI agents across the business.',
+      ],
+      highlights: [
+        'One governed lakehouse for agents, data, and telemetry',
+        'LLM consumption captured as first-class, queryable data',
+        'Benchmark-driven model selection per task class',
+        'RAG grounding so agents act on the company\'s real data',
+        'Agents wired into existing pipelines and APIs, not a silo',
+      ],
+    },
+
+    implementation: {
+      title: 'Key Implementation Details',
+      content: [
+        '**Planner / Worker Split**: A planner produced a typed, inspectable plan; workers executed one step at a time. This separation made behavior auditable and kept any single agent\'s scope small enough to validate.',
+        '**Grounding with RAG**: Before acting, agents retrieved relevant context from the client\'s data so outputs matched current reality — the same retrieve-then-generate pattern behind the live demo linked below.',
+        '**Consumption Telemetry**: Each call emitted a governed record to Databricks, turning "how are we using LLMs?" into a SQL query and a dashboard.',
+        '**Benchmark-Driven Selection**: New tasks were routed to the model that won on that task class in the benchmark harness — not the newest or most expensive one.',
+        '**Human-in-the-Loop**: High-impact steps paused for approval, so automation expanded only as far as trust allowed.',
+      ],
+      codeExample: {
+        language: 'python',
+        code: `# Illustrative: capturing every model call as governed lakehouse data
+async def instrumented_call(model: str, task_type: str, prompt: str):
+    start = perf_counter()
+    resp = await serving.generate(model=model, prompt=prompt)
+    record = {
+        "model": model,
+        "task_type": task_type,
+        "input_tokens": resp.usage.input_tokens,
+        "output_tokens": resp.usage.output_tokens,
+        "cost_usd": price(model, resp.usage),
+        "latency_ms": (perf_counter() - start) * 1000,
+    }
+    # Governed, queryable consumption telemetry for the whole org
+    await lakehouse.append("ai.llm_consumption", record)
+    return resp`,
+        caption: 'Illustrative of the consumption-telemetry pattern that gave leadership org-wide LLM visibility',
+      },
+    },
+
+    resultsAndImpact: {
+      title: 'Results & Impact',
+      content: [
+        '**Operational Outcomes**:',
+        '• **30% reduction in operational errors** — validated, grounded agents removed a large class of manual mistakes.',
+        '• **77% reduction in bottlenecks** — tasks that used to wait on a person now flowed through agents, with human approval only where it mattered.',
+        '• **72% growth of the client\'s analytics platform** — automated pipelines and APIs let AI agents operate across their work streams.',
+        '',
+        '**Organizational Outcomes**:',
+        '• Leadership gained a first-ever, queryable view of LLM consumption, cost, and quality.',
+        '• Model selection shifted from opinion to benchmark-backed decisions.',
+        '• Automation expanded safely because every action was grounded, validated, and auditable.',
+      ],
+    },
+
+    tradeoffsAndDecisions: {
+      title: 'Trade-offs & Architecture Decisions',
+      content: [
+        '**Decision 1: Constrained Agents vs. Open-Ended Autonomy**',
+        '✅ *Chose*: Small, typed, allow-listed tool sets with validated outputs',
+        '• *Rationale*: Reliability is the currency of enterprise automation; constraints are what make agents trustworthy',
+        '• *Trade-off*: Less "magic", more engineering — but automation you can actually deploy',
+        '',
+        '**Decision 2: Build on Databricks vs. a Separate Agent Stack**',
+        '✅ *Chose*: A Databricks + AWS lakehouse for agents, data, and telemetry',
+        '• *Rationale*: Governance and consumption visibility come almost for free when everything lives in one governed platform',
+        '• *Trade-off*: Tighter coupling to the platform, offset by unified auditability',
+        '',
+        '**Decision 3: Benchmark-Driven vs. Default Model Selection**',
+        '✅ *Chose*: A benchmarking harness scoring models per task class',
+        '• *Rationale*: The right model is task-dependent; defaulting to one model wastes either money or accuracy',
+        '• *Trade-off*: Up-front harness investment, repaid in cost and quality on every task',
+        '',
+        '**Decision 4: Full Automation vs. Human-in-the-Loop**',
+        '✅ *Chose*: Human approval gates on high-impact steps',
+        '• *Rationale*: Trust — and adoption — grow fastest when people stay in control of consequential actions',
+        '• *Trade-off*: Not every step is hands-off, but the automation that ships is safe',
+      ],
+    },
+
+    lessonsLearned: {
+      title: 'Lessons Learned',
+      content: [
+        '**1. Constraints Create Reliability**',
+        'The agents that shipped were the ones with the smallest scope. Allow-listed tools, typed outputs, and validation turned "usually right" into "safe to automate." *Lesson: in agentic systems, what you forbid matters more than what you allow.*',
+        '',
+        '**2. You Can\'t Govern What You Can\'t See**',
+        'Capturing every model call as governed data was as valuable as the automation itself — it turned LLM usage into something leadership could measure and manage. *Lesson: instrument consumption from day one.*',
+        '',
+        '**3. Model Selection Is an Engineering Problem**',
+        'A benchmarking harness ended endless "which model?" debates and saved real money. *Lesson: measure models on your tasks; don\'t default to the newest or priciest.*',
+        '',
+        '**4. Grounding Beats Cleverness**',
+        'RAG grounding in the client\'s own data eliminated a whole class of confident-but-wrong actions. *Lesson: give agents the facts before you give them autonomy.*',
+        '',
+        '**5. Keep Humans in the Loop to Move Faster**',
+        'Approval gates sound like friction but actually accelerated adoption, because stakeholders trusted a system they could still steer. *Lesson: human-in-the-loop is an adoption strategy, not just a safety net.*',
+      ],
+    },
+
+    liveDemo: '/ai-agents',
+    relatedCaseStudies: ['realtime-iot-platform', 'nlp-pipeline-architecture'],
+  },
+
+  {
+    slug: 'realtime-iot-platform',
+    title: 'Real-Time IoT Data Platform',
+    subtitle: 'Event-Driven Architecture for Sub-5-Second IoT at 99.99% Uptime',
+    description: 'How I architected a real-time, event-driven API platform for IoT data achieving 99.99% uptime and sub-5-second end-to-end latency — building on predictive-maintenance work that cut equipment downtime 83%.',
+    icon: '⚡',
+    category: 'Real-Time Systems',
+    technologies: ['Event-Driven Architecture', 'IoT', 'AWS', 'Python', 'Streaming', 'Real-Time Analytics', 'Predictive Maintenance'],
+    metrics: [
+      { label: 'Uptime', value: '99.99%', description: 'Real-time API platform availability' },
+      { label: 'End-to-End Latency', value: '<5s', description: 'Ingest to actionable insight' },
+      { label: 'Less Downtime', value: '83%', description: 'Equipment downtime cut via predictive maintenance' },
+      { label: 'Lower Cost', value: '10%', description: 'IoT backend automation savings' },
+    ],
+    readTime: '9 min read',
+    publishedDate: '2026-07',
+    challenge: 'IoT fleets emit a relentless, bursty stream of sensor data that is only valuable if it becomes insight in seconds — and never goes dark. The challenge: architect an event-driven platform that ingests high-volume IoT data, turns it into real-time analytics and alerts under a five-second budget, and holds 99.99% uptime.',
+
+    problemStatement: {
+      title: 'The Problem',
+      content: [
+        'This story spans two roles with one throughline: turning high-velocity machine and IoT data into real-time, reliable insight. It began at Amazon Robotics, where I built data pipelines for the Deployment Engineering division, and matured at Very Technology, where I architected a production real-time API platform for IoT data.',
+        'Sensor and machine data is high-volume, bursty, and perishable — a temperature spike or a vibration anomaly is only useful if it reaches an operator or a model within seconds. Traditional request/response and batch pipelines simply could not meet that latency budget at the required scale.',
+        'And in an operations context, the platform could not blink. Downtime in the pipeline meant blind spots on the floor, so the system had to be engineered for 99.99% availability while still hitting sub-five-second end-to-end latency.',
+      ],
+      highlights: [
+        'Ingest high-volume, bursty IoT/sensor streams without data loss',
+        'Deliver insight end-to-end in under five seconds',
+        'Sustain 99.99% uptime for an operations-critical platform',
+        'Power predictive-maintenance models and live monitoring dashboards',
+        'Automate the data backend to cut manual collection and cost',
+      ],
+    },
+
+    technicalChallenges: {
+      title: 'Technical Challenges',
+      content: [
+        '**1. Bursty, High-Volume Ingestion**: IoT fleets do not emit smoothly — they surge. The ingestion tier had to absorb spikes with backpressure and buffering rather than dropping events or falling behind.',
+        '**2. A Hard Latency Budget**: "Real-time" was a five-second, ingest-to-insight SLA. Every hop — ingest, process, score, serve — had to be measured and kept within budget.',
+        '**3. 99.99% Availability**: Four-nines means roughly a minute of downtime a week. That demands redundancy, health checks, and graceful failover at every tier, with no single point of failure.',
+        '**4. Delivery Semantics**: Networks and consumers fail. I designed for at-least-once delivery with idempotent processing, so a retried event never produced a double-counted metric or a false alert.',
+        '**5. Predictive Maintenance on a Stream**: At Amazon Robotics, the payoff was a predictive-maintenance model that consumed this telemetry to forecast equipment failure — turning raw sensor data into an 83% reduction in downtime.',
+      ],
+      codeExample: {
+        language: 'python',
+        code: `# Illustrative: an idempotent, windowed IoT stream consumer
+async def consume(stream: EventStream, sink: MetricSink):
+    async for batch in stream.read(max_batch=500, max_wait_ms=200):
+        # Backpressure: bounded batches keep latency inside the SLA
+        for event in batch:
+            if await seen.check_and_set(event.id):   # idempotency guard
+                continue                              # already processed
+
+            window = features.update(event.device_id, event.reading)
+            score = maintenance_model.predict(window) # failure risk 0..1
+            if score > ALERT_THRESHOLD:
+                await sink.alert(event.device_id, score)
+
+            await sink.emit(event.device_id, window.summary())
+        await stream.commit(batch)                    # at-least-once`,
+        caption: 'Illustrative of the streaming pattern: bounded batches for backpressure, an idempotency guard, and inline model scoring',
+      },
+    },
+
+    solutionArchitecture: {
+      title: 'Solution Architecture',
+      content: [
+        '**An Event-Driven Pipeline**: Instead of polling, the platform reacted to events as they arrived, which is what made sub-five-second latency achievable at IoT volume.',
+        '',
+        '**1. Ingestion Tier**',
+        '• A durable event stream buffered bursty device traffic and decoupled producers from consumers.',
+        '• Backpressure and bounded batches protected the latency budget under load.',
+        '',
+        '**2. Stream Processing**',
+        '• Stateful windowing computed rolling features per device (moving averages, rates of change).',
+        '• Idempotent processing over at-least-once delivery guaranteed correctness under retries.',
+        '',
+        '**3. Real-Time Analytics & Alerting**',
+        '• A predictive-maintenance model scored device health inline and raised alerts before failures.',
+        '• Live monitoring dashboards gave operators a real-time view of the fleet.',
+        '',
+        '**4. Serving API (99.99% Uptime)**',
+        '• A redundant, horizontally scaled API served fresh insight with health checks and automatic failover — no single point of failure.',
+      ],
+      highlights: [
+        'Event-driven, not polling — the key to sub-5s latency at scale',
+        'Durable stream buffering absorbs bursty device traffic',
+        'Idempotent processing over at-least-once delivery',
+        'Inline predictive-maintenance scoring, not after-the-fact batch',
+        'Redundant serving tier engineered for 99.99% availability',
+      ],
+    },
+
+    implementation: {
+      title: 'Key Implementation Details',
+      content: [
+        '**Decoupling with a Durable Stream**: Producers wrote to a durable event stream and consumers read at their own pace. This decoupling is what let the platform survive bursts without dropping data or blowing the latency budget.',
+        '**Windowed Feature Computation**: Rolling, per-device windows produced the features the maintenance model needed, updated incrementally as each event arrived rather than recomputed in batch.',
+        '**Idempotency Everywhere**: Every event carried a stable ID; a fast dedupe guard ensured retries were harmless, so at-least-once delivery never corrupted a metric.',
+        '**Health Checks & Failover**: Each tier exposed health endpoints; unhealthy nodes were drained and replaced automatically, which is how the platform held four-nines availability.',
+        '**Automating the Backend**: At Amazon Robotics, automating IoT data collection removed manual steps and cut costs ~10% within a month, while feeding cleaner data to the predictive model.',
+      ],
+      codeExample: {
+        language: 'python',
+        code: `# Illustrative: incremental per-device feature windows
+class FeatureWindow:
+    def __init__(self, size: int = 64):
+        self.buffers: dict[str, deque] = defaultdict(lambda: deque(maxlen=size))
+
+    def update(self, device_id: str, reading: float) -> "Window":
+        buf = self.buffers[device_id]
+        buf.append(reading)
+        return Window(
+            mean=fmean(buf),
+            slope=linear_trend(buf),        # rate of change → early warning
+            volatility=pstdev(buf) if len(buf) > 1 else 0.0,
+        )`,
+        caption: 'Illustrative of incremental windowed features updated per event, not recomputed in batch',
+      },
+    },
+
+    resultsAndImpact: {
+      title: 'Results & Impact',
+      content: [
+        '**Platform Performance**:',
+        '• **99.99% uptime** on the real-time API platform — operations-grade availability.',
+        '• **Sub-5-second end-to-end latency** from ingest to actionable insight for IoT data.',
+        '• Event-driven design absorbed bursty traffic without data loss or SLA breaches.',
+        '',
+        '**Operational Impact**:',
+        '• **83% reduction in equipment downtime** from the predictive-maintenance model this telemetry fed at Amazon Robotics.',
+        '• **~10% cost reduction** from automating IoT data collection on the backend.',
+        '• Real-time monitoring dashboards gave operators live visibility into the fleet.',
+        '',
+        '**Beyond the Numbers**:',
+        '• Established an event-driven pattern reused for other real-time workloads.',
+        '• Turned perishable sensor data into decisions made in seconds, not hours.',
+      ],
+    },
+
+    tradeoffsAndDecisions: {
+      title: 'Trade-offs & Architecture Decisions',
+      content: [
+        '**Decision 1: Event-Driven vs. Request/Response**',
+        '✅ *Chose*: Event-driven streaming',
+        '• *Rationale*: Reacting to events (not polling) is what makes sub-5s latency feasible at IoT volume',
+        '• *Trade-off*: More moving parts and eventual consistency, but the only design that hits the SLA',
+        '',
+        '**Decision 2: At-Least-Once + Idempotency vs. Exactly-Once**',
+        '✅ *Chose*: At-least-once delivery with idempotent processing',
+        '• *Rationale*: Exactly-once is expensive and brittle at scale; idempotency gives the same correctness far more simply',
+        '• *Trade-off*: Every consumer must be idempotent, but the system stays fast and resilient',
+        '',
+        '**Decision 3: Stream Processing vs. Micro-Batch**',
+        '✅ *Chose*: Continuous stream processing with windowing',
+        '• *Rationale*: Micro-batch adds latency at every interval; streaming keeps insight within the budget',
+        '• *Trade-off*: Stateful streaming is harder to reason about than batch, but essential for real-time',
+        '',
+        '**Decision 4: Redundancy Everywhere vs. Simplicity**',
+        '✅ *Chose*: Redundant, health-checked tiers with automatic failover',
+        '• *Rationale*: 99.99% uptime is impossible with single points of failure',
+        '• *Trade-off*: More infrastructure to run, justified by operations-critical availability',
+      ],
+    },
+
+    lessonsLearned: {
+      title: 'Lessons Learned',
+      content: [
+        '**1. Event-Driven Is a Latency Strategy**',
+        'Switching from polling and batch to an event-driven stream was the single change that made sub-five-second latency realistic. *Lesson: for real-time, design around events from the start — you can\'t bolt low latency on later.*',
+        '',
+        '**2. Idempotency Beats Exactly-Once**',
+        'Chasing exactly-once semantics is a trap at scale. At-least-once delivery plus idempotent consumers delivered the same correctness with far less fragility. *Lesson: make processing idempotent and stop fighting the network.*',
+        '',
+        '**3. Four-Nines Is an Architecture, Not a Setting**',
+        'You do not configure your way to 99.99% uptime — you design out single points of failure and automate failover. *Lesson: availability targets are decisions you make in the architecture diagram.*',
+        '',
+        '**4. Perishable Data Needs a Deadline**',
+        'Treating the five-second budget as a hard SLA — and measuring every hop against it — kept the whole team honest about latency. *Lesson: turn "real-time" into a number and hold every stage to it.*',
+        '',
+        '**5. Clean Automation Compounds**',
+        'Automating IoT data collection didn\'t just cut cost ~10% — it fed cleaner data to the predictive model, improving the downtime result too. *Lesson: upstream data quality quietly determines downstream model value.*',
+      ],
+    },
+
+    liveDemo: '/streaming',
+    relatedCaseStudies: ['energy-forecasting-ml', 'data-pipeline-orchestration'],
+  },
+
+  {
+    slug: 'energy-forecasting-ml',
+    title: 'ML Energy Forecasting',
+    subtitle: 'Time-Series Forecasting that Cut Energy Costs by $2M',
+    description: 'How I built a machine-learning forecasting model for industrial energy consumption that reduced costs by $2M in a year — on consolidated data pipelines that cut redundancies 80% and project overhead 50%.',
+    icon: '📈',
+    category: 'Predictive Analytics',
+    technologies: ['Time-Series Forecasting', 'Python', 'Machine Learning', 'scikit-learn', 'Data Pipelines', 'Backend Architecture'],
+    metrics: [
+      { label: 'Cost Saved', value: '$2M', description: 'Energy cost reduction in one year' },
+      { label: 'Less Redundancy', value: '80%', description: 'Data redundancy eliminated' },
+      { label: 'Lower Overhead', value: '50%', description: 'Project overhead reduction' },
+      { label: 'Ownership', value: 'Full lifecycle', description: 'End-to-end pipeline ownership' },
+    ],
+    readTime: '7 min read',
+    publishedDate: '2026-07',
+    challenge: 'Industrial energy is a massive, controllable cost — but only if you can forecast consumption accurately enough to act on it. As a Senior Data Engineer at Evonik, I owned the full data-pipeline lifecycle for a niche data-science segment and built a forecasting model whose predictions translated directly into $2M of annual savings.',
+
+    problemStatement: {
+      title: 'The Problem',
+      content: [
+        'At Evonik Industries, energy was one of the largest and most controllable operating costs — but the organization was reacting to consumption after the fact rather than anticipating it. Without a reliable forecast, there was no way to schedule, procure, or optimize around demand.',
+        'The data itself was the first obstacle. Consumption signals were spread across redundant, overlapping sources with heavy manual overhead, which made any modeling effort slow and brittle before it even began.',
+        'My mandate as Senior Data Engineer was to own the full lifecycle: design the backend and pipelines that fed the data-science segment, then build a forecasting model accurate enough that the business could act on its predictions with confidence.',
+      ],
+      highlights: [
+        'Forecast industrial energy consumption accurately enough to act on',
+        'Consolidate redundant, high-overhead data sources into clean pipelines',
+        'Own the full lifecycle — backend architecture through model delivery',
+        'Serve forecasts to data scientists and analysts, not just a notebook',
+        'Translate model accuracy into concrete operating-cost savings',
+      ],
+    },
+
+    technicalChallenges: {
+      title: 'Technical Challenges',
+      content: [
+        '**1. Redundant, Fragmented Data**: Energy signals lived in overlapping sources with duplicated records and manual hand-offs. Modeling was hopeless until the data foundation was consolidated.',
+        '**2. Trend and Seasonality**: Energy consumption carries strong trend and multi-scale seasonality (daily, weekly, seasonal). A forecast that ignored these would be systematically wrong at exactly the moments that mattered.',
+        '**3. Actionable Accuracy**: The bar was not a leaderboard metric — it was "accurate enough that operations will change decisions based on it." That demanded honest evaluation and calibrated expectations.',
+        '**4. A Backend the DS Team Could Use**: The model could not be a one-off script. It needed backend architecture and pipelines that data scientists and analysts could build on repeatedly.',
+        '**5. Maintainability**: As the person who also trained junior engineers, I needed the solution to be interpretable and teachable, not an opaque black box.',
+      ],
+      codeExample: {
+        language: 'python',
+        code: `# Illustrative: double exponential smoothing for trend-aware forecasting
+def holt_forecast(series: list[float], alpha: float, beta: float, horizon: int):
+    level, trend = series[0], series[1] - series[0]
+    for value in series[1:]:
+        prev_level = level
+        level = alpha * value + (1 - alpha) * (level + trend)     # level update
+        trend = beta * (level - prev_level) + (1 - beta) * trend  # trend update
+    # Project the level forward along the estimated trend
+    return [level + h * trend for h in range(1, horizon + 1)]`,
+        caption: 'Illustrative of the trend-aware time-series approach — the same method powering the live forecasting demo',
+      },
+    },
+
+    solutionArchitecture: {
+      title: 'Solution Architecture',
+      content: [
+        '**Foundation First, Then the Model**: The win came from fixing the data foundation before modeling, then serving forecasts through backend architecture the whole segment could rely on.',
+        '',
+        '**1. Data Consolidation Layer**',
+        '• Integrated redundant, overlapping sources into clean, canonical pipelines.',
+        '• Eliminated ~80% of data redundancy and cut project overhead ~50%, making every downstream effort faster.',
+        '',
+        '**2. Feature & Backend Architecture**',
+        '• Designed the backend system architecture that data scientists and analysts built on.',
+        '• Engineered trend and seasonality features that made consumption predictable.',
+        '',
+        '**3. Forecasting Model**',
+        '• A time-series model capturing level, trend, and seasonality to project energy consumption.',
+        '• Chosen for interpretability so the business could trust — and act on — its forecasts.',
+        '',
+        '**4. Delivery**',
+        '• Forecasts served through the pipeline lifecycle rather than a throwaway script, so predictions reached the people making procurement and scheduling decisions.',
+      ],
+      highlights: [
+        'Fixed the data foundation before touching the model',
+        '80% less redundancy, 50% less project overhead',
+        'Interpretable time-series model the business could trust',
+        'Backend architecture the data-science segment reused',
+        'Forecasts delivered to decision-makers, not stuck in a notebook',
+      ],
+    },
+
+    implementation: {
+      title: 'Key Implementation Details',
+      content: [
+        '**Consolidate, Then Model**: The first deliverable was not a model — it was clean pipelines. Integrating redundant sources removed ~80% of duplication and halved project overhead, which is what made accurate forecasting possible.',
+        '**Trend & Seasonality Features**: Energy demand has structure. Encoding trend and daily/weekly/seasonal cycles gave the model the signal it needed to be right when it counted.',
+        '**Interpretable Time-Series Methods**: I favored transparent, trend-aware methods (exponential smoothing / seasonal decomposition) over opaque models, so stakeholders could understand and trust the forecast enough to change decisions.',
+        '**Honest Evaluation**: Back-testing on held-out periods kept the accuracy claims grounded and the forecasts calibrated for real decision-making.',
+        '**Built to Be Handed Off**: The backend and pipelines were designed for the data-science team to extend — part of why I could also raise junior engineers\' readiness ~80%.',
+      ],
+    },
+
+    resultsAndImpact: {
+      title: 'Results & Impact',
+      content: [
+        '**Business Impact**:',
+        '• **$2M in energy-cost savings in a single year** — the forecast let the business optimize consumption instead of reacting to it.',
+        '• Predictions accurate and trusted enough to drive real procurement and scheduling decisions.',
+        '',
+        '**Engineering Impact**:',
+        '• **80% reduction in data redundancy** and **50% reduction in project overhead** from consolidating the pipeline foundation.',
+        '• Backend architecture that the data-science segment reused well beyond this project.',
+        '',
+        '**Team Impact**:',
+        '• Trained junior data engineers, raising their readiness ~80% by keeping the design interpretable and teachable.',
+        '• Established a repeatable, full-lifecycle pattern for future forecasting work.',
+      ],
+    },
+
+    tradeoffsAndDecisions: {
+      title: 'Trade-offs & Architecture Decisions',
+      content: [
+        '**Decision 1: Fix the Data vs. Model Around the Mess**',
+        '✅ *Chose*: Consolidate the data foundation first',
+        '• *Rationale*: No model overcomes fragmented, redundant inputs; the 80%/50% cleanup was the real unlock',
+        '• *Trade-off*: Slower to a first model, but far faster and more reliable thereafter',
+        '',
+        '**Decision 2: Interpretable Time-Series vs. Black-Box ML**',
+        '✅ *Chose*: Transparent, trend-aware time-series methods',
+        '• *Rationale*: The business had to trust the forecast enough to spend against it; interpretability drove adoption',
+        '• *Trade-off*: Might leave a little accuracy on the table versus heavier models, but earns the trust that creates value',
+        '',
+        '**Decision 3: A Reusable Backend vs. a One-Off Script**',
+        '✅ *Chose*: Backend architecture for the whole data-science segment',
+        '• *Rationale*: A model only creates value if it is delivered and maintainable; the platform outlived the project',
+        '• *Trade-off*: More engineering up front, repaid in reuse and lower overhead',
+        '',
+        '**Decision 4: Optimize a Metric vs. Optimize a Decision**',
+        '✅ *Chose*: Accuracy calibrated to the procurement/scheduling decision',
+        '• *Rationale*: The goal was $ saved, not a leaderboard score; evaluation targeted decision quality',
+        '• *Trade-off*: Less glamorous than chasing error metrics, but it is what produced the $2M',
+      ],
+    },
+
+    lessonsLearned: {
+      title: 'Lessons Learned',
+      content: [
+        '**1. The Data Foundation Is the Model**',
+        'The biggest lever was not the algorithm — it was consolidating redundant sources (80% less redundancy, 50% less overhead). *Lesson: invest in clean pipelines first; the model is only as good as what feeds it.*',
+        '',
+        '**2. Interpretability Drives Adoption**',
+        'A transparent, trend-aware model earned the trust that a black box never would, and trust is what turned forecasts into $2M of action. *Lesson: a model people act on beats a more accurate model they ignore.*',
+        '',
+        '**3. Optimize the Decision, Not the Metric**',
+        'Framing success as "cost saved" rather than "error minimized" kept the work aimed at business value. *Lesson: tie model evaluation to the decision it informs.*',
+        '',
+        '**4. Build It to Be Handed Off**',
+        'Designing the backend for the data-science team — and teaching it — multiplied the impact beyond what I could deliver alone. *Lesson: maintainable, teachable systems compound in value.*',
+        '',
+        '**5. Seasonality Is Signal, Not Noise**',
+        'Explicitly modeling trend and seasonal cycles was what made the forecast trustworthy at the moments that mattered. *Lesson: in time series, structure you ignore becomes error you can\'t explain.*',
+      ],
+    },
+
+    liveDemo: '/machine-learning',
+    relatedCaseStudies: ['realtime-iot-platform', 'agentic-ai-workforce'],
+  },
+
+  {
     slug: 'computer-vision-object-detection',
     title: 'Real-Time Object Detection',
     subtitle: 'Building a Multi-Model Computer Vision System',

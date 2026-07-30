@@ -24,6 +24,51 @@ interface CaseStudy {
 export default function CaseStudiesPage() {
   const caseStudies: CaseStudy[] = [
     {
+      slug: 'agentic-ai-workforce',
+      title: 'Agentic AI Workforce',
+      subtitle: 'Coordinated LLM Agents that Automate Enterprise Operations',
+      description: 'How I designed an agentic workforce on Databricks that automates workflows and manages tasks for a Fortune 500 client — cutting operational errors 30% and bottlenecks 77% while growing their analytics platform 72%.',
+      icon: '🧠',
+      category: 'AI & Agents',
+      technologies: ['Databricks', 'AWS', 'LLMs', 'Agentic AI', 'RAG'],
+      metrics: [
+        { label: 'Fewer Errors', value: '30%' },
+        { label: 'Fewer Bottlenecks', value: '77%' },
+        { label: 'Analytics Growth', value: '72%' },
+      ],
+      readTime: '8 min read',
+    },
+    {
+      slug: 'realtime-iot-platform',
+      title: 'Real-Time IoT Data Platform',
+      subtitle: 'Event-Driven Architecture for Sub-5-Second IoT at 99.99% Uptime',
+      description: 'How I architected a real-time, event-driven API platform for IoT data achieving 99.99% uptime and sub-5-second end-to-end latency — building on predictive-maintenance work that cut equipment downtime 83%.',
+      icon: '⚡',
+      category: 'Real-Time Systems',
+      technologies: ['Event-Driven', 'IoT', 'AWS', 'Streaming', 'Real-Time Analytics'],
+      metrics: [
+        { label: 'Uptime', value: '99.99%' },
+        { label: 'Latency', value: '<5s' },
+        { label: 'Less Downtime', value: '83%' },
+      ],
+      readTime: '9 min read',
+    },
+    {
+      slug: 'energy-forecasting-ml',
+      title: 'ML Energy Forecasting',
+      subtitle: 'Time-Series Forecasting that Cut Energy Costs by $2M',
+      description: 'How I built a machine-learning forecasting model for industrial energy consumption that reduced costs by $2M in a year — on consolidated data pipelines that cut redundancies 80% and project overhead 50%.',
+      icon: '📈',
+      category: 'Predictive Analytics',
+      technologies: ['Time-Series', 'Python', 'Forecasting', 'scikit-learn', 'Data Pipelines'],
+      metrics: [
+        { label: 'Cost Saved', value: '$2M' },
+        { label: 'Less Redundancy', value: '80%' },
+        { label: 'Lower Overhead', value: '50%' },
+      ],
+      readTime: '7 min read',
+    },
+    {
       slug: 'computer-vision-object-detection',
       title: 'Real-Time Object Detection',
       subtitle: 'Building a Multi-Model Computer Vision System',

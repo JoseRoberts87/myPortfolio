@@ -163,6 +163,96 @@ describe('Case Study Detail Page', () => {
     });
   });
 
+  describe('Agentic AI Workforce Case Study', () => {
+    const slug = 'agentic-ai-workforce';
+
+    it('should render title, subtitle, and challenge', async () => {
+      const component = await CaseStudyPage({ params: Promise.resolve({ slug }) });
+      render(component);
+
+      expect(screen.getByText('Agentic AI Workforce')).toBeInTheDocument();
+      expect(
+        screen.getByText('Coordinated LLM Agents that Automate Enterprise Operations')
+      ).toBeInTheDocument();
+      expect(screen.getByText('The Challenge')).toBeInTheDocument();
+      expect(screen.getByText(/Fortune 500 organization/i)).toBeInTheDocument();
+    });
+
+    it('should render headline metrics and technologies', async () => {
+      const component = await CaseStudyPage({ params: Promise.resolve({ slug }) });
+      render(component);
+
+      expect(screen.getByText('30%')).toBeInTheDocument();
+      expect(screen.getByText('77%')).toBeInTheDocument();
+      expect(screen.getByText('72%')).toBeInTheDocument();
+      expect(screen.getByText('Databricks')).toBeInTheDocument();
+      expect(screen.getByText('Agentic AI')).toBeInTheDocument();
+    });
+
+    it('should render all main content sections', async () => {
+      const component = await CaseStudyPage({ params: Promise.resolve({ slug }) });
+      render(component);
+
+      expect(screen.getByText('The Problem')).toBeInTheDocument();
+      expect(screen.getByText('Technical Challenges')).toBeInTheDocument();
+      expect(screen.getByText('Solution Architecture')).toBeInTheDocument();
+      expect(screen.getByText('Results & Impact')).toBeInTheDocument();
+      expect(screen.getByText('Lessons Learned')).toBeInTheDocument();
+    });
+
+    it('should link its live demo to the AI agents page', async () => {
+      const component = await CaseStudyPage({ params: Promise.resolve({ slug }) });
+      render(component);
+
+      const demoLink = screen.getByRole('link', { name: /View Live Demo/i });
+      expect(demoLink).toHaveAttribute('href', '/ai-agents');
+    });
+  });
+
+  describe('Real-Time IoT Platform Case Study', () => {
+    const slug = 'realtime-iot-platform';
+
+    it('should render title and key metrics', async () => {
+      const component = await CaseStudyPage({ params: Promise.resolve({ slug }) });
+      render(component);
+
+      expect(screen.getByText('Real-Time IoT Data Platform')).toBeInTheDocument();
+      expect(screen.getByText('99.99%')).toBeInTheDocument();
+      expect(screen.getByText('<5s')).toBeInTheDocument();
+      expect(screen.getByText('83%')).toBeInTheDocument();
+    });
+
+    it('should link its live demo to the streaming page', async () => {
+      const component = await CaseStudyPage({ params: Promise.resolve({ slug }) });
+      render(component);
+
+      const demoLink = screen.getByRole('link', { name: /View Live Demo/i });
+      expect(demoLink).toHaveAttribute('href', '/streaming');
+    });
+  });
+
+  describe('ML Energy Forecasting Case Study', () => {
+    const slug = 'energy-forecasting-ml';
+
+    it('should render title and key metrics', async () => {
+      const component = await CaseStudyPage({ params: Promise.resolve({ slug }) });
+      render(component);
+
+      expect(screen.getByText('ML Energy Forecasting')).toBeInTheDocument();
+      expect(screen.getByText('$2M')).toBeInTheDocument();
+      expect(screen.getByText('80%')).toBeInTheDocument();
+      expect(screen.getByText('50%')).toBeInTheDocument();
+    });
+
+    it('should link its live demo to the machine learning page', async () => {
+      const component = await CaseStudyPage({ params: Promise.resolve({ slug }) });
+      render(component);
+
+      const demoLink = screen.getByRole('link', { name: /View Live Demo/i });
+      expect(demoLink).toHaveAttribute('href', '/machine-learning');
+    });
+  });
+
   describe('Invalid case study', () => {
     it('should call notFound for invalid slug', async () => {
       const { notFound } = require('next/navigation');
@@ -181,6 +271,9 @@ describe('Case Study Detail Page', () => {
       const params = await generateStaticParams();
 
       expect(params).toEqual([
+        { slug: 'agentic-ai-workforce' },
+        { slug: 'realtime-iot-platform' },
+        { slug: 'energy-forecasting-ml' },
         { slug: 'computer-vision-object-detection' },
         { slug: 'nlp-pipeline-architecture' },
         { slug: 'data-pipeline-orchestration' },
