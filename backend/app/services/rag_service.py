@@ -18,6 +18,7 @@ import numpy as np
 
 from app.core.config import settings
 from app.core.llm import (
+    get_embed_client,
     get_llm_client,
     is_configured,
     resolve_chat_model,
@@ -52,7 +53,7 @@ class RagService:
         return is_configured()
 
     async def _embed(self, texts: List[str]) -> np.ndarray:
-        resp = await get_llm_client().embeddings.create(
+        resp = await get_embed_client().embeddings.create(
             model=resolve_embed_model(),
             input=texts,
         )

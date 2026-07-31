@@ -6,8 +6,8 @@ chains the results, and synthesizes a grounded final answer — while exposing i
 full tool-call trace so the behavior is visible, not a black box.
 
 Provider-agnostic via app.core.llm: it uses OpenAI-style function/tool calling,
-which works against a local Ollama server (llama3.2) in development and OpenAI in
-production with no code change — only configuration.
+which works against a local Ollama server (gpt-oss:20b) in development and Ollama
+Cloud in production with no code change — only configuration.
 """
 from __future__ import annotations
 
