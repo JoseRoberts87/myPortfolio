@@ -92,6 +92,11 @@ class ContentService:
         )
 
         content = (completion.choices[0].message.content or "").strip()
+        if getattr(completion.choices[0], "finish_reason", None) == "length":
+            logger.warning(
+                "Generated content hit the token cap (AI_GEN_MAX_TOKENS=%s) and may be truncated",
+                settings.AI_GEN_MAX_TOKENS,
+            )
         tokens = completion.usage.total_tokens if completion.usage else 0
         sources = [
             {"id": chunk["id"], "title": chunk["title"], "score": round(score, 3)}
