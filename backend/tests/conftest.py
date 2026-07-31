@@ -15,6 +15,33 @@ from app.db.database import Base, get_db
 from app.models.reddit_post import RedditPost
 
 
+@pytest.fixture(autouse=True)
+def _isolate_external_side_effects(monkeypatch):
+    """Keep the whole suite hermetic regardless of the developer's local `.env`.
+
+    A local `.env` may enable email notifications (`CONTACT_EMAIL_ENABLED=True`)
+    and carry live keys (`RESEND_API_KEY`, `NEWS_API_KEY`). Without this guard,
+    simply running the tests would send real contact emails (the contact tests
+    POST a valid payload) and hit the live News API. We force those services off
+    for every test — and stub the email send as a backstop — so the suite can
+    never perform a real external side-effect no matter how the machine is set up.
+    """
+    from app.core.config import settings
+
+    monkeypatch.setattr(settings, "CONTACT_EMAIL_ENABLED", False, raising=False)
+    monkeypatch.setattr(settings, "NEWS_API_KEY", "", raising=False)
+
+    # Backstop: even if a test explicitly re-enables email, sending is a no-op.
+    async def _no_send(*args, **kwargs):
+        return True
+
+    from app.services.email_service import email_service
+    from app.services.resend_email_service import resend_email_service
+
+    monkeypatch.setattr(resend_email_service, "send_contact_notification", _no_send, raising=False)
+    monkeypatch.setattr(email_service, "send_contact_notification", _no_send, raising=False)
+
+
 # Use in-memory SQLite database for testing
 TEST_DATABASE_URL = "sqlite:///:memory:"
 
