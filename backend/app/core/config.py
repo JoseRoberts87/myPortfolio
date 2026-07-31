@@ -25,7 +25,17 @@ class Settings(BaseSettings):
     NEWS_API_KEY: str = ""  # Get from https://newsapi.org/
 
     # CORS (comma-separated string that will be split)
-    CORS_ORIGINS: str = "http://localhost:3000,https://portfolio-60sng8hin-joseroberts87s-projects.vercel.app"
+    # Exact allowed origins. The Vercel *production alias* is stable; per-deployment
+    # preview URLs (which change every deploy) are matched by CORS_ORIGIN_REGEX below.
+    CORS_ORIGINS: str = (
+        "http://localhost:3000,"
+        "https://portfolio-joseroberts87s-projects.vercel.app,"
+        "https://www.therpiproject.com,"
+        "https://therpiproject.com"
+    )
+    # Regex for this Vercel project's preview deployments, so they don't have to be
+    # listed one-by-one. Set to "" to disable.
+    CORS_ORIGIN_REGEX: str = r"^https://portfolio-.*-joseroberts87s-projects\.vercel\.app$"
 
     # Pipeline Configuration
     REDDIT_SUBREDDITS: str = "python,javascript,machinelearning,datascience"
