@@ -8,13 +8,13 @@ Cloud serves chat but has no embeddings endpoint:
 
     # local (default): one local Ollama serves both chat and embeddings
     LLM_PROVIDER=ollama            # optional; auto-detected
-    OLLAMA_CHAT_MODEL=llama3.2
+    OLLAMA_CHAT_MODEL=gpt-oss:20b
 
     # prod: chat on Ollama Cloud, embeddings on a local/sidecar Ollama
     LLM_PROVIDER=ollama
     OLLAMA_BASE_URL=https://ollama.com/v1
     OLLAMA_API_KEY=<ollama cloud key>
-    OLLAMA_CHAT_MODEL=gpt-oss:120b
+    OLLAMA_CHAT_MODEL=gpt-oss:20b
     EMBED_BASE_URL=http://localhost:11434/v1   # sidecar Ollama (nomic-embed-text)
 
 AI features should get their CHAT client from `get_llm_client()`, their EMBEDDINGS
@@ -47,7 +47,7 @@ class LLMSettings(BaseSettings):
     # Chat provider — Ollama (local dev, or Ollama Cloud in prod via ollama.com).
     OLLAMA_BASE_URL: str = "http://localhost:11434/v1"
     OLLAMA_API_KEY: str = ""  # required for Ollama Cloud; ignored by a local server
-    OLLAMA_CHAT_MODEL: str = "llama3.2"
+    OLLAMA_CHAT_MODEL: str = "gpt-oss:20b"  # available both locally and on Ollama Cloud
 
     # Embeddings — a DEDICATED endpoint, independent of the chat provider. Ollama
     # Cloud serves chat but has no embeddings endpoint, so in prod this points at a
