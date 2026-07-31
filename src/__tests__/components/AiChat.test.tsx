@@ -45,6 +45,11 @@ describe('AiChat (streaming)', () => {
     ).toBeInTheDocument();
   });
 
+  it('discloses that conversations may be logged before the first message', () => {
+    render(<AiChat />);
+    expect(screen.getByText(/Conversations may be logged/i)).toBeInTheDocument();
+  });
+
   it('streams a grounded answer token-by-token and shows sources', async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce(
       sseResponse([
