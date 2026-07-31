@@ -14,11 +14,13 @@ KNOWLEDGE_CHUNKS: List[Dict[str, str]] = [
         "title": "Overview",
         "text": (
             "Jose Roberts is a Data & AI Architect based in Providence, Rhode Island, "
-            "with over 15 years of technology experience spanning go-to-market strategy, "
-            "business needs, and technical solutions. He specializes in AI-first systems, "
-            "agentic AI, LLM and generative-AI integration, and scalable data pipelines. "
-            "He has implemented AI-first systems that improved decision-making processes "
-            "by 90% within three weeks. He is open to Data & AI Architect roles. "
+            "with 15+ years building data platforms and production AI systems across "
+            "finance, consumer services, and industrial IoT. He is a Databricks Certified "
+            "Data Engineer Professional with deep AWS, Python, and Spark experience, and a "
+            "track record of taking systems from architecture through delivery — and leading "
+            "the engineers who build them. He specializes in AI-first systems, agentic AI, "
+            "and LLM/generative-AI integration; an AI-first system he helped design lifted "
+            "user productivity 90% within three weeks. He is open to Data & AI Architect roles. "
             "Contact: webterpr@gmail.com, LinkedIn linkedin.com/in/jose-roberts, "
             "website therpiproject.com."
         ),
@@ -121,7 +123,7 @@ KNOWLEDGE_CHUNKS: List[Dict[str, str]] = [
             "Programming languages: Java, JavaScript, Python 3. "
             "Frameworks: Flask, FastAPI, Django, React, Vite, Next.js, Spring Boot. "
             "Databases: MongoDB, MSSQL, MySQL, PostgreSQL. "
-            "Cloud platforms: AWS, Databricks, GCP, and Microsoft Azure (Data Factory). "
+            "Cloud platforms: AWS, Databricks, GCP, and Microsoft Azure. "
             "DevOps and containerization: CI/CD pipelines, Docker, Kubernetes, Terraform. "
             "AI and ML: Generative AI, LLMs, OpenAI, agentic AI, RAG, time-series forecasting, "
             "NLP, and computer vision. Deep AWS, Python, and Spark experience. "
