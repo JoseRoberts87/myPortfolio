@@ -38,6 +38,21 @@ RUN apt-get update && apt-get install -y \
     libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Ollama (embedding sidecar) and pre-pull the embed model, so cold starts
+# are fast and don't depend on the model registry at runtime. Models live in an
+# app-owned dir (OLLAMA_MODELS) so the non-root user can read them at runtime.
+ENV OLLAMA_MODELS=/models
+RUN curl -fsSL https://ollama.com/install.sh | sh && \
+    mkdir -p /models && \
+    (ollama serve & ) && \
+    timeout 60 sh -c 'until curl -sf http://localhost:11434/api/tags >/dev/null 2>&1; do sleep 1; done' && \
+    ollama pull nomic-embed-text && \
+    (pkill -f "ollama serve" || true)
+
+# Embeddings use the local sidecar; chat (OLLAMA_BASE_URL/OLLAMA_API_KEY/OLLAMA_CHAT_MODEL)
+# is configured at deploy time to point at Ollama Cloud.
+ENV EMBED_BASE_URL=http://localhost:11434/v1
+
 # Copy Python packages from builder
 COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
@@ -45,24 +60,18 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 # Copy application code
 COPY . .
 
-# Create non-root user and set permissions
+# Create non-root user and set permissions (incl. the sidecar's model dir)
 RUN useradd -m -u 1000 appuser && \
-    chown -R appuser:appuser /app
+    chmod +x /app/docker-entrypoint.sh && \
+    chown -R appuser:appuser /app /models
 USER appuser
 
 # Expose port
 EXPOSE 8000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+# Health check (longer start period: the embedding sidecar + migrations boot first)
+HEALTHCHECK --interval=30s --timeout=5s --start-period=180s --retries=3 \
     CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
 
-# Run migrations and start the application
-CMD alembic upgrade head && \
-    gunicorn app.main:app \
-    --workers 2 \
-    --worker-class uvicorn.workers.UvicornWorker \
-    --bind 0.0.0.0:${PORT:-8000} \
-    --access-logfile - \
-    --error-logfile - \
-    --log-level info
+# Start the embedding sidecar, run migrations, then the API (see docker-entrypoint.sh)
+CMD ["./docker-entrypoint.sh"]

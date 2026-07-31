@@ -80,7 +80,11 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(
         env_file=".env",
-        case_sensitive=True
+        case_sensitive=True,
+        # Ignore env vars owned by other settings classes (e.g. LLMSettings'
+        # OLLAMA_*/EMBED_* keys). Without this, a var like OLLAMA_API_KEY in the
+        # environment raises `extra_forbidden` — and leaks its value into the error.
+        extra="ignore",
     )
 
     @property

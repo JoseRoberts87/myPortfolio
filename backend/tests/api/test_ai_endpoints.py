@@ -34,6 +34,7 @@ def _fake_llm_client(answer: str = "Grounded answer.", tokens: int = 123, dim: i
 def _patch_llm(client, configured: bool = True):
     return [
         patch("app.services.rag_service.get_llm_client", return_value=client),
+        patch("app.services.rag_service.get_embed_client", return_value=client),
         patch("app.services.rag_service.is_configured", return_value=configured),
         patch("app.services.rag_service.resolve_chat_model", return_value="llama3.2"),
         patch("app.services.rag_service.resolve_embed_model", return_value="nomic-embed-text"),

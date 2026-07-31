@@ -1,23 +1,26 @@
 """
 Provider-agnostic LLM client.
 
-Local development runs against a local **Ollama** server; production uses
-**OpenAI**. Because Ollama exposes an OpenAI-compatible API (`/v1/chat/completions`,
-`/v1/embeddings`), the very same `openai` SDK drives both — only the `base_url`,
-`api_key`, and model names differ, and those are all env-driven. Switching to
-OpenAI for prod is therefore just configuration:
+Everything talks the OpenAI-compatible API, so the same `openai` SDK drives every
+backend — only `base_url`, `api_key`, and model names differ, and those are all
+env-driven. Chat and embeddings are configured *independently*, because Ollama
+Cloud serves chat but has no embeddings endpoint:
 
-    # local (default when no OPENAI_API_KEY is set)
+    # local (default): one local Ollama serves both chat and embeddings
     LLM_PROVIDER=ollama            # optional; auto-detected
     OLLAMA_CHAT_MODEL=llama3.2
 
-    # prod
-    LLM_PROVIDER=openai
-    OPENAI_API_KEY=sk-...
+    # prod: chat on Ollama Cloud, embeddings on a local/sidecar Ollama
+    LLM_PROVIDER=ollama
+    OLLAMA_BASE_URL=https://ollama.com/v1
+    OLLAMA_API_KEY=<ollama cloud key>
+    OLLAMA_CHAT_MODEL=gpt-oss:120b
+    EMBED_BASE_URL=http://localhost:11434/v1   # sidecar Ollama (nomic-embed-text)
 
-AI features should obtain their client from `get_llm_client()` and their model
-names from `resolve_chat_model()` / `resolve_embed_model()` rather than
-constructing `AsyncOpenAI` directly, so the provider stays swappable.
+AI features should get their CHAT client from `get_llm_client()`, their EMBEDDINGS
+client from `get_embed_client()`, and model names from `resolve_chat_model()` /
+`resolve_embed_model()` rather than constructing `AsyncOpenAI` directly, so the
+providers stay swappable.
 """
 
 from __future__ import annotations
@@ -41,15 +44,22 @@ class LLMSettings(BaseSettings):
     # "ollama" | "openai" | "" (auto: OpenAI when a key is present, else Ollama).
     LLM_PROVIDER: str = ""
 
-    # Local Ollama (OpenAI-compatible endpoint).
+    # Chat provider — Ollama (local dev, or Ollama Cloud in prod via ollama.com).
     OLLAMA_BASE_URL: str = "http://localhost:11434/v1"
+    OLLAMA_API_KEY: str = ""  # required for Ollama Cloud; ignored by a local server
     OLLAMA_CHAT_MODEL: str = "llama3.2"
+
+    # Embeddings — a DEDICATED endpoint, independent of the chat provider. Ollama
+    # Cloud serves chat but has no embeddings endpoint, so in prod this points at a
+    # local/sidecar Ollama running the embed model while chat goes to the cloud.
+    # Empty => fall back to OLLAMA_BASE_URL (the default local-dev behavior).
+    EMBED_BASE_URL: str = ""
+    EMBED_API_KEY: str = ""  # key for the embed endpoint; ignored for a local Ollama
     OLLAMA_EMBED_MODEL: str = "nomic-embed-text"
 
-    # OpenAI (production).
+    # OpenAI (alternative chat provider for production).
     OPENAI_API_KEY: str = ""
     OPENAI_CHAT_MODEL: str = "gpt-4o-mini"
-    OPENAI_EMBED_MODEL: str = "text-embedding-3-small"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore", case_sensitive=True)
 
@@ -75,23 +85,45 @@ def resolve_chat_model(settings: Optional[LLMSettings] = None) -> str:
 
 
 def resolve_embed_model(settings: Optional[LLMSettings] = None) -> str:
+    """The embedding model name. Embeddings run against EMBED_BASE_URL and are
+    decoupled from the chat provider, so this is independent of `resolve_provider`."""
     s = settings or get_llm_settings()
-    return s.OLLAMA_EMBED_MODEL if resolve_provider(s) == "ollama" else s.OPENAI_EMBED_MODEL
+    return s.OLLAMA_EMBED_MODEL
+
+
+def _is_local_url(url: str) -> bool:
+    return "localhost" in url or "127.0.0.1" in url
 
 
 def is_configured(settings: Optional[LLMSettings] = None) -> bool:
-    """Whether an LLM is usable. Ollama is assumed available locally (verify with
-    `check_llm_reachable`); OpenAI requires an API key."""
+    """Whether the chat LLM is usable. A local Ollama is assumed reachable; Ollama
+    Cloud (a remote base URL) and OpenAI each require their API key."""
     s = settings or get_llm_settings()
-    return True if resolve_provider(s) == "ollama" else bool(s.OPENAI_API_KEY)
+    if resolve_provider(s) == "openai":
+        return bool(s.OPENAI_API_KEY)
+    # Ollama: a local server needs no key; a remote (cloud) endpoint requires one.
+    return True if _is_local_url(s.OLLAMA_BASE_URL) else bool(s.OLLAMA_API_KEY)
 
 
 def get_llm_client(settings: Optional[LLMSettings] = None) -> AsyncOpenAI:
-    """An `AsyncOpenAI` client pointed at the active provider."""
+    """An `AsyncOpenAI` client for CHAT, pointed at the active provider."""
     s = settings or get_llm_settings()
     if resolve_provider(s) == "ollama":
-        return AsyncOpenAI(base_url=s.OLLAMA_BASE_URL, api_key=_OLLAMA_PLACEHOLDER_KEY)
+        # A real key for Ollama Cloud; the placeholder keeps a local server happy.
+        return AsyncOpenAI(
+            base_url=s.OLLAMA_BASE_URL, api_key=s.OLLAMA_API_KEY or _OLLAMA_PLACEHOLDER_KEY
+        )
     return AsyncOpenAI(api_key=s.OPENAI_API_KEY)
+
+
+def get_embed_client(settings: Optional[LLMSettings] = None) -> AsyncOpenAI:
+    """An `AsyncOpenAI` client for EMBEDDINGS. Independent of the chat provider so
+    embeddings can run on a local/sidecar Ollama (nomic-embed-text) even when chat
+    is served by Ollama Cloud, which has no embeddings endpoint. Falls back to the
+    chat Ollama URL when EMBED_BASE_URL is unset (the local-dev default)."""
+    s = settings or get_llm_settings()
+    base_url = s.EMBED_BASE_URL or s.OLLAMA_BASE_URL
+    return AsyncOpenAI(base_url=base_url, api_key=s.EMBED_API_KEY or _OLLAMA_PLACEHOLDER_KEY)
 
 
 def llm_status(settings: Optional[LLMSettings] = None) -> dict:
@@ -103,6 +135,7 @@ def llm_status(settings: Optional[LLMSettings] = None) -> dict:
         "chat_model": resolve_chat_model(s),
         "embed_model": resolve_embed_model(s),
         "base_url": s.OLLAMA_BASE_URL if provider == "ollama" else "https://api.openai.com/v1",
+        "embed_base_url": s.EMBED_BASE_URL or s.OLLAMA_BASE_URL,
         "configured": is_configured(s),
     }
 
