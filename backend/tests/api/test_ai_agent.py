@@ -142,6 +142,29 @@ class TestAgentService:
         assert len(result["steps"]) == 2  # two tool turns before the forced answer
         assert client.chat.completions.create.await_count == 3
 
+    async def test_all_chat_calls_are_token_capped(self, monkeypatch):
+        """Every agent chat call (loop step + forced-final) must pass max_tokens (issue #167)."""
+        from app.core.config import settings
+
+        monkeypatch.setattr(settings, "AI_AGENT_MAX_STEPS", 1)
+        monkeypatch.setattr(settings, "AI_AGENT_MAX_TOKENS", 321)
+        svc = AgentService()
+        # 1 loop turn asks for a tool -> loop exhausts (MAX_STEPS=1) -> forced final.
+        loop_turn = _completion("", [_tool_call("calculate", '{"expression": "1 + 1"}', "c")], 5)
+        client = _client_returning(loop_turn, _completion("Final answer.", None, 5))
+        patches = _patch_llm(client)
+        for p in patches:
+            p.start()
+        try:
+            await svc.run("do some tool work")
+        finally:
+            for p in patches:
+                p.stop()
+
+        assert client.chat.completions.create.await_count == 2  # loop step + forced final
+        for call in client.chat.completions.create.call_args_list:
+            assert call.kwargs.get("max_tokens") == 321
+
     async def test_raises_when_no_provider(self):
         svc = AgentService()
         with patch("app.services.agent_service.is_configured", return_value=False):

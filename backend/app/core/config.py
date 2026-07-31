@@ -76,6 +76,7 @@ class Settings(BaseSettings):
     AI_RATE_LIMIT_GLOBAL_PER_HOUR: int = 200  # Site-wide backstop (bounds spoofed X-Forwarded-For)
     AI_AGENT_MAX_STEPS: int = 5  # Max tool-calling iterations for the agent demo
     AI_AGENT_SEARCH_TOP_K: int = 3  # Chunks the agent's search_portfolio tool returns
+    AI_AGENT_MAX_TOKENS: int = 800  # Cap completion tokens per agent chat call (cost/latency)
     AI_GEN_MAX_TOKENS: int = 600  # Cap completion tokens for the content generator
     AI_GEN_TOP_K: int = 4  # Knowledge chunks grounding the generated content
 

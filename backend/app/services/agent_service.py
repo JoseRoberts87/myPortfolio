@@ -172,6 +172,7 @@ class AgentService:
             completion = await client.chat.completions.create(
                 model=model,
                 temperature=0.1,
+                max_tokens=settings.AI_AGENT_MAX_TOKENS,
                 messages=messages,
                 tools=TOOLS_SCHEMA,
             )
@@ -226,6 +227,7 @@ class AgentService:
         final = await client.chat.completions.create(
             model=model,
             temperature=0.2,
+            max_tokens=settings.AI_AGENT_MAX_TOKENS,
             messages=messages
             + [
                 {
