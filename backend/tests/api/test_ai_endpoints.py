@@ -91,6 +91,23 @@ class TestRagService:
                 p.stop()
 
 
+    async def test_warns_when_answer_is_truncated(self):
+        import app.services.rag_service as rag_module
+
+        svc = RagService()
+        client = _fake_llm_client()
+        client.chat.completions.create.return_value.choices[0].finish_reason = "length"
+        patches = _patch_llm(client) + [patch.object(rag_module.logger, "warning")]
+        started = [p.start() for p in patches]
+        warn = started[-1]
+        try:
+            await svc.answer("a question that elicits a long answer")
+        finally:
+            for p in patches:
+                p.stop()
+        assert warn.called  # finish_reason == "length" -> truncation warning logged
+
+
 class TestChatEndpoint:
     def test_empty_question_returns_400(self, client):
         assert client.post("/api/v1/ai/chat", json={"question": "   "}).status_code == 400

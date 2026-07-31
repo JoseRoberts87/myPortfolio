@@ -9,9 +9,9 @@ from app.services.content_service import DEFAULT_FORMAT, FORMATS, TONES, Content
 from app.services.rag_service import rag_service
 
 
-def _completion(content: str, tokens: int = 200):
+def _completion(content: str, tokens: int = 200, finish_reason=None):
     return SimpleNamespace(
-        choices=[SimpleNamespace(message=SimpleNamespace(content=content))],
+        choices=[SimpleNamespace(message=SimpleNamespace(content=content), finish_reason=finish_reason)],
         usage=SimpleNamespace(total_tokens=tokens),
     )
 
@@ -107,6 +107,23 @@ class TestContentService:
         finally:
             for p in patches:
                 p.stop()
+
+
+    async def test_warns_when_content_is_truncated(self):
+        import app.services.content_service as cs_module
+
+        svc = ContentService()
+        client = _client()
+        client.chat.completions.create.return_value = _completion("draft…", finish_reason="length")
+        patches = _patches(client) + [patch.object(cs_module.logger, "warning")]
+        started = [p.start() for p in patches]
+        warn = started[-1]
+        try:
+            await svc.generate("Senior AI role", "elevator_pitch", "professional")
+        finally:
+            for p in patches:
+                p.stop()
+        assert warn.called  # finish_reason == "length" -> truncation warning logged
 
 
 class TestGenerateEndpoint:
