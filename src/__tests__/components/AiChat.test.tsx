@@ -1,6 +1,11 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { TextEncoder, TextDecoder } from 'util';
+
+// jsdom doesn't provide TextEncoder/TextDecoder; the SSE reader/decoder needs them.
+Object.assign(global, { TextEncoder, TextDecoder });
+
 import AiChat from '@/components/AiChat';
 
 // jsdom lacks Element.prototype.scrollTo (used by the auto-scroll effect).
@@ -8,12 +13,23 @@ beforeAll(() => {
   Element.prototype.scrollTo = jest.fn();
 });
 
-const okAnswer = (answer: string, sources: Array<{ id: string; title: string; score: number }> = []) => ({
-  ok: true,
-  json: async () => ({ answer, sources, model: 'llama3.2', tokens_used: 42 }),
-});
+// Build a mock streaming Response whose body yields the given SSE events.
+function sseResponse(events: Array<Record<string, unknown>>) {
+  const encoder = new TextEncoder();
+  const bytes = encoder.encode(events.map((e) => `data: ${JSON.stringify(e)}\n\n`).join(''));
+  let sent = false;
+  return {
+    ok: true,
+    body: {
+      getReader: () => ({
+        read: async () =>
+          sent ? { done: true, value: undefined } : ((sent = true), { done: false, value: bytes }),
+      }),
+    },
+  };
+}
 
-describe('AiChat', () => {
+describe('AiChat (streaming)', () => {
   beforeEach(() => {
     global.fetch = jest.fn();
   });
@@ -24,30 +40,41 @@ describe('AiChat', () => {
   it('renders the empty state with suggested questions', () => {
     render(<AiChat />);
     expect(screen.getByText(/Ask anything about Jose/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'What has Jose done with agentic AI?' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'What has Jose done with agentic AI?' }),
+    ).toBeInTheDocument();
   });
 
-  it('sends a suggested question and renders the grounded answer + sources', async () => {
+  it('streams a grounded answer token-by-token and shows sources', async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce(
-      okAnswer('Jose built an agentic workforce that cut errors 30%.', [
-        { id: 'mojotech', title: 'MojoTech — Data and AI Architect (2026)', score: 0.71 },
+      sseResponse([
+        {
+          type: 'sources',
+          sources: [{ id: 'mojotech', title: 'MojoTech — Data and AI Architect (2026)', score: 0.71 }],
+          model: 'gpt-oss:20b',
+        },
+        { type: 'token', text: 'Jose built ' },
+        { type: 'token', text: 'an agentic workforce ' },
+        { type: 'token', text: 'that cut errors 30%.' },
+        { type: 'done' },
       ]),
     );
 
     render(<AiChat />);
     fireEvent.click(screen.getByRole('button', { name: 'What has Jose done with agentic AI?' }));
 
-    // The user's question and the assistant's grounded answer both render.
-    await screen.findByText(/agentic workforce that cut errors/i);
+    // Tokens accumulate into the full answer.
+    await screen.findByText('Jose built an agentic workforce that cut errors 30%.');
     expect(screen.getByText('What has Jose done with agentic AI?')).toBeInTheDocument();
-    // Cited source chip.
     expect(screen.getByText('MojoTech — Data and AI Architect (2026)')).toBeInTheDocument();
-    // The POST hit the chat endpoint.
-    expect((global.fetch as jest.Mock).mock.calls[0][0]).toMatch(/\/api\/v1\/ai\/chat$/);
+    // Hit the streaming endpoint.
+    expect((global.fetch as jest.Mock).mock.calls[0][0]).toMatch(/\/api\/v1\/ai\/chat\/stream$/);
   });
 
   it('submits a typed question via the form', async () => {
-    (global.fetch as jest.Mock).mockResolvedValueOnce(okAnswer('Answer text.'));
+    (global.fetch as jest.Mock).mockResolvedValueOnce(
+      sseResponse([{ type: 'token', text: 'Answer text.' }, { type: 'done' }]),
+    );
     render(<AiChat />);
 
     fireEvent.change(screen.getByLabelText(/Ask about Jose/i), { target: { value: 'What tools?' } });
@@ -57,7 +84,7 @@ describe('AiChat', () => {
     expect(screen.getByText('What tools?')).toBeInTheDocument();
   });
 
-  it('shows an error bubble when the backend returns an error', async () => {
+  it('shows an error bubble when the backend returns a non-OK response', async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: false,
       json: async () => ({ detail: 'The AI assistant is not configured.' }),

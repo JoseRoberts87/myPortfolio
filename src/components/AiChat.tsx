@@ -13,6 +13,14 @@ interface Message {
   content: string;
   sources?: Source[];
   error?: boolean;
+  streaming?: boolean;
+}
+
+interface StreamEvent {
+  type?: string;
+  text?: string;
+  sources?: Source[];
+  detail?: string;
 }
 
 const SUGGESTED_QUESTIONS = [
@@ -35,42 +43,89 @@ export default function AiChat() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, loading]);
 
+  // Update the most recent assistant message in place (the one being streamed).
+  const updateAssistant = (fn: (m: Message) => Message) => {
+    setMessages((msgs) => {
+      const next = [...msgs];
+      for (let i = next.length - 1; i >= 0; i--) {
+        if (next[i].role === 'assistant') {
+          next[i] = fn(next[i]);
+          break;
+        }
+      }
+      return next;
+    });
+  };
+
   const send = async (question: string) => {
     const q = question.trim();
     if (!q || loading) return;
 
     setInput('');
-    setMessages((m) => [...m, { role: 'user', content: q }]);
+    setMessages((m) => [
+      ...m,
+      { role: 'user', content: q },
+      { role: 'assistant', content: '', streaming: true },
+    ]);
     setLoading(true);
 
     try {
-      const res = await fetch(`${baseUrl}/api/v1/ai/chat`, {
+      const res = await fetch(`${baseUrl}/api/v1/ai/chat/stream`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: q }),
       });
-      const data = await res.json().catch(() => ({}));
 
-      if (!res.ok) {
-        const detail =
-          data?.error?.message || data?.detail || 'The assistant is unavailable right now.';
-        setMessages((m) => [...m, { role: 'assistant', content: detail, error: true }]);
-      } else {
-        setMessages((m) => [
-          ...m,
-          { role: 'assistant', content: data.answer, sources: data.sources },
-        ]);
+      if (!res.ok || !res.body) {
+        const data = await res.json().catch(() => ({}));
+        const detail = data?.detail || 'The assistant is unavailable right now.';
+        updateAssistant((m) => ({ ...m, content: detail, error: true, streaming: false }));
+        return;
       }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        // SSE frames are separated by a blank line; keep any trailing partial frame.
+        const frames = buffer.split('\n\n');
+        buffer = frames.pop() || '';
+        for (const frame of frames) {
+          const line = frame.trim();
+          if (!line.startsWith('data:')) continue;
+          let event: StreamEvent;
+          try {
+            event = JSON.parse(line.slice(5).trim());
+          } catch {
+            continue;
+          }
+          if (event.type === 'sources') {
+            updateAssistant((m) => ({ ...m, sources: event.sources }));
+          } else if (event.type === 'token') {
+            updateAssistant((m) => ({ ...m, content: m.content + (event.text || '') }));
+          } else if (event.type === 'error') {
+            updateAssistant((m) => ({
+              ...m,
+              content: event.detail || 'The assistant is unavailable right now.',
+              error: true,
+            }));
+          }
+        }
+      }
+      updateAssistant((m) => ({ ...m, streaming: false }));
     } catch {
-      setMessages((m) => [
+      updateAssistant((m) => ({
         ...m,
-        {
-          role: 'assistant',
-          content:
-            'Could not reach the AI service. If you are running this locally, make sure the backend is running on port 8000.',
-          error: true,
-        },
-      ]);
+        content:
+          'Could not reach the AI service. If you are running this locally, make sure the backend is running on port 8000.',
+        error: true,
+        streaming: false,
+      }));
     } finally {
       setLoading(false);
     }
@@ -120,7 +175,30 @@ export default function AiChat() {
                     : 'bg-sunken border border-subtle text-foreground'
               }`}
             >
-              <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+              {/* Thinking state: streaming, first token not in yet */}
+              {msg.role === 'assistant' && msg.streaming && !msg.content ? (
+                <div className="flex gap-1.5" role="status" aria-label="Assistant is thinking">
+                  <span className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" />
+                  <span
+                    className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"
+                    style={{ animationDelay: '0.15s' }}
+                  />
+                  <span
+                    className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"
+                    style={{ animationDelay: '0.3s' }}
+                  />
+                </div>
+              ) : (
+                <p className="whitespace-pre-wrap leading-relaxed">
+                  {msg.content}
+                  {msg.streaming && msg.content && (
+                    <span
+                      className="inline-block w-1.5 h-4 ml-0.5 align-text-bottom bg-purple-400 animate-pulse"
+                      aria-hidden
+                    />
+                  )}
+                </p>
+              )}
 
               {msg.sources && msg.sources.length > 0 && (
                 <div className="mt-3 pt-3 border-t border-subtle">
@@ -141,24 +219,6 @@ export default function AiChat() {
             </div>
           </div>
         ))}
-
-        {loading && (
-          <div className="flex justify-start">
-            <div className="bg-sunken border border-subtle rounded-2xl px-4 py-3">
-              <div className="flex gap-1.5" role="status" aria-label="Assistant is typing">
-                <span className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" />
-                <span
-                  className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"
-                  style={{ animationDelay: '0.15s' }}
-                />
-                <span
-                  className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"
-                  style={{ animationDelay: '0.3s' }}
-                />
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Input */}
