@@ -48,6 +48,16 @@ export default function AgentDemo() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [turns, loading]);
 
+  // Replace the most recent turn (the one currently streaming). Pure — the
+  // updater may be double-invoked in StrictMode, so it must not mutate.
+  const updateTurn = (fn: (turn: AgentTurn) => AgentTurn) => {
+    setTurns((t) => {
+      const next = [...t];
+      next[next.length - 1] = fn(next[next.length - 1]);
+      return next;
+    });
+  };
+
   const send = async (question: string) => {
     const q = question.trim();
     if (!q || loading) return;
@@ -57,36 +67,79 @@ export default function AgentDemo() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${baseUrl}/api/v1/ai/agent`, {
+      // SSE stream (issue #171): tool-call steps arrive as they execute, so the
+      // trace builds live instead of appearing all at once after the wait.
+      const res = await fetch(`${baseUrl}/api/v1/ai/agent/stream`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: q }),
       });
-      const data = await res.json().catch(() => ({}));
 
-      setTurns((t) => {
-        const next = [...t];
-        const turn = next[next.length - 1];
-        if (!res.ok) {
-          turn.answer = data?.detail || 'The agent is unavailable right now.';
-          turn.error = true;
-        } else {
-          turn.answer = data.answer;
-          turn.steps = data.steps || [];
-          turn.model = data.model;
-          turn.tokensUsed = data.tokens_used;
+      if (!res.ok || !res.body) {
+        const data = await res.json().catch(() => ({}));
+        updateTurn((turn) => ({
+          ...turn,
+          answer: data?.detail || 'The agent is unavailable right now.',
+          error: true,
+        }));
+        return;
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        // SSE frames are separated by a blank line; keep any trailing partial frame.
+        const frames = buffer.split('\n\n');
+        buffer = frames.pop() || '';
+        for (const frame of frames) {
+          const line = frame.trim();
+          if (!line.startsWith('data:')) continue;
+          let event: Record<string, unknown>;
+          try {
+            event = JSON.parse(line.slice(5).trim());
+          } catch {
+            continue;
+          }
+          if (event.type === 'model') {
+            updateTurn((turn) => ({ ...turn, model: event.model as string }));
+          } else if (event.type === 'step') {
+            updateTurn((turn) => ({
+              ...turn,
+              steps: [
+                ...turn.steps,
+                {
+                  tool: event.tool as string,
+                  arguments: (event.arguments as Record<string, unknown>) || {},
+                  result: (event.result as string) || '',
+                },
+              ],
+            }));
+          } else if (event.type === 'answer') {
+            updateTurn((turn) => ({ ...turn, answer: (event.text as string) || '' }));
+          } else if (event.type === 'done') {
+            updateTurn((turn) => ({ ...turn, tokensUsed: (event.tokens_used as number) || undefined }));
+          } else if (event.type === 'error') {
+            updateTurn((turn) => ({
+              ...turn,
+              answer: (event.detail as string) || 'The agent is unavailable right now.',
+              error: true,
+            }));
+          }
         }
-        return next;
-      });
+      }
     } catch {
-      setTurns((t) => {
-        const next = [...t];
-        const turn = next[next.length - 1];
-        turn.answer =
-          'Could not reach the agent. If you are running this locally, make sure the backend is running on port 8000.';
-        turn.error = true;
-        return next;
-      });
+      updateTurn((turn) => ({
+        ...turn,
+        answer:
+          'Could not reach the agent. If you are running this locally, make sure the backend is running on port 8000.',
+        error: true,
+      }));
     } finally {
       setLoading(false);
     }

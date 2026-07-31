@@ -10,7 +10,7 @@ OpenAI in production with no code change — only configuration.
 """
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any, AsyncIterator, Dict
 
 from app.core.config import settings
 from app.core.llm import get_llm_client, is_configured, resolve_chat_model
@@ -61,11 +61,9 @@ class ContentService:
         """True when an LLM provider is usable (Ollama locally, or OpenAI with a key)."""
         return is_configured()
 
-    async def generate(self, brief: str, fmt: str, tone: str) -> Dict[str, Any]:
-        """Generate content for the given brief, format, and tone, grounded in the resume."""
-        if not self.enabled:
-            raise RuntimeError("No LLM provider is configured")
-
+    async def _prepare(self, brief: str, fmt: str, tone: str) -> Dict[str, Any]:
+        """Shared prep for both generate paths: retrieve grounding facts and build
+        the prompt. Returns the user prompt, cited sources, and model."""
         brief = (brief or "").strip()
         format_desc = FORMATS.get(fmt, FORMATS[DEFAULT_FORMAT])
         tone_desc = TONES.get(tone, TONES[DEFAULT_TONE])
@@ -82,8 +80,23 @@ class ContentService:
             f"Write {format_desc} in a {tone_desc} tone that positions Jose for this role. "
             "Tailor it to the brief and ground every claim in the context above."
         )
+        sources = [
+            {"id": chunk["id"], "title": chunk["title"], "score": round(score, 3)}
+            for chunk, score in retrieved
+        ]
+        return {
+            "user_prompt": user_prompt,
+            "sources": sources,
+            "model": resolve_chat_model(),
+        }
 
-        model = resolve_chat_model()
+    async def generate(self, brief: str, fmt: str, tone: str) -> Dict[str, Any]:
+        """Generate content for the given brief, format, and tone, grounded in the resume."""
+        if not self.enabled:
+            raise RuntimeError("No LLM provider is configured")
+
+        prep = await self._prepare(brief, fmt, tone)
+        user_prompt, sources, model = prep["user_prompt"], prep["sources"], prep["model"]
         completion = await get_llm_client().chat.completions.create(
             model=model,
             temperature=0.6,
@@ -101,16 +114,46 @@ class ContentService:
                 settings.AI_GEN_MAX_TOKENS,
             )
         tokens = completion.usage.total_tokens if completion.usage else 0
-        sources = [
-            {"id": chunk["id"], "title": chunk["title"], "score": round(score, 3)}
-            for chunk, score in retrieved
-        ]
         return {
             "content": content,
             "sources": sources,
             "model": model,
             "tokens_used": tokens,
         }
+
+    async def generate_stream(
+        self, brief: str, fmt: str, tone: str
+    ) -> AsyncIterator[Dict[str, Any]]:
+        """Stream the generated draft as events (issue #171): one 'sources', then
+        'token's, then 'done' — mirroring RagService.answer_stream."""
+        if not self.enabled:
+            raise RuntimeError("No LLM provider is configured")
+
+        prep = await self._prepare(brief, fmt, tone)
+        model = prep["model"]
+        yield {"type": "sources", "sources": prep["sources"], "model": model}
+
+        stream = await get_llm_client().chat.completions.create(
+            model=model,
+            temperature=0.6,
+            max_tokens=settings.AI_GEN_MAX_TOKENS,
+            messages=[
+                {"role": "system", "content": GEN_SYSTEM_PROMPT},
+                {"role": "user", "content": prep["user_prompt"]},
+            ],
+            stream=True,
+        )
+        chars_streamed = 0
+        async for chunk in stream:
+            if not chunk.choices:
+                continue
+            delta = getattr(chunk.choices[0].delta, "content", None)
+            if delta:
+                chars_streamed += len(delta)
+                yield {"type": "token", "text": delta}
+        # Streamed completions don't reliably report usage across providers, so
+        # approximate for budget accounting (~4 chars/token heuristic).
+        yield {"type": "done", "tokens_used": max(1, chars_streamed // 4)}
 
 
 content_service = ContentService()

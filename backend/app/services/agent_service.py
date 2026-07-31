@@ -15,7 +15,7 @@ import ast
 import json
 import operator
 from datetime import date
-from typing import Any, Dict, List
+from typing import Any, AsyncIterator, Dict, List
 
 from app.core.config import settings
 from app.core.llm import get_llm_client, is_configured, resolve_chat_model
@@ -158,18 +158,23 @@ class AgentService:
         except Exception as exc:  # surfaced to the model so it can recover
             return f"Error running {name}: {exc}"
 
-    async def run(self, question: str) -> Dict[str, Any]:
-        """Run the agent loop and return the final answer plus the tool-call trace."""
+    async def run_stream(self, question: str) -> AsyncIterator[Dict[str, Any]]:
+        """Stream the agent loop as events (issue #171): one 'model', a 'step' per
+        executed tool call AS IT HAPPENS, then 'answer' and 'done'. The agent is
+        the slowest demo (multiple sequential reasoning-model calls), so surfacing
+        steps live is the difference between a progress view and a long spinner."""
         if not self.enabled:
             raise RuntimeError("No LLM provider is configured")
 
         client = get_llm_client()
         model = resolve_chat_model()
+        yield {"type": "model", "model": model}
+
         messages: List[Dict[str, Any]] = [
             {"role": "system", "content": AGENT_SYSTEM_PROMPT},
             {"role": "user", "content": question},
         ]
-        steps: List[Dict[str, Any]] = []
+        steps = 0
         total_tokens = 0
 
         for _ in range(settings.AI_AGENT_MAX_STEPS):
@@ -187,12 +192,9 @@ class AgentService:
             tool_calls = msg.tool_calls or []
 
             if not tool_calls:
-                return {
-                    "answer": (msg.content or "").strip(),
-                    "steps": steps,
-                    "model": model,
-                    "tokens_used": total_tokens,
-                }
+                yield {"type": "answer", "text": (msg.content or "").strip()}
+                yield {"type": "done", "tokens_used": total_tokens, "steps": steps}
+                return
 
             # Record the assistant's tool-call turn, then execute each requested tool.
             messages.append(
@@ -220,9 +222,13 @@ class AgentService:
                 if not isinstance(args, dict):
                     args = {}
                 result = await self._dispatch(tc.function.name, args)
-                steps.append(
-                    {"tool": tc.function.name, "arguments": args, "result": result}
-                )
+                steps += 1
+                yield {
+                    "type": "step",
+                    "tool": tc.function.name,
+                    "arguments": args,
+                    "result": result,
+                }
                 messages.append(
                     {"role": "tool", "tool_call_id": tc.id, "content": result}
                 )
@@ -242,8 +248,36 @@ class AgentService:
         )
         if final.usage:
             total_tokens += final.usage.total_tokens
+        yield {"type": "answer", "text": (final.choices[0].message.content or "").strip()}
+        yield {"type": "done", "tokens_used": total_tokens, "steps": steps}
+
+    async def run(self, question: str) -> Dict[str, Any]:
+        """Run the agent loop and return the final answer plus the tool-call trace.
+
+        Non-streaming wrapper over `run_stream` — one loop implementation serves
+        both the JSON endpoint and the SSE endpoint."""
+        answer = ""
+        steps: List[Dict[str, Any]] = []
+        model = ""
+        total_tokens = 0
+        async for event in self.run_stream(question):
+            etype = event["type"]
+            if etype == "model":
+                model = event["model"]
+            elif etype == "step":
+                steps.append(
+                    {
+                        "tool": event["tool"],
+                        "arguments": event["arguments"],
+                        "result": event["result"],
+                    }
+                )
+            elif etype == "answer":
+                answer = event["text"]
+            elif etype == "done":
+                total_tokens = event["tokens_used"]
         return {
-            "answer": (final.choices[0].message.content or "").strip(),
+            "answer": answer,
             "steps": steps,
             "model": model,
             "tokens_used": total_tokens,

@@ -364,6 +364,69 @@ async def agent(payload: ChatRequest, request: Request) -> AgentResponse:
 
 
 @router.post(
+    "/agent/stream",
+    summary="Ask the tool-using portfolio agent (streaming)",
+    description="Same tool-using agent as /agent, but streams progress as Server-Sent "
+    "Events — a 'model' event, a 'step' event per executed tool call AS IT HAPPENS, "
+    "then 'answer' and 'done' — so users watch the agent work instead of waiting.",
+)
+async def agent_stream(payload: ChatRequest, request: Request) -> StreamingResponse:
+    # Gate + validate + rate-limit BEFORE the stream opens, so these surface as
+    # normal HTTP errors (503/400/429) rather than mid-stream events.
+    await _ensure_available()
+
+    question = payload.question.strip()
+    if not question:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Question cannot be empty.")
+    if len(question) > settings.AI_MAX_QUESTION_CHARS:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            f"Question too long (max {settings.AI_MAX_QUESTION_CHARS} characters).",
+        )
+
+    await _enforce_rate_limit(request)
+    await _enforce_budget()
+
+    _acquire_llm_slot()
+
+    async def event_stream():
+        answer = ""
+        model = "stream"
+        step_count = 0
+        tokens = 0
+        try:
+            async for event in agent_service.run_stream(question):
+                etype = event.get("type")
+                if etype == "model":
+                    model = event.get("model", model)
+                elif etype == "step":
+                    step_count += 1
+                elif etype == "answer":
+                    answer = event.get("text", "")
+                elif etype == "done":
+                    tokens = int(event.get("tokens_used") or 0)
+                    await _record_tokens(tokens)
+                yield f"data: {json.dumps(event)}\n\n"
+        except Exception as exc:  # stream already open — report as an SSE error event
+            logger.error(f"AI agent stream error: {exc}")
+            yield "data: " + json.dumps(
+                {"type": "error", "detail": "The AI agent is temporarily unavailable."}
+            ) + "\n\n"
+        finally:
+            _release_llm_slot()
+            _log_conversation(
+                "agent_stream", question, answer, model, tokens, request,
+                {"ai_steps": step_count, "ai_streamed": True},
+            )
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
+
+
+@router.post(
     "/generate",
     response_model=GenerateResponse,
     summary="Generate tailored content grounded in the resume",
@@ -402,6 +465,58 @@ async def generate(payload: GenerateRequest, request: Request) -> GenerateRespon
         {"ai_format": payload.format, "ai_tone": payload.tone},
     )
     return GenerateResponse(**result)
+
+
+@router.post(
+    "/generate/stream",
+    summary="Generate tailored content grounded in the resume (streaming)",
+    description="Same résumé-grounded generation as /generate, but streams the draft "
+    "as Server-Sent Events — a 'sources' event, then 'token' events, then 'done' — "
+    "so the text appears as it is written.",
+)
+async def generate_stream(payload: GenerateRequest, request: Request) -> StreamingResponse:
+    await _ensure_available()
+
+    if len(payload.brief) > settings.AI_MAX_QUESTION_CHARS * 4:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Brief is too long.")
+
+    await _enforce_rate_limit(request)
+    await _enforce_budget()
+
+    _acquire_llm_slot()
+
+    async def event_stream():
+        parts: list[str] = []
+        tokens = 0
+        try:
+            async for event in content_service.generate_stream(
+                payload.brief, payload.format, payload.tone
+            ):
+                etype = event.get("type")
+                if etype == "token":
+                    parts.append(event.get("text", ""))
+                elif etype == "done":
+                    tokens = int(event.get("tokens_used") or 0)
+                    await _record_tokens(tokens)
+                yield f"data: {json.dumps(event)}\n\n"
+        except Exception as exc:  # stream already open — report as an SSE error event
+            logger.error(f"AI content generation stream error: {exc}")
+            yield "data: " + json.dumps(
+                {"type": "error", "detail": "The content generator is temporarily unavailable."}
+            ) + "\n\n"
+        finally:
+            _release_llm_slot()
+            _log_conversation(
+                "generate_stream", payload.brief or f"[{payload.format}]",
+                "".join(parts), "stream", tokens, request,
+                {"ai_format": payload.format, "ai_tone": payload.tone, "ai_streamed": True},
+            )
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
 
 
 @router.get("/health", summary="AI assistant status")
