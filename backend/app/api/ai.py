@@ -5,9 +5,11 @@ Exposes a single grounded-Q&A endpoint backed by the RAG service, with a
 per-IP hourly rate limit (Redis, fail-open) and request-size guards. The LLM
 provider (local Ollama vs. OpenAI) is resolved by app.core.llm.
 """
+import json
 from datetime import datetime
 
 from fastapi import APIRouter, HTTPException, Request, status
+from fastapi.responses import StreamingResponse
 from redis import asyncio as aioredis
 
 from app.core.config import settings
@@ -134,6 +136,51 @@ async def chat(payload: ChatRequest, request: Request) -> ChatResponse:
         extra={"question": question[:120], "tokens": result["tokens_used"]},
     )
     return ChatResponse(**result)
+
+
+@router.post(
+    "/chat/stream",
+    summary="Ask the portfolio assistant (streaming)",
+    description="Same grounded Q&A as /chat, but streams the reply as Server-Sent "
+    "Events — a 'sources' event, then 'token' events, then 'done' — so the answer "
+    "renders progressively instead of after a single long wait.",
+)
+async def chat_stream(payload: ChatRequest, request: Request) -> StreamingResponse:
+    # Gate + validate + rate-limit BEFORE the stream opens, so these surface as
+    # normal HTTP errors (503/400/429) rather than mid-stream events.
+    if not settings.AI_CHAT_ENABLED or not rag_service.enabled:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="The AI assistant is not configured. Start a local Ollama server "
+            "or set OPENAI_API_KEY to enable it.",
+        )
+
+    question = payload.question.strip()
+    if not question:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Question cannot be empty.")
+    if len(question) > settings.AI_MAX_QUESTION_CHARS:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            f"Question too long (max {settings.AI_MAX_QUESTION_CHARS} characters).",
+        )
+
+    await _enforce_rate_limit(request)
+
+    async def event_stream():
+        try:
+            async for event in rag_service.answer_stream(question):
+                yield f"data: {json.dumps(event)}\n\n"
+        except Exception as exc:  # stream already open — report as an SSE error event
+            logger.error(f"AI chat stream error: {exc}")
+            yield "data: " + json.dumps(
+                {"type": "error", "detail": "The AI assistant is temporarily unavailable."}
+            ) + "\n\n"
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
 
 
 @router.post(

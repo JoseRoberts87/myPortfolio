@@ -12,7 +12,7 @@ production with no code change — only configuration.
 from __future__ import annotations
 
 import asyncio
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, AsyncIterator, Dict, List, Optional, Tuple
 
 import numpy as np
 
@@ -123,6 +123,40 @@ class RagService:
             "model": model,
             "tokens_used": tokens,
         }
+
+    async def answer_stream(self, question: str) -> AsyncIterator[Dict[str, Any]]:
+        """Stream a grounded answer as events: one 'sources', then 'token's, then 'done'."""
+        if not self.enabled:
+            raise RuntimeError("No LLM provider is configured")
+
+        retrieved = await self.retrieve(question, settings.AI_RETRIEVAL_TOP_K)
+        context = "\n\n".join(
+            f"[{chunk['title']}]\n{chunk['text']}" for chunk, _ in retrieved
+        )
+        sources = [
+            {"id": chunk["id"], "title": chunk["title"], "score": round(score, 3)}
+            for chunk, score in retrieved
+        ]
+        model = resolve_chat_model()
+        yield {"type": "sources", "sources": sources, "model": model}
+
+        stream = await get_llm_client().chat.completions.create(
+            model=model,
+            temperature=0.2,
+            max_tokens=settings.AI_MAX_ANSWER_TOKENS,
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": f"Context:\n{context}\n\nQuestion: {question}"},
+            ],
+            stream=True,
+        )
+        async for chunk in stream:
+            if not chunk.choices:
+                continue
+            delta = getattr(chunk.choices[0].delta, "content", None)
+            if delta:
+                yield {"type": "token", "text": delta}
+        yield {"type": "done"}
 
 
 rag_service = RagService()
