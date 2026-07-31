@@ -26,10 +26,12 @@ FROM python:3.12-slim
 # Set working directory
 WORKDIR /app
 
-# Install runtime dependencies only
+# Install runtime dependencies only.
+# zstd: required by the Ollama installer to extract its release archive.
 RUN apt-get update && apt-get install -y \
     postgresql-client \
     curl \
+    zstd \
     libgl1 \
     libglib2.0-0 \
     libsm6 \
@@ -42,12 +44,14 @@ RUN apt-get update && apt-get install -y \
 # are fast and don't depend on the model registry at runtime. Models live in an
 # app-owned dir (OLLAMA_MODELS) so the non-root user can read them at runtime.
 ENV OLLAMA_MODELS=/models
+# The build-time `ollama serve` is intentionally left running: Docker tears it down
+# when the layer completes. (Do NOT `pkill -f "ollama serve"` — the pattern also
+# matches this build shell's own command line and would kill the RUN, failing the build.)
 RUN curl -fsSL https://ollama.com/install.sh | sh && \
     mkdir -p /models && \
     (ollama serve & ) && \
     timeout 60 sh -c 'until curl -sf http://localhost:11434/api/tags >/dev/null 2>&1; do sleep 1; done' && \
-    ollama pull nomic-embed-text && \
-    (pkill -f "ollama serve" || true)
+    ollama pull nomic-embed-text
 
 # Embeddings use the local sidecar; chat (OLLAMA_BASE_URL/OLLAMA_API_KEY/OLLAMA_CHAT_MODEL)
 # is configured at deploy time to point at Ollama Cloud.
