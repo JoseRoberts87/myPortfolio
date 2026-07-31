@@ -45,6 +45,13 @@ describe('AiChat (streaming)', () => {
     ).toBeInTheDocument();
   });
 
+  it('discloses that the bot speaks about Jose, not for him (#180)', () => {
+    render(<AiChat />);
+    expect(
+      screen.getByText(/doesn't speak for him, and can make mistakes/i),
+    ).toBeInTheDocument();
+  });
+
   it('streams a grounded answer token-by-token and shows sources', async () => {
     (global.fetch as jest.Mock).mockResolvedValueOnce(
       sseResponse([

@@ -246,6 +246,11 @@ export default function AiChat() {
           Send
         </button>
       </form>
+      {/* Framing disclosure (#180): the bot speaks about Jose, never as him. */}
+      <p className="px-4 pb-3 text-xs text-faint bg-surface-alt">
+        AI assistant — it answers about Jose from his portfolio, doesn&apos;t speak for
+        him, and can make mistakes.
+      </p>
     </div>
   );
 }
