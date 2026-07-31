@@ -55,26 +55,30 @@ class TestKillSwitch:
 
 
 class TestSpendAlert:
-    async def test_alert_fires_once_when_crossing_80_percent(self, monkeypatch):
+    # The alert rides on #186's daily-budget counter (_record_tokens); this test
+    # covers the 80%-crossing WARNING added for #183.
+    async def test_alert_fires_once_when_crossing_the_threshold(self, monkeypatch):
         fake = FakeRedis()  # one shared counter across calls
         monkeypatch.setattr(ai, "_get_redis", lambda: fake)
         monkeypatch.setattr(ai.settings, "AI_DAILY_TOKEN_BUDGET", 100)
+        monkeypatch.setattr(ai.settings, "AI_BUDGET_ALERT_FRACTION", 0.8)
         warn = Mock()
         monkeypatch.setattr(ai.logger, "warning", warn)
 
-        await ai._record_spend(70)   # total 70 (<80) — no alert
+        await ai._record_tokens(70)   # total 70 (<80) — no alert
         assert not warn.called
-        await ai._record_spend(20)   # total 90 (crosses 80) — alert
+        await ai._record_tokens(20)   # total 90 (crosses 80) — alert
         assert warn.call_count == 1
-        await ai._record_spend(5)    # total 95 — already alerted, no repeat
+        await ai._record_tokens(5)    # total 95 — already alerted, no repeat
         assert warn.call_count == 1
 
     async def test_no_alert_when_budget_is_zero(self, monkeypatch):
-        monkeypatch.setattr(ai, "_get_redis", lambda: FakeRedis())
+        fake = FakeRedis()
+        monkeypatch.setattr(ai, "_get_redis", lambda: fake)
         monkeypatch.setattr(ai.settings, "AI_DAILY_TOKEN_BUDGET", 0)
         warn = Mock()
         monkeypatch.setattr(ai.logger, "warning", warn)
-        await ai._record_spend(10_000)
+        await ai._record_tokens(10_000)
         assert not warn.called
 
 

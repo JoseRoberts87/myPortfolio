@@ -7,7 +7,7 @@ provider (local Ollama vs. OpenAI) is resolved by app.core.llm.
 """
 import hashlib
 import json
-from datetime import date, datetime
+from datetime import datetime
 
 from fastapi import APIRouter, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
@@ -96,10 +96,81 @@ async def _enforce_rate_limit(request: Request) -> None:
         )
 
 
+def _budget_key() -> str:
+    return f"ai:budget:{datetime.utcnow():%Y%m%d}"
+
+
+async def _enforce_budget() -> None:
+    """Site-wide daily token budget — the hard ceiling on LLM spend (issue #179).
+
+    The hourly rate limits bound request *counts*; this bounds total *tokens*, so
+    even maximal-length questions against the global limit can't exceed a known
+    daily spend. Fails open if Redis is down (matching the rate limiter): a Redis
+    blip shouldn't take the demo down, and the rate limits still bound abuse.
+    """
+    if settings.AI_DAILY_TOKEN_BUDGET <= 0:
+        return
+    try:
+        spent = int(await _get_redis().get(_budget_key()) or 0)
+    except Exception as exc:
+        logger.warning(f"AI budget check unavailable, allowing request: {exc}")
+        return
+    if spent >= settings.AI_DAILY_TOKEN_BUDGET:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="The assistant has reached today's usage limit and is resting. "
+            "Please come back tomorrow — or reach out via the contact form.",
+        )
+
+
+async def _record_tokens(tokens: int) -> None:
+    """Best-effort accounting toward the daily budget (never fails the request)."""
+    if settings.AI_DAILY_TOKEN_BUDGET <= 0 or tokens <= 0:
+        return
+    key = _budget_key()
+    budget = settings.AI_DAILY_TOKEN_BUDGET
+    threshold = budget * settings.AI_BUDGET_ALERT_FRACTION
+    try:
+        redis = _get_redis()
+        total = await redis.incrby(key, tokens)
+        if total == tokens:  # first write of the day — bound the key's lifetime
+            await redis.expire(key, 172_800)
+        if (total - tokens) < threshold <= total:  # alert once, on crossing (issue #183)
+            logger.warning(
+                f"AI daily token spend crossed {settings.AI_BUDGET_ALERT_FRACTION:.0%}: "
+                f"{total}/{budget} tokens"
+            )
+    except Exception as exc:
+        logger.warning(f"AI budget accounting unavailable: {exc}")
+
+
+_active_llm_calls = 0
+
+
+def _acquire_llm_slot() -> None:
+    """Per-worker concurrency cap (issue #181) so a burst of parallel chats can't
+    pin every worker on slow LLM calls. A plain counter is race-free on the
+    single-threaded event loop, and unlike a semaphore it can be released from a
+    streaming generator's `finally` after the response has been returned."""
+    global _active_llm_calls
+    if _active_llm_calls >= settings.AI_MAX_CONCURRENT_REQUESTS:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="The assistant is handling too many conversations right now. "
+            "Please try again in a moment.",
+        )
+    _active_llm_calls += 1
+
+
+def _release_llm_slot() -> None:
+    global _active_llm_calls
+    _active_llm_calls = max(0, _active_llm_calls - 1)
+
+
 async def _is_killed() -> bool:
-    """Runtime kill switch: True when the kill-switch Redis key is set. Flips the chat
-    off within one request, no deploy. Fails open (not killed) if Redis is down — the
-    AI_CHAT_ENABLED env flag is the deploy-time master switch."""
+    """Runtime kill switch (issue #183): True when the kill-switch Redis key is set.
+    Flips the chat off within one request, no deploy. Fails open if Redis is down —
+    AI_CHAT_ENABLED is the deploy-time master switch."""
     try:
         return bool(await _get_redis().exists(_KILL_SWITCH_KEY))
     except Exception:
@@ -107,7 +178,7 @@ async def _is_killed() -> bool:
 
 
 async def _ensure_available() -> None:
-    """Gate every AI endpoint: env master switch + provider config + runtime kill switch."""
+    """Endpoint gate: env master switch + provider config + runtime kill switch."""
     if not settings.AI_CHAT_ENABLED or not rag_service.enabled:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -121,59 +192,21 @@ async def _ensure_available() -> None:
         )
 
 
-async def _prepare_question(payload: ChatRequest, request: Request) -> str:
-    """Shared front door for the question endpoints: availability gate + validation + rate limit."""
-    await _ensure_available()
-    question = payload.question.strip()
-    if not question:
-        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Question cannot be empty.")
-    if len(question) > settings.AI_MAX_QUESTION_CHARS:
-        raise HTTPException(
-            status.HTTP_400_BAD_REQUEST,
-            f"Question too long (max {settings.AI_MAX_QUESTION_CHARS} characters).",
-        )
-    await _enforce_rate_limit(request)
-    return question
-
-
-async def _record_spend(tokens: int) -> None:
-    """Accumulate daily token spend in Redis; log an alert once it crosses 80% of the
-    budget (the hard cap/kill lives in #179). Fails open if Redis is down."""
-    if tokens <= 0:
-        return
-    budget = settings.AI_DAILY_TOKEN_BUDGET
-    try:
-        redis = _get_redis()
-        key = f"ai:spend:{date.today().isoformat()}"
-        total = await redis.incrby(key, tokens)
-        if total == tokens:
-            await redis.expire(key, 172800)  # keep ~2 days
-    except Exception as exc:
-        logger.warning(f"AI spend counter unavailable: {exc}")
-        return
-    if budget and (total - tokens) < budget * 0.8 <= total:
-        logger.warning(f"AI daily token spend crossed 80%: {total}/{budget} tokens")
-
-
 def _log_conversation(
     kind: str, question: str, answer: str, model: str, tokens: int,
     request: Request, extra: dict | None = None,
 ) -> None:
-    """Log a conversation server-side for review. Hashes the client IP (no raw PII) and
-    truncates content. Disable with AI_CONVERSATION_LOGGING=false."""
+    """Log a conversation server-side for review (issue #183). Hashes the client IP
+    (no raw PII) and truncates content. Disable with AI_CONVERSATION_LOGGING=false."""
     if not settings.AI_CONVERSATION_LOGGING:
         return
     client_hash = hashlib.sha256(_client_ip(request).encode()).hexdigest()[:12]
     logger.info(
         "AI conversation",
         extra={
-            "ai_kind": kind,
-            "ai_client": client_hash,
-            "ai_model": model,
-            "ai_tokens": tokens,
-            "ai_question": question[:500],
-            "ai_answer": (answer or "")[:1000],
-            **(extra or {}),
+            "ai_kind": kind, "ai_client": client_hash, "ai_model": model,
+            "ai_tokens": tokens, "ai_question": question[:500],
+            "ai_answer": (answer or "")[:1000], **(extra or {}),
         },
     )
 
@@ -186,8 +219,21 @@ def _log_conversation(
     "Answers are generated with RAG over a curated portfolio knowledge base.",
 )
 async def chat(payload: ChatRequest, request: Request) -> ChatResponse:
-    question = await _prepare_question(payload, request)
+    await _ensure_available()
 
+    question = payload.question.strip()
+    if not question:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Question cannot be empty.")
+    if len(question) > settings.AI_MAX_QUESTION_CHARS:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            f"Question too long (max {settings.AI_MAX_QUESTION_CHARS} characters).",
+        )
+
+    await _enforce_rate_limit(request)
+    await _enforce_budget()
+
+    _acquire_llm_slot()
     try:
         result = await rag_service.answer(question)
     except HTTPException:
@@ -198,8 +244,10 @@ async def chat(payload: ChatRequest, request: Request) -> ChatResponse:
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="The AI assistant is temporarily unavailable. Please try again.",
         )
+    finally:
+        _release_llm_slot()
+    await _record_tokens(result["tokens_used"])
 
-    await _record_spend(result["tokens_used"])
     _log_conversation(
         "chat", question, result["answer"], result["model"], result["tokens_used"],
         request, {"ai_sources": [s["id"] for s in result["sources"]]},
@@ -217,17 +265,39 @@ async def chat(payload: ChatRequest, request: Request) -> ChatResponse:
 async def chat_stream(payload: ChatRequest, request: Request) -> StreamingResponse:
     # Gate + validate + rate-limit BEFORE the stream opens, so these surface as
     # normal HTTP errors (503/400/429) rather than mid-stream events.
-    question = await _prepare_question(payload, request)
+    await _ensure_available()
+
+    question = payload.question.strip()
+    if not question:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Question cannot be empty.")
+    if len(question) > settings.AI_MAX_QUESTION_CHARS:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            f"Question too long (max {settings.AI_MAX_QUESTION_CHARS} characters).",
+        )
+
+    await _enforce_rate_limit(request)
+    await _enforce_budget()
+
+    # Acquired here (not inside the generator) so saturation surfaces as a normal
+    # 429 before the stream opens; released in the generator's finally, which runs
+    # when the stream ends or the client disconnects.
+    _acquire_llm_slot()
 
     async def event_stream():
         parts: list[str] = []
         sources: list = []
+        tokens = 0
         try:
             async for event in rag_service.answer_stream(question):
-                if event.get("type") == "token":
+                etype = event.get("type")
+                if etype == "token":
                     parts.append(event.get("text", ""))
-                elif event.get("type") == "sources":
+                elif etype == "sources":
                     sources = event.get("sources", [])
+                elif etype == "done":
+                    tokens = int(event.get("tokens_used") or 0)
+                    await _record_tokens(tokens)
                 yield f"data: {json.dumps(event)}\n\n"
         except Exception as exc:  # stream already open — report as an SSE error event
             logger.error(f"AI chat stream error: {exc}")
@@ -235,11 +305,9 @@ async def chat_stream(payload: ChatRequest, request: Request) -> StreamingRespon
                 {"type": "error", "detail": "The AI assistant is temporarily unavailable."}
             ) + "\n\n"
         finally:
-            answer = "".join(parts)
-            tokens = max(1, len(answer) // 4)  # rough estimate — the stream carries no usage
-            await _record_spend(tokens)
+            _release_llm_slot()
             _log_conversation(
-                "chat_stream", question, answer, "stream", tokens, request,
+                "chat_stream", question, "".join(parts), "stream", tokens, request,
                 {"ai_sources": [s.get("id") for s in sources], "ai_streamed": True},
             )
 
@@ -259,8 +327,21 @@ async def chat_stream(payload: ChatRequest, request: Request) -> StreamingRespon
     "grounded answer — returning its full tool-call trace.",
 )
 async def agent(payload: ChatRequest, request: Request) -> AgentResponse:
-    question = await _prepare_question(payload, request)
+    await _ensure_available()
 
+    question = payload.question.strip()
+    if not question:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Question cannot be empty.")
+    if len(question) > settings.AI_MAX_QUESTION_CHARS:
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            f"Question too long (max {settings.AI_MAX_QUESTION_CHARS} characters).",
+        )
+
+    await _enforce_rate_limit(request)
+    await _enforce_budget()
+
+    _acquire_llm_slot()
     try:
         result = await agent_service.run(question)
     except HTTPException:
@@ -271,8 +352,10 @@ async def agent(payload: ChatRequest, request: Request) -> AgentResponse:
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="The AI agent is temporarily unavailable. Please try again.",
         )
+    finally:
+        _release_llm_slot()
+    await _record_tokens(result["tokens_used"])
 
-    await _record_spend(result["tokens_used"])
     _log_conversation(
         "agent", question, result["answer"], result["model"], result["tokens_used"],
         request, {"ai_steps": len(result["steps"])},
@@ -289,10 +372,14 @@ async def agent(payload: ChatRequest, request: Request) -> AgentResponse:
 )
 async def generate(payload: GenerateRequest, request: Request) -> GenerateResponse:
     await _ensure_available()
+
     if len(payload.brief) > settings.AI_MAX_QUESTION_CHARS * 4:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Brief is too long.")
-    await _enforce_rate_limit(request)
 
+    await _enforce_rate_limit(request)
+    await _enforce_budget()
+
+    _acquire_llm_slot()
     try:
         result = await content_service.generate(
             payload.brief, payload.format, payload.tone
@@ -305,8 +392,10 @@ async def generate(payload: GenerateRequest, request: Request) -> GenerateRespon
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="The content generator is temporarily unavailable. Please try again.",
         )
+    finally:
+        _release_llm_slot()
+    await _record_tokens(result["tokens_used"])
 
-    await _record_spend(result["tokens_used"])
     _log_conversation(
         "generate", payload.brief or f"[{payload.format}]", result["content"],
         result["model"], result["tokens_used"], request,
