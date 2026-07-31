@@ -91,6 +91,8 @@ class Settings(BaseSettings):
     AI_AGENT_MAX_TOKENS: int = 800  # Cap completion tokens per agent chat call (cost/latency)
     AI_GEN_MAX_TOKENS: int = 1000  # Cap completion tokens for the generator; reasoning headroom
     AI_GEN_TOP_K: int = 4  # Knowledge chunks grounding the generated content
+    AI_BUDGET_ALERT_FRACTION: float = 0.8  # Log an alert once daily spend crosses this fraction of the budget
+    AI_CONVERSATION_LOGGING: bool = True  # Log Q&A server-side for review (IP hashed, content truncated)
 
     model_config = SettingsConfigDict(
         env_file=".env",

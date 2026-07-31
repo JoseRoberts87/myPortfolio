@@ -158,6 +158,10 @@ export default function AiChat() {
                 </button>
               ))}
             </div>
+            <p className="text-faint text-xs mt-6 max-w-md">
+              Conversations may be logged to improve this demo — please don&apos;t share
+              sensitive information.
+            </p>
           </div>
         )}
 

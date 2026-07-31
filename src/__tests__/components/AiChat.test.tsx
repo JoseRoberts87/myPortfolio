@@ -45,6 +45,11 @@ describe('AiChat (streaming)', () => {
     ).toBeInTheDocument();
   });
 
+  it('discloses that conversations may be logged before the first message', () => {
+    render(<AiChat />);
+    expect(screen.getByText(/Conversations may be logged/i)).toBeInTheDocument();
+  });
+
   it('discloses that the bot speaks about Jose, not for him (#180)', () => {
     render(<AiChat />);
     expect(
