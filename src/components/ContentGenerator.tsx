@@ -53,22 +53,64 @@ export default function ContentGenerator() {
     setCopied(false);
 
     try {
-      const res = await fetch(`${baseUrl}/api/v1/ai/generate`, {
+      // SSE stream (issue #171): the draft renders as it is written instead of
+      // after one long reasoning-model wait.
+      const res = await fetch(`${baseUrl}/api/v1/ai/generate/stream`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ brief, format, tone }),
       });
-      const data = await res.json().catch(() => ({}));
 
-      if (!res.ok) {
+      if (!res.ok || !res.body) {
+        const data = await res.json().catch(() => ({}));
         setError(data?.detail || 'The generator is unavailable right now.');
-      } else {
-        setResult({
-          content: data.content,
-          sources: data.sources || [],
-          model: data.model,
-          tokensUsed: data.tokens_used,
-        });
+        return;
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        // SSE frames are separated by a blank line; keep any trailing partial frame.
+        const frames = buffer.split('\n\n');
+        buffer = frames.pop() || '';
+        for (const frame of frames) {
+          const line = frame.trim();
+          if (!line.startsWith('data:')) continue;
+          let event: Record<string, unknown>;
+          try {
+            event = JSON.parse(line.slice(5).trim());
+          } catch {
+            continue;
+          }
+          if (event.type === 'sources') {
+            setResult((r) => ({
+              content: r?.content || '',
+              sources: (event.sources as Source[]) || [],
+              model: event.model as string,
+              tokensUsed: r?.tokensUsed,
+            }));
+          } else if (event.type === 'token') {
+            setResult((r) => ({
+              content: (r?.content || '') + ((event.text as string) || ''),
+              sources: r?.sources || [],
+              model: r?.model,
+              tokensUsed: r?.tokensUsed,
+            }));
+          } else if (event.type === 'done') {
+            setResult((r) =>
+              r ? { ...r, tokensUsed: (event.tokens_used as number) || undefined } : r,
+            );
+          } else if (event.type === 'error') {
+            setResult(null);
+            setError((event.detail as string) || 'The generator is unavailable right now.');
+          }
+        }
       }
     } catch {
       setError(
