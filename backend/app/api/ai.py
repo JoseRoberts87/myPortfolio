@@ -45,25 +45,50 @@ def _get_redis() -> aioredis.Redis:
     return _redis
 
 
+def _client_ip(request: Request) -> str:
+    """Best-effort real client IP for rate-limiting.
+
+    Behind a proxy (Railway/Vercel) `request.client.host` is the proxy, so a naive
+    per-IP limit collapses into one global bucket shared by every visitor. Prefer
+    the left-most `X-Forwarded-For` entry (the original client). X-Forwarded-For is
+    client-spoofable, so the global backstop below bounds total abuse regardless.
+    """
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        client = forwarded.split(",")[0].strip()
+        if client:
+            return client
+    return request.client.host if request.client else "unknown"
+
+
 async def _enforce_rate_limit(request: Request) -> None:
-    """Per-IP hourly limit. Fails open (allows the request) if Redis is down."""
-    client_ip = request.client.host if request.client else "unknown"
-    key = f"ai:ratelimit:{client_ip}"
+    """Per-client hourly limit + a global hourly backstop. Fails open if Redis is down."""
+    ip_key = f"ai:ratelimit:{_client_ip(request)}"
+    global_key = "ai:ratelimit:global"
     try:
-        count = await _get_redis().incr(key)
-        if count == 1:
-            await _get_redis().expire(key, 3600)
+        redis = _get_redis()
+        ip_count = await redis.incr(ip_key)
+        if ip_count == 1:
+            await redis.expire(ip_key, 3600)
+        global_count = await redis.incr(global_key)
+        if global_count == 1:
+            await redis.expire(global_key, 3600)
     except Exception as exc:  # Redis unavailable — don't block the demo
         logger.warning(f"AI rate limiter unavailable, allowing request: {exc}")
         return
 
-    if count > settings.AI_RATE_LIMIT_PER_HOUR:
+    if ip_count > settings.AI_RATE_LIMIT_PER_HOUR:
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail=(
                 f"Rate limit exceeded ({settings.AI_RATE_LIMIT_PER_HOUR} questions/hour). "
                 "Please try again later."
             ),
+        )
+    if global_count > settings.AI_RATE_LIMIT_GLOBAL_PER_HOUR:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="The assistant is busy right now. Please try again in a bit.",
         )
 
 
