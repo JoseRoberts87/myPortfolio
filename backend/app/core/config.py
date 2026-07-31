@@ -84,6 +84,8 @@ class Settings(BaseSettings):
     AI_RETRIEVAL_TOP_K: int = 4  # Knowledge chunks retrieved per query
     AI_RATE_LIMIT_PER_HOUR: int = 20  # Per-client requests per hour
     AI_RATE_LIMIT_GLOBAL_PER_HOUR: int = 200  # Site-wide backstop (bounds spoofed X-Forwarded-For)
+    AI_DAILY_TOKEN_BUDGET: int = 200_000  # Site-wide daily LLM token ceiling; <=0 disables the cap
+    AI_MAX_CONCURRENT_REQUESTS: int = 4  # Simultaneous LLM calls per worker; excess get 429
     AI_AGENT_MAX_STEPS: int = 5  # Max tool-calling iterations for the agent demo
     AI_AGENT_SEARCH_TOP_K: int = 3  # Chunks the agent's search_portfolio tool returns
     AI_AGENT_MAX_TOKENS: int = 800  # Cap completion tokens per agent chat call (cost/latency)

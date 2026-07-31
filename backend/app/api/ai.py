@@ -94,6 +94,70 @@ async def _enforce_rate_limit(request: Request) -> None:
         )
 
 
+def _budget_key() -> str:
+    return f"ai:budget:{datetime.utcnow():%Y%m%d}"
+
+
+async def _enforce_budget() -> None:
+    """Site-wide daily token budget — the hard ceiling on LLM spend (issue #179).
+
+    The hourly rate limits bound request *counts*; this bounds total *tokens*, so
+    even maximal-length questions against the global limit can't exceed a known
+    daily spend. Fails open if Redis is down (matching the rate limiter): a Redis
+    blip shouldn't take the demo down, and the rate limits still bound abuse.
+    """
+    if settings.AI_DAILY_TOKEN_BUDGET <= 0:
+        return
+    try:
+        spent = int(await _get_redis().get(_budget_key()) or 0)
+    except Exception as exc:
+        logger.warning(f"AI budget check unavailable, allowing request: {exc}")
+        return
+    if spent >= settings.AI_DAILY_TOKEN_BUDGET:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="The assistant has reached today's usage limit and is resting. "
+            "Please come back tomorrow — or reach out via the contact form.",
+        )
+
+
+async def _record_tokens(tokens: int) -> None:
+    """Best-effort accounting toward the daily budget (never fails the request)."""
+    if settings.AI_DAILY_TOKEN_BUDGET <= 0 or tokens <= 0:
+        return
+    key = _budget_key()
+    try:
+        redis = _get_redis()
+        total = await redis.incrby(key, tokens)
+        if total == tokens:  # first write of the day — bound the key's lifetime
+            await redis.expire(key, 172_800)
+    except Exception as exc:
+        logger.warning(f"AI budget accounting unavailable: {exc}")
+
+
+_active_llm_calls = 0
+
+
+def _acquire_llm_slot() -> None:
+    """Per-worker concurrency cap (issue #181) so a burst of parallel chats can't
+    pin every worker on slow LLM calls. A plain counter is race-free on the
+    single-threaded event loop, and unlike a semaphore it can be released from a
+    streaming generator's `finally` after the response has been returned."""
+    global _active_llm_calls
+    if _active_llm_calls >= settings.AI_MAX_CONCURRENT_REQUESTS:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="The assistant is handling too many conversations right now. "
+            "Please try again in a moment.",
+        )
+    _active_llm_calls += 1
+
+
+def _release_llm_slot() -> None:
+    global _active_llm_calls
+    _active_llm_calls = max(0, _active_llm_calls - 1)
+
+
 @router.post(
     "/chat",
     response_model=ChatResponse,
@@ -119,7 +183,9 @@ async def chat(payload: ChatRequest, request: Request) -> ChatResponse:
         )
 
     await _enforce_rate_limit(request)
+    await _enforce_budget()
 
+    _acquire_llm_slot()
     try:
         result = await rag_service.answer(question)
     except HTTPException:
@@ -130,6 +196,9 @@ async def chat(payload: ChatRequest, request: Request) -> ChatResponse:
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="The AI assistant is temporarily unavailable. Please try again.",
         )
+    finally:
+        _release_llm_slot()
+    await _record_tokens(result["tokens_used"])
 
     logger.info(
         "AI chat answered",
@@ -165,16 +234,26 @@ async def chat_stream(payload: ChatRequest, request: Request) -> StreamingRespon
         )
 
     await _enforce_rate_limit(request)
+    await _enforce_budget()
+
+    # Acquired here (not inside the generator) so saturation surfaces as a normal
+    # 429 before the stream opens; released in the generator's finally, which runs
+    # when the stream ends or the client disconnects.
+    _acquire_llm_slot()
 
     async def event_stream():
         try:
             async for event in rag_service.answer_stream(question):
+                if event.get("type") == "done":
+                    await _record_tokens(int(event.get("tokens_used") or 0))
                 yield f"data: {json.dumps(event)}\n\n"
         except Exception as exc:  # stream already open — report as an SSE error event
             logger.error(f"AI chat stream error: {exc}")
             yield "data: " + json.dumps(
                 {"type": "error", "detail": "The AI assistant is temporarily unavailable."}
             ) + "\n\n"
+        finally:
+            _release_llm_slot()
 
     return StreamingResponse(
         event_stream(),
@@ -209,7 +288,9 @@ async def agent(payload: ChatRequest, request: Request) -> AgentResponse:
         )
 
     await _enforce_rate_limit(request)
+    await _enforce_budget()
 
+    _acquire_llm_slot()
     try:
         result = await agent_service.run(question)
     except HTTPException:
@@ -220,6 +301,9 @@ async def agent(payload: ChatRequest, request: Request) -> AgentResponse:
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="The AI agent is temporarily unavailable. Please try again.",
         )
+    finally:
+        _release_llm_slot()
+    await _record_tokens(result["tokens_used"])
 
     logger.info(
         "AI agent answered",
@@ -251,7 +335,9 @@ async def generate(payload: GenerateRequest, request: Request) -> GenerateRespon
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Brief is too long.")
 
     await _enforce_rate_limit(request)
+    await _enforce_budget()
 
+    _acquire_llm_slot()
     try:
         result = await content_service.generate(
             payload.brief, payload.format, payload.tone
@@ -264,6 +350,9 @@ async def generate(payload: GenerateRequest, request: Request) -> GenerateRespon
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail="The content generator is temporarily unavailable. Please try again.",
         )
+    finally:
+        _release_llm_slot()
+    await _record_tokens(result["tokens_used"])
 
     logger.info(
         "AI content generated",

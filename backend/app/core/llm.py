@@ -61,6 +61,10 @@ class LLMSettings(BaseSettings):
     OPENAI_API_KEY: str = ""
     OPENAI_CHAT_MODEL: str = "gpt-4o-mini"
 
+    # Request timeout for every LLM call. The OpenAI SDK's default is 10 minutes,
+    # which would let a hung provider pin a public endpoint's worker that long.
+    LLM_TIMEOUT_SECONDS: float = 60.0
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore", case_sensitive=True)
 
 
@@ -111,9 +115,11 @@ def get_llm_client(settings: Optional[LLMSettings] = None) -> AsyncOpenAI:
     if resolve_provider(s) == "ollama":
         # A real key for Ollama Cloud; the placeholder keeps a local server happy.
         return AsyncOpenAI(
-            base_url=s.OLLAMA_BASE_URL, api_key=s.OLLAMA_API_KEY or _OLLAMA_PLACEHOLDER_KEY
+            base_url=s.OLLAMA_BASE_URL,
+            api_key=s.OLLAMA_API_KEY or _OLLAMA_PLACEHOLDER_KEY,
+            timeout=s.LLM_TIMEOUT_SECONDS,
         )
-    return AsyncOpenAI(api_key=s.OPENAI_API_KEY)
+    return AsyncOpenAI(api_key=s.OPENAI_API_KEY, timeout=s.LLM_TIMEOUT_SECONDS)
 
 
 def get_embed_client(settings: Optional[LLMSettings] = None) -> AsyncOpenAI:
@@ -123,7 +129,11 @@ def get_embed_client(settings: Optional[LLMSettings] = None) -> AsyncOpenAI:
     chat Ollama URL when EMBED_BASE_URL is unset (the local-dev default)."""
     s = settings or get_llm_settings()
     base_url = s.EMBED_BASE_URL or s.OLLAMA_BASE_URL
-    return AsyncOpenAI(base_url=base_url, api_key=s.EMBED_API_KEY or _OLLAMA_PLACEHOLDER_KEY)
+    return AsyncOpenAI(
+        base_url=base_url,
+        api_key=s.EMBED_API_KEY or _OLLAMA_PLACEHOLDER_KEY,
+        timeout=s.LLM_TIMEOUT_SECONDS,
+    )
 
 
 def llm_status(settings: Optional[LLMSettings] = None) -> dict:

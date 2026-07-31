@@ -150,13 +150,18 @@ class RagService:
             ],
             stream=True,
         )
+        chars_streamed = 0
         async for chunk in stream:
             if not chunk.choices:
                 continue
             delta = getattr(chunk.choices[0].delta, "content", None)
             if delta:
+                chars_streamed += len(delta)
                 yield {"type": "token", "text": delta}
-        yield {"type": "done"}
+        # Streamed completions don't reliably report usage across providers
+        # (stream_options.include_usage is OpenAI-specific), so approximate the
+        # spend for the daily budget with the ~4-chars-per-token heuristic.
+        yield {"type": "done", "tokens_used": max(1, chars_streamed // 4)}
 
 
 rag_service = RagService()
