@@ -1,10 +1,11 @@
 'use client';
+import { apiBaseUrl } from '@/lib/apiBase';
 
 import { useState } from 'react';
 import { useMLModel } from '@/hooks/useMLModel';
 import type { RedditPost, LivePredictionResult } from '@/types/ml';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_BASE_URL = apiBaseUrl();
 const API_URL = `${API_BASE_URL}/api/v1`;
 
 export default function LivePredictions() {

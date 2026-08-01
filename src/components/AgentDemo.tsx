@@ -10,6 +10,7 @@ import {
 } from '@/lib/aiErrors';
 import { useAiHealth } from '@/hooks/useAiHealth';
 import AiOfflineState from '@/components/AiOfflineState';
+import { apiBaseUrl } from '@/lib/apiBase';
 
 interface AgentStep {
   tool: string;
@@ -55,7 +56,7 @@ export default function AgentDemo() {
   // Remembered so the "Try again" button on an error state can resend (#211).
   const lastQuestion = useRef('');
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  const baseUrl = apiBaseUrl();
   const health = useAiHealth(baseUrl);
 
   useEffect(() => {

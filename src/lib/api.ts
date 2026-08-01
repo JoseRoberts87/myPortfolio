@@ -22,8 +22,9 @@ import type {
   KeywordStats,
   KeywordTrendingResponse
 } from '@/types/api';
+import { apiBaseUrl } from '@/lib/apiBase';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_URL = apiBaseUrl();
 const API_V1 = `${API_URL}/api/v1`;
 
 /**

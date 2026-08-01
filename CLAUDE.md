@@ -146,7 +146,7 @@ Modular Terraform configuration with 9 modules:
 
 ### API Endpoints
 - Base URL (local): `http://localhost:8000`
-- Base URL (production): `https://dev.therpiproject.com`
+- Base URL (production backend): `https://myportfolio-production-d468.up.railway.app` (Railway; `dev.therpiproject.com` is defunct — its DNS record no longer exists)
 - API prefix: `/api/v1`
 - Health check: `/health` (used by Railway and AWS healthchecks)
 - Detailed health: `/api/v1/health/detailed` (includes DB/Redis status)
@@ -289,6 +289,7 @@ Workflows trigger on push to `main` branch or manual workflow dispatch with envi
 - **API Documentation**: Access `/docs` on running backend for interactive Swagger UI
 - **Architecture Diagram**: See `docs/architecture.md` for AWS infrastructure details
 - **Deployment Guide**: See `DEPLOYMENT.md` for detailed AWS deployment instructions
-- **Production URL**: https://dev.therpiproject.com
+- **Production frontend**: https://www.therpiproject.com (Vercel)
+- **Production backend**: https://myportfolio-production-d468.up.railway.app (Railway; set as `NEXT_PUBLIC_API_URL` in the Vercel project)
 - **Database**: PostgreSQL 16 (AWS RDS in production, Docker in local)
 - **Caching**: Redis 7.1 (AWS ElastiCache in production, Docker in local)

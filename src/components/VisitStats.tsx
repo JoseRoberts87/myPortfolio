@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { apiBaseUrl } from '@/lib/apiBase';
 
 interface ReferrerStat {
   referrer: string;
@@ -28,7 +29,7 @@ export default function VisitStats() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const baseUrl = apiBaseUrl();
         const response = await fetch(`${baseUrl}/api/v1/visits/stats`);
 
         if (!response.ok) {
@@ -51,7 +52,7 @@ export default function VisitStats() {
     // Track current visit
     const trackVisit = async () => {
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const baseUrl = apiBaseUrl();
         await fetch(`${baseUrl}/api/v1/visits/track`, {
           method: 'POST',
           headers: {

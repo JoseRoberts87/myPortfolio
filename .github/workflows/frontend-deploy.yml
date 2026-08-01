@@ -92,6 +92,23 @@ jobs:
             fi
           fi
 
+      # Smoke check (issue #213): refuse to bake a dead API URL into the build.
+      # Shipping a frontend pointed at an unreachable backend is exactly the
+      # production-outage class this guards against (dev.therpiproject.com went
+      # away while still being the configured target).
+      - name: Verify the API URL responds before baking it in
+        env:
+          API_URL: https://${{ steps.set-env.outputs.DOMAIN }}/api
+        run: |
+          echo "Checking $API_URL/health"
+          status=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 \
+            --retry 2 --retry-delay 5 "$API_URL/health") || status=000
+          if [ "$status" != "200" ]; then
+            echo "::error::API base $API_URL is not responding (HTTP $status) — refusing to bake it into the frontend image."
+            exit 1
+          fi
+          echo "API reachable ✓"
+
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:

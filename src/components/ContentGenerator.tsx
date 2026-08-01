@@ -10,6 +10,7 @@ import {
 } from '@/lib/aiErrors';
 import { useAiHealth } from '@/hooks/useAiHealth';
 import AiOfflineState from '@/components/AiOfflineState';
+import { apiBaseUrl } from '@/lib/apiBase';
 
 interface Source {
   id: string;
@@ -54,7 +55,7 @@ export default function ContentGenerator() {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  const baseUrl = apiBaseUrl();
   const health = useAiHealth(baseUrl);
 
   const generate = async () => {
