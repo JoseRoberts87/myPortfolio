@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Card } from '@/components/ui';
 import { apiErrorMessage } from '@/lib/aiErrors';
+import { apiBaseUrl } from '@/lib/apiBase';
 
 interface ContactFormData {
   name: string;
@@ -107,7 +108,7 @@ export default function ContactForm() {
     setSubmitStatus('idle');
 
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const API_URL = apiBaseUrl();
       const API_V1 = `${API_URL}/api/v1`;
       const response = await fetch(`${API_V1}/contact`, {
         method: 'POST',

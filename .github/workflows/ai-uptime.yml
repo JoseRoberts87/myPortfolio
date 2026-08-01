@@ -1,0 +1,45 @@
+name: AI Uptime Probe
+
+# Hourly health probe of the production AI backend (issue #213): fails red —
+# which emails the repo owner — when the endpoint is unreachable, non-200, or
+# reports configured: false. Learn about outages from an alert, not from a
+# visitor's screenshot. Run manually via workflow_dispatch to test the alert.
+
+on:
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+
+jobs:
+  probe:
+    name: Probe production AI health
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    env:
+      # Override with a repo variable when the backend moves; the fallback is
+      # the current Railway production URL (dev.therpiproject.com is defunct).
+      BACKEND_URL: ${{ vars.AI_BACKEND_URL || 'https://myportfolio-production-d468.up.railway.app' }}
+
+    steps:
+      - name: Check /api/v1/ai/health
+        run: |
+          echo "Probing $BACKEND_URL/api/v1/ai/health"
+          body=$(curl -sS --max-time 20 --retry 2 --retry-delay 5 \
+            -w '\n%{http_code}' "$BACKEND_URL/api/v1/ai/health") || {
+            echo "::error::AI backend unreachable at $BACKEND_URL"
+            exit 1
+          }
+          status=$(echo "$body" | tail -n1)
+          json=$(echo "$body" | sed '$d')
+          echo "HTTP $status"
+          echo "$json"
+          if [ "$status" != "200" ]; then
+            echo "::error::AI health endpoint returned HTTP $status"
+            exit 1
+          fi
+          if [ "$(echo "$json" | jq -r '.configured')" != "true" ]; then
+            echo "::error::AI backend is up but reports configured: false (no LLM provider)"
+            exit 1
+          fi
+          echo "AI backend healthy and configured ✓"
