@@ -92,7 +92,7 @@ export default async function CaseStudyPage({ params }: PageProps) {
               <svg className="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
-              The Challenge
+              Executive Summary
             </h3>
             <p className="text-body text-lg leading-relaxed">
               {caseStudy.challenge}
@@ -124,6 +124,11 @@ export default async function CaseStudyPage({ params }: PageProps) {
               </Card>
             ))}
           </div>
+          {caseStudy.metricsNote && (
+            <p className="mt-4 text-center text-xs text-faint max-w-2xl mx-auto">
+              {caseStudy.metricsNote}
+            </p>
+          )}
         </div>
       </Section>
 
@@ -144,12 +149,18 @@ export default async function CaseStudyPage({ params }: PageProps) {
       {/* Main Content Sections */}
       <div className="max-w-4xl mx-auto">
         <CaseStudySection section={caseStudy.problemStatement} />
+        <CaseStudySection section={caseStudy.stakeholders} />
+        <CaseStudySection section={caseStudy.constraints} />
         <CaseStudySection section={caseStudy.technicalChallenges} />
         <CaseStudySection section={caseStudy.solutionArchitecture} />
-        <CaseStudySection section={caseStudy.implementation} />
-        <CaseStudySection section={caseStudy.resultsAndImpact} />
         <CaseStudySection section={caseStudy.tradeoffsAndDecisions} />
+        <CaseStudySection section={caseStudy.implementation} />
+        <CaseStudySection section={caseStudy.reliability} />
+        <CaseStudySection section={caseStudy.security} />
+        <CaseStudySection section={caseStudy.testingStrategy} />
+        <CaseStudySection section={caseStudy.resultsAndImpact} />
         <CaseStudySection section={caseStudy.lessonsLearned} />
+        <CaseStudySection section={caseStudy.futureImprovements} />
       </div>
 
       {/* Live Demo CTA */}

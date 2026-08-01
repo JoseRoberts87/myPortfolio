@@ -34,7 +34,7 @@ describe('Case Study Detail Page', () => {
       const component = await CaseStudyPage({ params });
       render(component);
 
-      expect(screen.getByText('The Challenge')).toBeInTheDocument();
+      expect(screen.getByText('Executive Summary')).toBeInTheDocument();
       expect(
         screen.getByText(/Build a production-ready object detection system/i)
       ).toBeInTheDocument();
@@ -174,7 +174,7 @@ describe('Case Study Detail Page', () => {
       expect(
         screen.getByText('Coordinated LLM Agents that Automate Enterprise Operations')
       ).toBeInTheDocument();
-      expect(screen.getByText('The Challenge')).toBeInTheDocument();
+      expect(screen.getByText('Executive Summary')).toBeInTheDocument();
       expect(screen.getByText(/Fortune 500 organization/i)).toBeInTheDocument();
     });
 
