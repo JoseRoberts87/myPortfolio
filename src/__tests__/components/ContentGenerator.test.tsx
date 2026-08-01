@@ -6,6 +6,10 @@ import { TextEncoder, TextDecoder } from 'util';
 // jsdom doesn't provide TextEncoder/TextDecoder; the SSE reader/decoder needs them.
 Object.assign(global, { TextEncoder, TextDecoder });
 
+// Default the mount-time health probe (#210) to 'online' so it doesn't consume
+// the per-test fetch mocks; offline behavior is covered in AiOffline.test.
+jest.mock('@/hooks/useAiHealth', () => ({ useAiHealth: () => 'online' }));
+
 import ContentGenerator from '@/components/ContentGenerator';
 
 // Build a mock streaming Response whose body yields the given SSE events.
@@ -150,6 +154,49 @@ describe('ContentGenerator (streaming)', () => {
     render(<ContentGenerator />);
     fireEvent.click(screen.getByRole('button', { name: 'Generate' }));
 
-    await screen.findByText(/Could not reach the generator/i);
+    // Production copy (no dev-only "port 8000" hint outside development).
+    await screen.findByText(/The generator is temporarily unavailable/i);
+  });
+
+  it('prefers the error-middleware envelope message over the generic fallback (#209)', async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ error: { message: 'The AI chat is temporarily offline.' } }),
+    });
+
+    render(<ContentGenerator />);
+    fireEvent.click(screen.getByRole('button', { name: 'Generate' }));
+
+    await screen.findByText(/temporarily offline/i);
+  });
+
+  it('keeps a partial draft with a notice when the stream dies mid-write (#211)', async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce(
+      sseResponse([
+        { type: 'sources', sources: [], model: 'llama3.2' },
+        { type: 'token', text: 'I am a Data & AI Architect' },
+        { type: 'error', detail: 'upstream died' },
+      ]),
+    );
+
+    render(<ContentGenerator />);
+    fireEvent.click(screen.getByRole('button', { name: 'Generate' }));
+
+    await screen.findByText('I am a Data & AI Architect');
+    expect(screen.getByText(/answer above may be incomplete/i)).toBeInTheDocument();
+  });
+
+  it('offers Try again in the error state (#211)', async () => {
+    const fetchMock = global.fetch as jest.Mock;
+    fetchMock
+      .mockResolvedValueOnce({ ok: false, json: async () => ({ detail: 'busy' }) })
+      .mockResolvedValueOnce(okGenStream('Recovered draft.'));
+
+    render(<ContentGenerator />);
+    fireEvent.click(screen.getByRole('button', { name: 'Generate' }));
+    await screen.findByText('busy');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    await screen.findByText('Recovered draft.');
   });
 });

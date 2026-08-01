@@ -2,6 +2,15 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { reportClientError, describeError, streamingSupported } from '@/lib/clientErrorLog';
+import {
+  apiErrorMessage,
+  networkErrorMessage,
+  STREAM_LOST_NOTICE,
+  timeoutSignal,
+  FETCH_TIMEOUT_MS,
+} from '@/lib/aiErrors';
+import { useAiHealth } from '@/hooks/useAiHealth';
+import AiOfflineState from '@/components/AiOfflineState';
 
 interface Source {
   id: string;
@@ -17,6 +26,8 @@ interface Message {
   streaming?: boolean;
   /** Technical cause shown under an error bubble (helps diagnose mobile-only failures). */
   detail?: string;
+  /** Non-destructive note (e.g. stream lost after partial output) — content is kept. */
+  notice?: string;
 }
 
 interface StreamEvent {
@@ -39,8 +50,11 @@ export default function AiChat() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  // Remembered so the "Try again" button on an error bubble can resend (#211).
+  const lastQuestion = useRef('');
 
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  const health = useAiHealth(baseUrl);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -64,6 +78,7 @@ export default function AiChat() {
     const q = question.trim();
     if (!q || loading) return;
 
+    lastQuestion.current = q;
     setInput('');
     setMessages((m) => [
       ...m,
@@ -76,17 +91,22 @@ export default function AiChat() {
     // browsers fail at different stages than desktop — see clientErrorLog).
     let stage = 'fetch';
     let res: Response | null = null;
+    // Bound time-to-first-byte so a hung request doesn't spin forever (#211);
+    // cleared once headers arrive so long streams aren't cut off.
+    const timeout = timeoutSignal(FETCH_TIMEOUT_MS);
     try {
       res = await fetch(`${baseUrl}/api/v1/ai/chat/stream`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: q }),
+        signal: timeout.signal,
       });
+      timeout.clear();
       stage = 'response';
 
       if (!res.ok || !res.body) {
         const data = await res.json().catch(() => ({}));
-        const detail = data?.detail || 'The assistant is unavailable right now.';
+        const detail = apiErrorMessage(data, 'The assistant is unavailable right now.');
         reportClientError(baseUrl, {
           component: 'ai-chat',
           stage: !res.ok ? 'http-error' : 'no-stream-body',
@@ -127,16 +147,23 @@ export default function AiChat() {
           } else if (event.type === 'token') {
             updateAssistant((m) => ({ ...m, content: m.content + (event.text || '') }));
           } else if (event.type === 'error') {
-            updateAssistant((m) => ({
-              ...m,
-              content: event.detail || 'The assistant is unavailable right now.',
-              error: true,
-            }));
+            // Preserve partial output: only fall to an error bubble when nothing
+            // streamed yet; otherwise keep the text and append a notice (#211).
+            updateAssistant((m) =>
+              m.content
+                ? { ...m, notice: STREAM_LOST_NOTICE, streaming: false }
+                : {
+                    ...m,
+                    content: event.detail || 'The assistant is unavailable right now.',
+                    error: true,
+                  },
+            );
           }
         }
       }
       updateAssistant((m) => ({ ...m, streaming: false }));
     } catch (err) {
+      timeout.clear();
       const info = describeError(err, res);
       reportClientError(baseUrl, {
         component: 'ai-chat',
@@ -144,14 +171,17 @@ export default function AiChat() {
         ...info,
         streams_supported: streamingSupported(),
       });
-      updateAssistant((m) => ({
-        ...m,
-        content:
-          'Could not reach the AI service. If you are running this locally, make sure the backend is running on port 8000.',
-        error: true,
-        streaming: false,
-        detail: `${info.name}: ${info.message} (at ${stage})`,
-      }));
+      updateAssistant((m) =>
+        m.content
+          ? { ...m, notice: STREAM_LOST_NOTICE, streaming: false }
+          : {
+              ...m,
+              content: networkErrorMessage('assistant'),
+              error: true,
+              streaming: false,
+              detail: `${info.name}: ${info.message} (at ${stage})`,
+            },
+      );
     } finally {
       setLoading(false);
     }
@@ -161,6 +191,33 @@ export default function AiChat() {
     e.preventDefault();
     send(input);
   };
+
+  // Health-gated offline state (#210): never offer a dead input.
+  if (health === 'offline') {
+    return (
+      <AiOfflineState
+        title="The assistant is offline right now"
+        description="This demo answers questions about Jose's experience with retrieval-augmented generation over his portfolio, citing its sources. It'll be back — meanwhile, Jose is one message away."
+        sample={
+          <div className="space-y-3 text-sm">
+            <div className="flex justify-end">
+              <p className="max-w-[85%] rounded-2xl px-4 py-2.5 bg-purple-600 text-white">
+                What has Jose done with agentic AI?
+              </p>
+            </div>
+            <div className="flex justify-start">
+              <p className="max-w-[85%] rounded-2xl px-4 py-2.5 bg-sunken border border-subtle text-foreground">
+                At MojoTech, Jose designed agentic data ingestion on Databricks and
+                integrated pipelines and APIs for a Fortune 500 company — enabling AI
+                agents across their work streams and driving 72% growth of their
+                analytics platform.
+              </p>
+            </div>
+          </div>
+        }
+      />
+    );
+  }
 
   return (
     <div className="bg-surface border border-subtle rounded-2xl shadow-xl overflow-hidden flex flex-col h-[70vh] max-h-[640px]">
@@ -234,6 +291,20 @@ export default function AiChat() {
                 <p className="mt-2 text-xs font-mono text-red-600/80 dark:text-red-300/80 break-words">
                   {msg.detail}
                 </p>
+              )}
+
+              {msg.notice && (
+                <p className="mt-2 text-xs text-amber-700 dark:text-amber-400">{msg.notice}</p>
+              )}
+
+              {msg.role === 'assistant' && (msg.error || msg.notice) && !loading && (
+                <button
+                  type="button"
+                  onClick={() => send(lastQuestion.current)}
+                  className="mt-2 text-xs font-semibold text-accent hover:text-accent-strong underline underline-offset-2"
+                >
+                  Try again
+                </button>
               )}
 
               {msg.sources && msg.sources.length > 0 && (

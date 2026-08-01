@@ -6,6 +6,10 @@ import { TextEncoder, TextDecoder } from 'util';
 // jsdom doesn't provide TextEncoder/TextDecoder; the SSE reader/decoder needs them.
 Object.assign(global, { TextEncoder, TextDecoder });
 
+// Default the mount-time health probe (#210) to 'online' so it doesn't consume
+// the per-test fetch mocks; offline behavior is covered in AiOffline.test.
+jest.mock('@/hooks/useAiHealth', () => ({ useAiHealth: () => 'online' }));
+
 import AgentDemo from '@/components/AgentDemo';
 
 // jsdom lacks Element.prototype.scrollTo (used by the auto-scroll effect).
@@ -129,6 +133,39 @@ describe('AgentDemo (streaming)', () => {
     render(<AgentDemo />);
     fireEvent.click(screen.getByRole('button', { name: /Amazon Robotics and Evonik/i }));
 
-    await screen.findByText(/Could not reach the agent/i);
+    // Production copy (no dev-only "port 8000" hint outside development).
+    await screen.findByText(/The agent is temporarily unavailable/i);
+  });
+
+  it('prefers the error-middleware envelope message over the generic fallback (#209)', async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({ error: { message: 'Rate limit exceeded (20 questions/hour).' } }),
+    });
+
+    render(<AgentDemo />);
+    fireEvent.click(screen.getByRole('button', { name: /Bank of America/i }));
+
+    await screen.findByText(/Rate limit exceeded/i);
+  });
+
+  it('keeps streamed steps with a notice when the stream dies mid-run (#211)', async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce(
+      sseResponse([
+        { type: 'model', model: 'llama3.2' },
+        { type: 'step', tool: 'calculate', arguments: { expression: '1+1' }, result: '2.0' },
+        { type: 'error', detail: 'upstream died' },
+      ]),
+    );
+
+    render(<AgentDemo />);
+    fireEvent.click(screen.getByRole('button', { name: /Bank of America/i }));
+
+    // The executed step survives with a notice — the trace isn't wiped.
+    await screen.findByText('Ran a calculation');
+    expect(screen.getByText(/answer above may be incomplete/i)).toBeInTheDocument();
+
+    // And Try again is offered.
+    expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument();
   });
 });
