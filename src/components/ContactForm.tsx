@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Card } from '@/components/ui';
+import { apiErrorMessage } from '@/lib/aiErrors';
 
 interface ContactFormData {
   name: string;
@@ -139,7 +140,9 @@ export default function ContactForm() {
         });
       } else {
         setSubmitStatus('error');
-        setSubmitMessage(data.detail || 'Something went wrong. Please try again later.');
+        setSubmitMessage(
+          apiErrorMessage(data, 'Something went wrong. Please try again later.'),
+        );
       }
     } catch (error) {
       console.error('Error submitting form:', error);

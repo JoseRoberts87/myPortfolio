@@ -1,6 +1,15 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import {
+  apiErrorMessage,
+  networkErrorMessage,
+  STREAM_LOST_NOTICE,
+  timeoutSignal,
+  FETCH_TIMEOUT_MS,
+} from '@/lib/aiErrors';
+import { useAiHealth } from '@/hooks/useAiHealth';
+import AiOfflineState from '@/components/AiOfflineState';
 
 interface AgentStep {
   tool: string;
@@ -15,6 +24,8 @@ interface AgentTurn {
   model?: string;
   tokensUsed?: number;
   error?: boolean;
+  /** Non-destructive note (e.g. stream lost after partial output) — trace is kept. */
+  notice?: string;
 }
 
 const SUGGESTED_QUESTIONS = [
@@ -41,8 +52,11 @@ export default function AgentDemo() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  // Remembered so the "Try again" button on an error state can resend (#211).
+  const lastQuestion = useRef('');
 
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  const health = useAiHealth(baseUrl);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -62,10 +76,14 @@ export default function AgentDemo() {
     const q = question.trim();
     if (!q || loading) return;
 
+    lastQuestion.current = q;
     setInput('');
     setTurns((t) => [...t, { question: q, steps: [] }]);
     setLoading(true);
 
+    // Bound time-to-first-byte; cleared once headers arrive so long agent runs
+    // aren't cut off mid-stream (#211).
+    const timeout = timeoutSignal(FETCH_TIMEOUT_MS);
     try {
       // SSE stream (issue #171): tool-call steps arrive as they execute, so the
       // trace builds live instead of appearing all at once after the wait.
@@ -73,13 +91,15 @@ export default function AgentDemo() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: q }),
+        signal: timeout.signal,
       });
+      timeout.clear();
 
       if (!res.ok || !res.body) {
         const data = await res.json().catch(() => ({}));
         updateTurn((turn) => ({
           ...turn,
-          answer: data?.detail || 'The agent is unavailable right now.',
+          answer: apiErrorMessage(data, 'The agent is unavailable right now.'),
           error: true,
         }));
         return;
@@ -125,21 +145,27 @@ export default function AgentDemo() {
           } else if (event.type === 'done') {
             updateTurn((turn) => ({ ...turn, tokensUsed: (event.tokens_used as number) || undefined }));
           } else if (event.type === 'error') {
-            updateTurn((turn) => ({
-              ...turn,
-              answer: (event.detail as string) || 'The agent is unavailable right now.',
-              error: true,
-            }));
+            // Preserve partial progress: keep any streamed steps/answer and
+            // append a notice instead of wiping the trace (#211).
+            updateTurn((turn) =>
+              turn.answer || turn.steps.length > 0
+                ? { ...turn, notice: STREAM_LOST_NOTICE }
+                : {
+                    ...turn,
+                    answer: (event.detail as string) || 'The agent is unavailable right now.',
+                    error: true,
+                  },
+            );
           }
         }
       }
     } catch {
-      updateTurn((turn) => ({
-        ...turn,
-        answer:
-          'Could not reach the agent. If you are running this locally, make sure the backend is running on port 8000.',
-        error: true,
-      }));
+      timeout.clear();
+      updateTurn((turn) =>
+        turn.answer || turn.steps.length > 0
+          ? { ...turn, notice: STREAM_LOST_NOTICE }
+          : { ...turn, answer: networkErrorMessage('agent'), error: true },
+      );
     } finally {
       setLoading(false);
     }
@@ -149,6 +175,32 @@ export default function AgentDemo() {
     e.preventDefault();
     send(input);
   };
+
+  // Health-gated offline state (#210): never offer a dead input.
+  if (health === 'offline') {
+    return (
+      <AiOfflineState
+        title="The agent is offline right now"
+        description="This demo shows an LLM agent choosing tools — portfolio search, a calculator, today's date — and chaining them into a grounded answer, with every tool call traced live."
+        sample={
+          <div className="space-y-2 text-sm">
+            <p className="text-muted">
+              <span className="font-medium text-foreground">Q:</span> How many years of
+              experience does Jose have in total?
+            </p>
+            <p className="bg-sunken border border-subtle rounded-lg px-3 py-2 font-mono text-xs text-muted">
+              1. 🔎 search_portfolio(query: career start) → started in 2011 · 2. 🧮
+              calculate(2026 - 2011) → 15.0
+            </p>
+            <p className="text-muted">
+              <span className="font-medium text-foreground">A:</span> Jose has about 15 years
+              of professional experience, starting in 2011.
+            </p>
+          </div>
+        }
+      />
+    );
+  }
 
   return (
     <div className="bg-surface border border-subtle rounded-2xl shadow-xl overflow-hidden flex flex-col h-[70vh] max-h-[640px]">
@@ -237,6 +289,24 @@ export default function AgentDemo() {
                       {turn.tokensUsed ? ` · ${turn.tokensUsed} tokens` : ''}
                     </p>
                   )}
+                </div>
+              </div>
+            )}
+
+            {/* Stream-lost notice + retry (partial progress is preserved above) */}
+            {(turn.notice || turn.error) && !loading && (
+              <div className="flex justify-start">
+                <div className="text-xs space-y-1">
+                  {turn.notice && (
+                    <p className="text-amber-700 dark:text-amber-400">{turn.notice}</p>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => send(lastQuestion.current)}
+                    className="font-semibold text-accent hover:text-accent-strong underline underline-offset-2"
+                  >
+                    Try again
+                  </button>
                 </div>
               </div>
             )}

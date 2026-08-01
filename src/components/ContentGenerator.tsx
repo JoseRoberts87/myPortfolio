@@ -1,6 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+import {
+  apiErrorMessage,
+  networkErrorMessage,
+  STREAM_LOST_NOTICE,
+  timeoutSignal,
+  FETCH_TIMEOUT_MS,
+} from '@/lib/aiErrors';
+import { useAiHealth } from '@/hooks/useAiHealth';
+import AiOfflineState from '@/components/AiOfflineState';
 
 interface Source {
   id: string;
@@ -13,6 +22,8 @@ interface GenerateResult {
   sources: Source[];
   model?: string;
   tokensUsed?: number;
+  /** Non-destructive note (e.g. stream lost after partial output) — draft is kept. */
+  notice?: string;
 }
 
 const SUGGESTED_BRIEFS = [
@@ -44,6 +55,7 @@ export default function ContentGenerator() {
   const [copied, setCopied] = useState(false);
 
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  const health = useAiHealth(baseUrl);
 
   const generate = async () => {
     if (loading) return;
@@ -52,6 +64,11 @@ export default function ContentGenerator() {
     setResult(null);
     setCopied(false);
 
+    // Bound time-to-first-byte; cleared once headers arrive so long drafts
+    // aren't cut off mid-stream (#211).
+    const timeout = timeoutSignal(FETCH_TIMEOUT_MS);
+    // Tracks whether any draft text has streamed, so failures can preserve it.
+    let streamedChars = 0;
     try {
       // SSE stream (issue #171): the draft renders as it is written instead of
       // after one long reasoning-model wait.
@@ -59,11 +76,13 @@ export default function ContentGenerator() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ brief, format, tone }),
+        signal: timeout.signal,
       });
+      timeout.clear();
 
       if (!res.ok || !res.body) {
         const data = await res.json().catch(() => ({}));
-        setError(data?.detail || 'The generator is unavailable right now.');
+        setError(apiErrorMessage(data, 'The generator is unavailable right now.'));
         return;
       }
 
@@ -96,6 +115,7 @@ export default function ContentGenerator() {
               tokensUsed: r?.tokensUsed,
             }));
           } else if (event.type === 'token') {
+            streamedChars += ((event.text as string) || '').length;
             setResult((r) => ({
               content: (r?.content || '') + ((event.text as string) || ''),
               sources: r?.sources || [],
@@ -107,15 +127,27 @@ export default function ContentGenerator() {
               r ? { ...r, tokensUsed: (event.tokens_used as number) || undefined } : r,
             );
           } else if (event.type === 'error') {
-            setResult(null);
-            setError((event.detail as string) || 'The generator is unavailable right now.');
+            // Preserve a partially-written draft with a notice; only fall to the
+            // error state when nothing streamed yet (#211).
+            if (streamedChars > 0) {
+              setResult((r) => (r ? { ...r, notice: STREAM_LOST_NOTICE } : r));
+            } else {
+              setResult(null);
+              setError(
+                (event.detail as string) || 'The generator is unavailable right now.',
+              );
+            }
           }
         }
       }
     } catch {
-      setError(
-        'Could not reach the generator. If you are running this locally, make sure the backend is running on port 8000.',
-      );
+      timeout.clear();
+      if (streamedChars > 0) {
+        setResult((r) => (r ? { ...r, notice: STREAM_LOST_NOTICE } : r));
+      } else {
+        setResult(null);
+        setError(networkErrorMessage('generator'));
+      }
     } finally {
       setLoading(false);
     }
@@ -134,6 +166,24 @@ export default function ContentGenerator() {
 
   const selectClass =
     'bg-surface border border-subtle focus:border-purple-500 rounded-lg px-3 py-2 text-foreground outline-none transition-colors disabled:opacity-60';
+
+  // Health-gated offline state (#210): never offer a dead form.
+  if (health === 'offline') {
+    return (
+      <AiOfflineState
+        title="The generator is offline right now"
+        description="This demo writes a role-tailored elevator pitch, cover letter, or LinkedIn intro — grounded in Jose's real résumé so it never invents experience."
+        sample={
+          <blockquote className="bg-sunken border border-subtle rounded-lg px-4 py-3 text-sm text-muted italic">
+            &ldquo;I&apos;m a Data &amp; AI Architect with 15+ years of experience turning
+            data platforms into production AI systems — most recently designing agentic
+            data ingestion on Databricks that helped a Fortune 500 team grow their
+            analytics platform by 72%.&rdquo;
+          </blockquote>
+        }
+      />
+    );
+  }
 
   return (
     <div className="bg-surface border border-subtle rounded-2xl shadow-xl p-4 sm:p-6 space-y-5">
@@ -239,7 +289,15 @@ export default function ContentGenerator() {
 
       {error && (
         <div className="bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-300 rounded-lg px-4 py-3 text-sm">
-          {error}
+          <p>{error}</p>
+          <button
+            type="button"
+            onClick={generate}
+            disabled={loading}
+            className="mt-2 text-xs font-semibold text-accent hover:text-accent-strong underline underline-offset-2"
+          >
+            Try again
+          </button>
         </div>
       )}
 
@@ -256,6 +314,10 @@ export default function ContentGenerator() {
             </button>
           </div>
           <p className="text-body whitespace-pre-wrap leading-relaxed">{result.content}</p>
+
+          {result.notice && (
+            <p className="mt-2 text-xs text-amber-700 dark:text-amber-400">{result.notice}</p>
+          )}
 
           {result.sources.length > 0 && (
             <div className="mt-4 pt-3 border-t border-subtle">

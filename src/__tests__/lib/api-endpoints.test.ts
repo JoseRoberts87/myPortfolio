@@ -68,6 +68,13 @@ describe('fetchApi error branches', () => {
     await expect(getEntityStats()).rejects.toThrow('HTTP 503: Service Unavailable');
   });
 
+  it('prefers the error-middleware envelope message ({error: {message}}) (#209)', async () => {
+    mockFetch.mockResolvedValueOnce(errJson(429, 'Too Many Requests', {
+      error: { message: 'The assistant is resting.' },
+    }));
+    await expect(getEntityStats()).rejects.toThrow('The assistant is resting.');
+  });
+
   it('falls back to a generic message when the error body is not valid JSON', async () => {
     // json() rejects -> the `.catch(() => ({ detail: 'Unknown error' }))` kicks in.
     mockFetch.mockResolvedValueOnce({

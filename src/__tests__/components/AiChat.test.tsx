@@ -6,6 +6,10 @@ import { TextEncoder, TextDecoder } from 'util';
 // jsdom doesn't provide TextEncoder/TextDecoder; the SSE reader/decoder needs them.
 Object.assign(global, { TextEncoder, TextDecoder });
 
+// The mount-time health probe (#210) would consume the per-test fetch mocks;
+// default it to 'online' here — offline behavior is covered in AiOffline.test.
+jest.mock('@/hooks/useAiHealth', () => ({ useAiHealth: () => 'online' }));
+
 import AiChat from '@/components/AiChat';
 
 // jsdom lacks Element.prototype.scrollTo (used by the auto-scroll effect).
@@ -114,7 +118,8 @@ describe('AiChat (streaming)', () => {
     render(<AiChat />);
     fireEvent.click(screen.getByRole('button', { name: /real-time \/ IoT work/i }));
 
-    await screen.findByText(/Could not reach the AI service/i);
+    // Production copy (no dev-only "port 8000" hint outside development).
+    await screen.findByText(/The assistant is temporarily unavailable/i);
   });
 
   it('beacons the real error and surfaces its cause when the request throws', async () => {
@@ -139,5 +144,66 @@ describe('AiChat (streaming)', () => {
     expect(body.component).toBe('ai-chat');
     expect(body.stage).toBe('fetch');
     expect(body.name).toBe('TypeError');
+  });
+
+  it('prefers the error-middleware envelope message over the generic fallback (#209)', async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: false,
+      json: async () => ({
+        error: { message: 'The assistant has reached today\'s usage limit and is resting.' },
+      }),
+    });
+
+    render(<AiChat />);
+    fireEvent.click(screen.getByRole('button', { name: /biggest measurable results/i }));
+
+    await screen.findByText(/reached today's usage limit/i);
+  });
+
+  it('keeps partial output with a notice when the stream dies mid-answer (#211)', async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce(
+      sseResponse([
+        { type: 'token', text: 'Jose has 15+ years' },
+        { type: 'error', detail: 'upstream died' },
+      ]),
+    );
+
+    render(<AiChat />);
+    fireEvent.click(screen.getByRole('button', { name: /biggest measurable results/i }));
+
+    // The streamed text survives, with a non-destructive notice — not an error bubble.
+    await screen.findByText('Jose has 15+ years');
+    expect(screen.getByText(/answer above may be incomplete/i)).toBeInTheDocument();
+    expect(screen.queryByText(/upstream died/)).not.toBeInTheDocument();
+  });
+
+  it('offers Try again on an error bubble and resends the same question (#211)', async () => {
+    const fetchMock = global.fetch as jest.Mock;
+    // Route by URL: the failure triggers a diagnostic beacon (#208) between the
+    // two chat requests, which must not consume the retry's queued response.
+    const chatResponses: unknown[] = [
+      { ok: false, json: async () => ({ detail: 'busy' }) },
+      sseResponse([{ type: 'token', text: 'Recovered.' }]),
+    ];
+    fetchMock.mockImplementation((url: string) =>
+      String(url).includes('/client-error')
+        ? Promise.resolve({ ok: true, status: 204 })
+        : Promise.resolve(chatResponses.shift()),
+    );
+
+    render(<AiChat />);
+    fireEvent.click(screen.getByRole('button', { name: /biggest measurable results/i }));
+    await screen.findByText('busy');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    await screen.findByText('Recovered.');
+    // Same question was resent (comparing only the chat-stream calls).
+    const chatCalls = fetchMock.mock.calls.filter((c) =>
+      String(c[0]).includes('/chat/stream'),
+    );
+    expect(chatCalls).toHaveLength(2);
+    expect(JSON.parse(chatCalls[1][1].body).question).toBe(
+      JSON.parse(chatCalls[0][1].body).question,
+    );
   });
 });

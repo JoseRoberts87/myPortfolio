@@ -41,7 +41,13 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> 
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
-      throw new Error(errorData.detail || `HTTP ${response.status}: ${response.statusText}`);
+      // The backend's error middleware wraps HTTPException as {error: {message}};
+      // FastAPI validation errors use {detail} — accept both (#209).
+      throw new Error(
+        errorData?.error?.message ||
+          errorData.detail ||
+          `HTTP ${response.status}: ${response.statusText}`
+      );
     }
 
     return await response.json();
@@ -161,7 +167,11 @@ export async function detectObjectsInImage(
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
-    throw new Error(errorData.detail || `HTTP ${response.status}: ${response.statusText}`);
+    throw new Error(
+      errorData?.error?.message ||
+        errorData.detail ||
+        `HTTP ${response.status}: ${response.statusText}`
+    );
   }
 
   return await response.json();
