@@ -116,4 +116,28 @@ describe('AiChat (streaming)', () => {
 
     await screen.findByText(/Could not reach the AI service/i);
   });
+
+  it('beacons the real error and surfaces its cause when the request throws', async () => {
+    const fetchMock = global.fetch as jest.Mock;
+    // 1st call = the stream request (throws); later calls = the diagnostic beacon.
+    fetchMock
+      .mockRejectedValueOnce(new TypeError('Load failed'))
+      .mockResolvedValue({ ok: true, status: 204 });
+
+    render(<AiChat />);
+    fireEvent.click(screen.getByRole('button', { name: /real-time \/ IoT work/i }));
+
+    // The technical cause is shown on-screen (so a mobile screenshot reveals it).
+    await screen.findByText(/TypeError: Load failed \(at fetch\)/i);
+
+    // And a diagnostic was POSTed to the client-error endpoint.
+    const beacon = fetchMock.mock.calls.find((c) =>
+      String(c[0]).includes('/api/v1/ai/client-error'),
+    );
+    expect(beacon).toBeTruthy();
+    const body = JSON.parse(beacon![1].body as string);
+    expect(body.component).toBe('ai-chat');
+    expect(body.stage).toBe('fetch');
+    expect(body.name).toBe('TypeError');
+  });
 });

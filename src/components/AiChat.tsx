@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { reportClientError, describeError, streamingSupported } from '@/lib/clientErrorLog';
 
 interface Source {
   id: string;
@@ -14,6 +15,8 @@ interface Message {
   sources?: Source[];
   error?: boolean;
   streaming?: boolean;
+  /** Technical cause shown under an error bubble (helps diagnose mobile-only failures). */
+  detail?: string;
 }
 
 interface StreamEvent {
@@ -69,23 +72,38 @@ export default function AiChat() {
     ]);
     setLoading(true);
 
+    // Track how far we got, so a failure beacon says *where* it broke (mobile
+    // browsers fail at different stages than desktop — see clientErrorLog).
+    let stage = 'fetch';
+    let res: Response | null = null;
     try {
-      const res = await fetch(`${baseUrl}/api/v1/ai/chat/stream`, {
+      res = await fetch(`${baseUrl}/api/v1/ai/chat/stream`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: q }),
       });
+      stage = 'response';
 
       if (!res.ok || !res.body) {
         const data = await res.json().catch(() => ({}));
         const detail = data?.detail || 'The assistant is unavailable right now.';
+        reportClientError(baseUrl, {
+          component: 'ai-chat',
+          stage: !res.ok ? 'http-error' : 'no-stream-body',
+          name: 'ResponseError',
+          message: detail,
+          status: res.status,
+          has_body: Boolean(res.body),
+        });
         updateAssistant((m) => ({ ...m, content: detail, error: true, streaming: false }));
         return;
       }
 
+      stage = 'stream-open';
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let buffer = '';
+      stage = 'stream-read';
 
       while (true) {
         const { done, value } = await reader.read();
@@ -118,13 +136,21 @@ export default function AiChat() {
         }
       }
       updateAssistant((m) => ({ ...m, streaming: false }));
-    } catch {
+    } catch (err) {
+      const info = describeError(err, res);
+      reportClientError(baseUrl, {
+        component: 'ai-chat',
+        stage,
+        ...info,
+        streams_supported: streamingSupported(),
+      });
       updateAssistant((m) => ({
         ...m,
         content:
           'Could not reach the AI service. If you are running this locally, make sure the backend is running on port 8000.',
         error: true,
         streaming: false,
+        detail: `${info.name}: ${info.message} (at ${stage})`,
       }));
     } finally {
       setLoading(false);
@@ -201,6 +227,12 @@ export default function AiChat() {
                       aria-hidden
                     />
                   )}
+                </p>
+              )}
+
+              {msg.error && msg.detail && (
+                <p className="mt-2 text-xs font-mono text-red-600/80 dark:text-red-300/80 break-words">
+                  {msg.detail}
                 </p>
               )}
 

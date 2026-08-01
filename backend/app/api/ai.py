@@ -9,7 +9,7 @@ import hashlib
 import json
 from datetime import datetime
 
-from fastapi import APIRouter, HTTPException, Request, status
+from fastapi import APIRouter, HTTPException, Request, Response, status
 from fastapi.responses import StreamingResponse
 from redis import asyncio as aioredis
 
@@ -20,6 +20,7 @@ from app.schemas.ai import (
     AgentResponse,
     ChatRequest,
     ChatResponse,
+    ClientErrorReport,
     GenerateRequest,
     GenerateResponse,
 )
@@ -209,6 +210,20 @@ def _log_conversation(
             "ai_answer": (answer or "")[:1000], **(extra or {}),
         },
     )
+
+
+async def _client_error_allowed(request: Request) -> bool:
+    """Bound per-IP client-error beacons so the public endpoint can't flood logs.
+    Fails open (a Redis outage never blocks diagnostics)."""
+    key = f"ai:clienterr:{_client_ip(request)}"
+    try:
+        redis = _get_redis()
+        count = await redis.incr(key)
+        if count == 1:
+            await redis.expire(key, 3600)
+        return count <= settings.AI_CLIENT_ERROR_MAX_PER_HOUR
+    except Exception:
+        return True
 
 
 @router.post(
@@ -517,6 +532,38 @@ async def generate_stream(payload: GenerateRequest, request: Request) -> Streami
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
+
+
+@router.post(
+    "/client-error",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Report a client-side AI error",
+    description="Beacon a browser-side failure (e.g. mobile streaming errors) for diagnosis. "
+    "Fire-and-forget; the IP is hashed and fields are size-capped. Gated by AI_CONVERSATION_LOGGING.",
+)
+async def client_error(payload: ClientErrorReport, request: Request) -> Response:
+    # Best-effort diagnostics: log at WARNING so mobile-only failures surface in the
+    # server logs. Silently drop (still 204) past the per-IP hourly cap or when
+    # logging is disabled — the client never depends on the response.
+    if settings.AI_CONVERSATION_LOGGING and await _client_error_allowed(request):
+        client_hash = hashlib.sha256(_client_ip(request).encode()).hexdigest()[:12]
+        logger.warning(
+            "AI client error",
+            extra={
+                "ai_kind": "client-error",
+                "ai_client": client_hash,
+                "ai_component": payload.component,
+                "ai_stage": payload.stage,
+                "ai_error_name": payload.name,
+                "ai_error_message": payload.message,
+                "ai_http_status": payload.status,
+                "ai_has_body": payload.has_body,
+                "ai_streams_supported": payload.streams_supported,
+                "ai_url": payload.url[:500],
+                "ai_ua": (payload.ua or request.headers.get("user-agent", ""))[:400],
+            },
+        )
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.get("/health", summary="AI assistant status")

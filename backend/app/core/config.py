@@ -93,6 +93,7 @@ class Settings(BaseSettings):
     AI_GEN_TOP_K: int = 4  # Knowledge chunks grounding the generated content
     AI_BUDGET_ALERT_FRACTION: float = 0.8  # Log an alert once daily spend crosses this fraction of the budget
     AI_CONVERSATION_LOGGING: bool = True  # Log Q&A server-side for review (IP hashed, content truncated)
+    AI_CLIENT_ERROR_MAX_PER_HOUR: int = 30  # Per-IP cap on client-error beacons, so the public endpoint can't flood logs
 
     model_config = SettingsConfigDict(
         env_file=".env",
