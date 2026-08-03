@@ -38,12 +38,23 @@ export interface CaseStudy {
 
   // Main sections
   problemStatement: CaseStudySection;
+  // Senior-level narrative structure (#197): every study answers who it was
+  // for, what boxed it in, and how it was kept reliable, secure, and tested —
+  // not just what was built. Enforced by case-studies-structure.test.ts.
+  stakeholders: CaseStudySection;
+  constraints: CaseStudySection;
   technicalChallenges: CaseStudySection;
   solutionArchitecture: CaseStudySection;
   implementation: CaseStudySection;
+  reliability: CaseStudySection;
+  security: CaseStudySection;
+  testingStrategy: CaseStudySection;
   resultsAndImpact: CaseStudySection;
+  /** Distinguishes measured results from published benchmarks or estimates (#197). */
+  metricsNote?: string;
   tradeoffsAndDecisions: CaseStudySection;
   lessonsLearned: CaseStudySection;
+  futureImprovements: CaseStudySection;
 
   // Related links
   liveDemo?: string;
@@ -70,6 +81,60 @@ export const caseStudies: CaseStudy[] = [
     publishedDate: '2026-07',
     challenge: 'A Fortune 500 organization was losing time and accuracy to manual, repetitive workflows, with no visibility into how LLMs were being consumed across teams. The goal: deploy a coordinated workforce of AI agents that execute tasks reliably, with governance and cost transparency — augmenting people rather than replacing them.',
 
+    stakeholders: {
+      title: 'Users & Stakeholders',
+      content: [
+        'Operations teams whose manual workflows — data hand-offs, reconciliation, report generation — the agents took over.',
+        'Leadership, who needed the first org-wide view of LLM consumption, cost, and quality before expanding automation.',
+        'Platform and data teams owning the Databricks lakehouse the agents ran on and the pipelines they plugged into.',
+        'The people in the loop: approvers accountable for high-impact actions, who had to trust every step they signed off.',
+      ],
+    },
+    constraints: {
+      title: 'Constraints',
+      content: [
+        'Enterprise governance: nothing could be automated that could not be audited — every action needed provenance.',
+        'The platform was fixed: agents had to live on the client\'s existing Databricks + AWS lakehouse, not a new stack.',
+        'Probabilistic models feeding deterministic business workflows — a single hallucinated field could corrupt downstream systems.',
+        'Cost transparency was a mandate, not a nice-to-have: ungoverned model spend had already stalled adoption once.',
+        'Humans stayed accountable: consequential steps required an approval gate by policy.',
+      ],
+    },
+    reliability: {
+      title: 'Reliability & Error Handling',
+      content: [
+        'Every tool output was schema-validated before it touched a downstream system; failed validation fed back to the agent for self-correction rather than propagating.',
+        'Hard step caps and timeouts prevented runaway loops; retries and typed hand-offs kept multi-agent tasks from duplicating work.',
+        'Idempotent integration points meant a retried step never double-applied an action.',
+        'Human approval gates acted as circuit breakers on the highest-impact paths.',
+      ],
+    },
+    security: {
+      title: 'Security & Privacy',
+      content: [
+        'Agents ran against small, typed, allow-listed tool sets — no open-ended code or network access.',
+        'Data never left the governed lakehouse: retrieval, action, and telemetry all happened inside the client\'s existing access controls.',
+        'Every model call and agent action was recorded with provenance, making the system auditable end to end.',
+        'Consumption telemetry deliberately captured metadata (model, tokens, cost, latency) rather than raw sensitive content.',
+      ],
+    },
+    testingStrategy: {
+      title: 'Testing Strategy',
+      content: [
+        'A model-benchmarking harness scored candidates per task class (extraction, summarization, classification, reasoning) before any model reached production.',
+        'Agent behaviors were exercised against representative historical tasks before being allowed to act on live ones.',
+        'Output validators doubled as executable contracts: schema checks ran on every call in production, not just in test.',
+        'Automation expanded incrementally — each new task class earned trust through observed reliability, not promises.',
+      ],
+    },
+    futureImprovements: {
+      title: 'Future Improvements',
+      content: [
+        'Continuous evaluation in CI so model and prompt regressions are caught before deployment, not after.',
+        'Cost-aware routing that picks the cheapest model meeting the task\'s measured accuracy bar automatically.',
+        'Expanding the agentic pattern to more work streams as approval-gate data identifies the safest candidates.',
+      ],
+    },
     problemStatement: {
       title: 'The Problem',
       content: [
@@ -267,6 +332,59 @@ async def instrumented_call(model: str, task_type: str, prompt: str):
     publishedDate: '2026-07',
     challenge: 'IoT fleets emit a relentless, bursty stream of sensor data that is only valuable if it becomes insight in seconds — and never goes dark. The challenge: architect an event-driven platform that ingests high-volume IoT data, turns it into real-time analytics and alerts under a five-second budget, and holds 99.99% uptime.',
 
+    stakeholders: {
+      title: 'Users & Stakeholders',
+      content: [
+        'Floor operators who depended on live dashboards and alerts to act on equipment issues within seconds.',
+        'Maintenance teams consuming predictive-failure alerts to schedule work before breakdowns.',
+        'Deployment engineering at Amazon Robotics, whose telemetry pipelines fed the models.',
+        'Operations leadership, for whom platform downtime meant blind spots on the floor.',
+      ],
+    },
+    constraints: {
+      title: 'Constraints',
+      content: [
+        'A hard five-second ingest-to-insight SLA — "real-time" was a number, not a vibe.',
+        '99.99% availability for an operations-critical system: roughly one minute of allowable downtime per week.',
+        'Bursty, high-volume device traffic that could not be dropped or allowed to back up.',
+        'Networks and consumers that fail: delivery semantics had to survive retries without corrupting metrics.',
+        'A cost envelope that ruled out simply over-provisioning everything.',
+      ],
+    },
+    reliability: {
+      title: 'Reliability & Error Handling',
+      content: [
+        'A durable event stream decoupled producers from consumers, absorbing bursts without data loss.',
+        'At-least-once delivery paired with idempotent consumers: retried events could never double-count a metric or fire a duplicate alert.',
+        'Backpressure via bounded batches kept latency inside the SLA under load instead of letting queues silently grow.',
+        'Every tier exposed health checks; unhealthy nodes were drained and replaced automatically — no single point of failure.',
+      ],
+    },
+    security: {
+      title: 'Security & Privacy',
+      content: [
+        'Device identity and authenticated ingestion kept untrusted traffic out of the stream.',
+        'The ingestion tier was network-isolated from the serving tier; services ran with least-privilege roles.',
+        'Telemetry was machine data by design — the platform avoided ingesting personal data at all.',
+      ],
+    },
+    testingStrategy: {
+      title: 'Testing Strategy',
+      content: [
+        'Load and burst tests replayed recorded device traffic at multiples of expected volume against the latency SLA.',
+        'Failover drills killed nodes on purpose to prove the four-nines design actually recovered automatically.',
+        'Idempotency was tested by deliberate duplicate delivery — correctness under retry was an assertion, not an assumption.',
+        'Every hop was instrumented, so latency-budget regressions surfaced in measurement rather than in incidents.',
+      ],
+    },
+    futureImprovements: {
+      title: 'Future Improvements',
+      content: [
+        'Broader anomaly-detection models beyond the original predictive-maintenance target.',
+        'Multi-region failover for resilience beyond a single deployment footprint.',
+        'Tiered storage of historical telemetry to make long-horizon model training cheaper.',
+      ],
+    },
     problemStatement: {
       title: 'The Problem',
       content: [
@@ -456,6 +574,55 @@ class FeatureWindow:
     publishedDate: '2026-07',
     challenge: 'Industrial energy is a massive, controllable cost — but only if you can forecast consumption accurately enough to act on it. As a Senior Data Engineer at Evonik, I owned the full data-pipeline lifecycle for a niche data-science segment and built a forecasting model whose predictions translated directly into $2M of annual savings.',
 
+    stakeholders: {
+      title: 'Users & Stakeholders',
+      content: [
+        'Procurement and plant operations, who turned forecasts into purchasing and scheduling decisions worth real money.',
+        'The data-science segment that built on the consolidated pipelines and backend architecture.',
+        'Junior data engineers I trained on the system — it had to be teachable, not just functional.',
+        'Site leadership accountable for energy cost as a controllable operating expense.',
+      ],
+    },
+    constraints: {
+      title: 'Constraints',
+      content: [
+        'Fragmented, redundant source data with heavy manual overhead — the foundation had to be fixed before modeling was viable.',
+        'The forecast had to be trusted enough to spend against: interpretability was a requirement, not a preference.',
+        'Full-lifecycle ownership by a small team — the design had to be maintainable and hand-off-able.',
+        'Industrial energy data stayed in-house under company access controls.',
+      ],
+    },
+    reliability: {
+      title: 'Reliability & Error Handling',
+      content: [
+        'Canonical pipelines with validation at ingestion replaced fragile manual hand-offs — the 80% redundancy cut was also a reliability fix.',
+        'Forecasts were monitored against actuals, so drift showed up as a measured error trend rather than a surprise.',
+        'The serving path degraded gracefully: a late upstream source delayed a refresh instead of publishing a wrong forecast.',
+      ],
+    },
+    security: {
+      title: 'Security & Privacy',
+      content: [
+        'Consumption data was operational, not personal — but it was commercially sensitive, so it stayed inside company-controlled infrastructure.',
+        'Pipeline access followed the segment\'s existing role-based controls; no data left the governed environment for modeling.',
+      ],
+    },
+    testingStrategy: {
+      title: 'Testing Strategy',
+      content: [
+        'Back-testing on held-out historical periods kept accuracy claims honest and calibrated to the decisions the forecast informed.',
+        'Data-quality checks on the consolidated pipelines caught upstream schema and completeness problems before they reached the model.',
+        'Evaluation targeted decision quality (cost saved at the procurement horizon) rather than leaderboard error metrics.',
+      ],
+    },
+    futureImprovements: {
+      title: 'Future Improvements',
+      content: [
+        'Prediction intervals, not just point forecasts, so decisions could price in uncertainty explicitly.',
+        'Finer-grained seasonality (per-line, per-shift) as the consolidated data matured.',
+        'Automated retraining triggered by measured drift instead of a fixed calendar.',
+      ],
+    },
     problemStatement: {
       title: 'The Problem',
       content: [
@@ -620,6 +787,58 @@ def holt_forecast(series: list[float], alpha: float, beta: float, horizon: int):
     publishedDate: '2025-01',
     challenge: 'Build a production-ready object detection system that works seamlessly across both browser (client-side) and server environments, balancing performance, accuracy, and user experience.',
 
+    stakeholders: {
+      title: 'Users & Stakeholders',
+      content: [
+        'Portfolio visitors — recruiters and engineers — who need the demo to work instantly on whatever device they arrive with.',
+        'Me as the operator: the demo has to run within a hobby-tier infrastructure budget with no GPU.',
+        'The codebase itself: the hooks and utilities are reused by other demos, so they are maintained like production code.',
+      ],
+    },
+    constraints: {
+      title: 'Constraints',
+      content: [
+        'No GPU anywhere: server inference runs on shared CPU (Railway), client inference on whatever hardware the visitor owns.',
+        'A public web audience: unknown devices, browsers, and camera hardware, with zero install tolerance.',
+        'Bundle-size discipline: the ML runtime and model load lazily so the rest of the site stays fast.',
+        'Hobby-tier cost ceiling — the design must not require paid inference infrastructure to demo well.',
+      ],
+    },
+    reliability: {
+      title: 'Reliability & Error Handling',
+      content: [
+        'Model-load and camera-permission failures render explicit error states instead of a frozen demo.',
+        'Detection loops are cancelled on unmount (requestAnimationFrame cleanup), preventing leaks across navigation.',
+        'React error boundaries isolate a crashing demo from the rest of the page.',
+        'The server path validates uploads (type, size) and returns structured errors the UI renders honestly.',
+      ],
+    },
+    security: {
+      title: 'Security & Privacy',
+      content: [
+        'Webcam frames never leave the browser — client-side inference means live video is processed entirely on-device.',
+        'Uploaded images are processed in memory for inference and are not persisted.',
+        'Upload validation (content type, size caps) bounds abuse of the server endpoint.',
+      ],
+    },
+    testingStrategy: {
+      title: 'Testing Strategy',
+      content: [
+        'The detection hooks and canvas-drawing utilities carry dedicated Jest suites — the coordinate math is tested to 100% branch coverage.',
+        'Playwright end-to-end specs exercise the demo pages, including axe-core accessibility scans.',
+        'Coverage is enforced by a ratcheting floor in CI, and mutation testing (Stryker) guards the core utilities against vacuous tests.',
+      ],
+    },
+    futureImprovements: {
+      title: 'Future Improvements',
+      content: [
+        'WebGPU inference as browser support matures — a significant client-side speedup over WebGL.',
+        'Model selection by device capability, serving a larger model to hardware that can handle it.',
+        'Segmentation and pose demos reusing the same hook and overlay architecture.',
+      ],
+    },
+    metricsNote:
+      'FPS and latency figures were measured on development hardware; mAP figures are the published benchmarks of the underlying models (COCO-SSD, YOLOv8n), not re-validated on a custom dataset.',
     problemStatement: {
       title: 'The Problem',
       content: [
@@ -887,6 +1106,58 @@ async def detect_objects(file: UploadFile = File(...)):
     publishedDate: '2025-01',
     challenge: 'Build a production NLP pipeline that provides sentiment analysis, named entity recognition, and keyword extraction with high throughput, low latency, and graceful degradation.',
 
+    stakeholders: {
+      title: 'Users & Stakeholders',
+      content: [
+        'Portfolio visitors exploring the analytics and NLP demos, who see the pipeline\'s output as live charts and entity/keyword views.',
+        'The data-pipeline scheduler, which depends on NLP enrichment completing reliably for every ingested batch.',
+        'Me as the operator: the pipeline must run unattended within small-instance memory limits.',
+      ],
+    },
+    constraints: {
+      title: 'Constraints',
+      content: [
+        'A 2 GB memory envelope shared by three models (spaCy large, DistilBERT, TF-IDF) — models load once, never per request.',
+        'Dependency gravity: spaCy 3.8 pins numpy <2.0, constraining the entire Python dependency tree.',
+        'Cost: heavy transformer inference must be amortized by caching, not scaled with hardware.',
+        'Unattended operation: one bad document must never stall a batch.',
+      ],
+    },
+    reliability: {
+      title: 'Reliability & Error Handling',
+      content: [
+        'Each stage (NER, sentiment, keywords) fails independently with a safe default — a malformed document degrades one field, never the batch.',
+        'Redis caching is best-effort: a cache outage slows the pipeline but does not break it.',
+        'Inputs are truncated to model limits deliberately (DistilBERT\'s 512 tokens) rather than erroring on long articles.',
+        'Failures are logged with context so silent degradation shows up in operational review.',
+      ],
+    },
+    security: {
+      title: 'Security & Privacy',
+      content: [
+        'The pipeline processes public content (Reddit posts, news articles) — no user PII enters the NLP path.',
+        'Cache keys are content hashes, not raw text; secrets live in environment configuration, never in code.',
+        'The public API in front of the results is rate-limited and validates input at the schema layer.',
+      ],
+    },
+    testingStrategy: {
+      title: 'Testing Strategy',
+      content: [
+        'A pytest suite covers the pipeline services and API surface with mocked models and deterministic fixtures.',
+        'Error-path tests assert the graceful-degradation contract: each stage\'s failure produces its safe default.',
+        'Backend CI runs the full suite with an enforced coverage floor on every change.',
+      ],
+    },
+    futureImprovements: {
+      title: 'Future Improvements',
+      content: [
+        'Batch inference for sentiment to raise throughput on large ingest runs.',
+        'Aspect-based sentiment (what is positive about what) beyond document-level labels.',
+        'A quality-evaluation set to track enrichment accuracy over time, not just availability.',
+      ],
+    },
+    metricsNote:
+      'Throughput, cache-hit rate, and latency are measurements from this portfolio\'s own dev-scale deployment; F1/accuracy figures are the published benchmarks of the underlying models (spaCy en_core_web_lg, DistilBERT SST-2).',
     problemStatement: {
       title: 'The Problem',
       content: [
@@ -1219,6 +1490,56 @@ export const useSentimentAnalysis = () => {
     publishedDate: '2025-01',
     challenge: 'Build a production data pipeline that reliably ingests data from multiple external APIs, handles failures gracefully, and provides observability into pipeline health.',
 
+    stakeholders: {
+      title: 'Users & Stakeholders',
+      content: [
+        'The portfolio\'s analytics and NLP pages, which are only as fresh as this pipeline\'s last successful run.',
+        'Me as the unattended operator: the pipeline runs on a schedule and must surface its own failures.',
+        'External API providers (Reddit, NewsAPI) whose rate limits and outages the pipeline must respect and survive.',
+      ],
+    },
+    constraints: {
+      title: 'Constraints',
+      content: [
+        'Third-party rate limits and quotas — the pipeline must throttle itself rather than get banned.',
+        'Small-instance hosting: one scheduler process, bounded memory, no dedicated workers.',
+        'Unattended operation: no one is watching a console when a 3 a.m. run fails.',
+        'External APIs change and break without notice; the pipeline cannot assume clean inputs.',
+      ],
+    },
+    reliability: {
+      title: 'Reliability & Error Handling',
+      content: [
+        'Every run is recorded — status, duration, records processed, errors — into a run history the jobs API exposes.',
+        'Failures are isolated per source: a Reddit outage does not block news ingestion, and vice versa.',
+        'Retries with backoff absorb transient API errors; permanent failures are logged with context and skipped.',
+        'Redis unavailability degrades caching, never correctness — the app tolerates a cold cache by design.',
+      ],
+    },
+    security: {
+      title: 'Security & Privacy',
+      content: [
+        'API credentials live in environment configuration; the repository contains no secrets.',
+        'Ingested content is public data; the pipeline stores no personal user information.',
+        'The management endpoints validate input at the schema layer and sit behind the app\'s rate limiting.',
+      ],
+    },
+    testingStrategy: {
+      title: 'Testing Strategy',
+      content: [
+        'Pytest suites cover the pipeline services, scheduler wiring, and the jobs/metrics API with mocked external APIs.',
+        'Deterministic fixtures simulate provider failures to assert the isolation and retry behavior.',
+        'Backend CI enforces a coverage floor, and health endpoints make pipeline state observable in production.',
+      ],
+    },
+    futureImprovements: {
+      title: 'Future Improvements',
+      content: [
+        'A dead-letter queue for records that repeatedly fail enrichment, instead of log-and-skip.',
+        'Alerting on consecutive run failures (the run history already captures the signal).',
+        'Incremental checkpointing so an interrupted run resumes instead of restarting.',
+      ],
+    },
     problemStatement: {
       title: 'The Problem',
       content: [
