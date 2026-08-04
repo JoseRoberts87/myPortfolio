@@ -6,37 +6,35 @@ describe('ImpactMetrics', () => {
   it('renders the section heading', () => {
     render(<ImpactMetrics />);
     expect(
-      screen.getByRole('heading', { level: 2, name: /impact by the numbers/i })
+      screen.getByRole('heading', { level: 2, name: /impact by the numbers/i }),
     ).toBeInTheDocument();
   });
 
-  it('renders all six headline metrics', () => {
+  it('shows four-to-six strong, résumé-verified figures (#192)', () => {
     render(<ImpactMetrics />);
-    expect(screen.getByText('72%')).toBeInTheDocument();
-    expect(screen.getByText('90%')).toBeInTheDocument();
-    expect(screen.getByText('$2M')).toBeInTheDocument();
-    expect(screen.getByText('83%')).toBeInTheDocument();
-    expect(screen.getByText('99.99%')).toBeInTheDocument();
-    expect(screen.getByText('Billions')).toBeInTheDocument();
+    const items = screen.getAllByRole('listitem');
+    expect(items.length).toBeGreaterThanOrEqual(4);
+    expect(items.length).toBeLessThanOrEqual(6);
+    for (const value of ['$2M', '83%', '99.99%', '72%', '90%', '68%']) {
+      expect(screen.getByText(value)).toBeInTheDocument();
+    }
   });
 
-  it('labels each metric for context', () => {
+  it('drops the unbaselined "Billions" hyperbole (#192)', () => {
     render(<ImpactMetrics />);
-    expect(screen.getByText('Fortune 500 growth')).toBeInTheDocument();
-    expect(screen.getByText('Platform uptime')).toBeInTheDocument();
-    expect(screen.getByText('Dollars recovered')).toBeInTheDocument();
+    expect(screen.queryByText(/billions/i)).not.toBeInTheDocument();
   });
 
-  it('renders one card per metric', () => {
+  it('gives every metric measurable context — the workflow and where (#192)', () => {
     render(<ImpactMetrics />);
-    // Each of the six metric cards contributes its own supporting detail line;
-    // asserting all six render proves one card per metric without counting DOM
-    // nodes by layout class.
-    expect(screen.getByText(/Analytics-platform growth via Databricks/i)).toBeInTheDocument();
-    expect(screen.getByText(/AI-first system delivered in 3 weeks/i)).toBeInTheDocument();
-    expect(screen.getByText(/ML forecasting model in one year/i)).toBeInTheDocument();
-    expect(screen.getByText(/Predictive maintenance/i)).toBeInTheDocument();
-    expect(screen.getByText(/Real-time IoT platform/i)).toBeInTheDocument();
-    expect(screen.getByText(/Deposit-account analytics/i)).toBeInTheDocument();
+    // Every card carries a context sentence naming the role, not just a number.
+    for (const item of screen.getAllByRole('listitem')) {
+      expect(item.textContent).toMatch(
+        /Evonik|Amazon Robotics|Very Technology|MojoTech|Bank of America/,
+      );
+    }
+    // A baseline and a timeframe are spelled out for non-technical readers.
+    expect(screen.getByText(/under ~1 minute of downtime a week/i)).toBeInTheDocument();
+    expect(screen.getByText(/within three weeks/i)).toBeInTheDocument();
   });
 });
