@@ -102,20 +102,26 @@ export default function Home() {
                 Jose Roberts
               </h1>
               <h2 className="text-3xl md:text-4xl font-semibold text-accent">
-                Data & AI Architect
+                Data &amp; AI Architect
               </h2>
-              <p className="text-xl md:text-2xl text-body">
-                Building data platforms &amp; production AI systems
+              {/* Outcome-first positioning (#190): what hiring him buys, then the
+                  credentials that back it — grounded in the case-study numbers. */}
+              <p className="text-xl md:text-2xl text-body max-w-2xl">
+                I build production AI and data platforms that replace manual workflows
+                and turn data into decisions the business can act on.
               </p>
               <p className="text-lg text-muted max-w-2xl">
-                15+ years across finance, consumer services &amp; industrial IoT — Databricks-certified, with deep AWS, Python &amp; Spark experience
+                15+ years across finance, consumer services &amp; industrial IoT — most
+                recently an agentic AI workforce for a Fortune&nbsp;500 client (72%
+                analytics-platform growth) and ML forecasting that cut energy costs $2M.
+                Databricks-certified, with deep AWS, Python &amp; Spark experience.
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-4 lg:justify-start justify-center">
                 <a
-                  href="#web-dev"
+                  href="/case-studies"
                   className="inline-block bg-purple-600 hover:bg-purple-700 text-white font-semibold px-8 py-3 rounded-lg transition-colors"
                 >
-                  Explore My Work
+                  See the Case Studies
                 </a>
                 <a
                   href="/Jose-Roberts-Resume.pdf"

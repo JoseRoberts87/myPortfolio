@@ -35,10 +35,10 @@ const config: Config = {
   // coverage drops below the floor or the floor drifts stale. Ratchet only goes up.
   coverageThreshold: {
     global: {
-      statements: 78,
+      statements: 83,
       branches: 83,
-      functions: 81,
-      lines: 78,
+      functions: 83,
+      lines: 83,
     },
   },
 };
