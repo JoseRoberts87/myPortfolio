@@ -75,7 +75,8 @@ describe('Case Studies Index Page', () => {
     render(<CaseStudiesPage />);
 
     expect(screen.getByText('Computer Vision')).toBeInTheDocument();
-    expect(screen.getByText('Machine Learning')).toBeInTheDocument();
+    // Appears as both a category and a technology badge with the shared data.
+    expect(screen.getAllByText('Machine Learning').length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('Data Engineering')).toBeInTheDocument();
   });
 

@@ -62,6 +62,12 @@ describe.each(caseStudies.map((cs) => [cs.slug, cs] as const))(
       expect(study.constraints.content.length).toBeGreaterThanOrEqual(1);
     });
 
+    it('states a measurable impact line with context (#199)', () => {
+      expect(study.impact.trim().length).toBeGreaterThan(40);
+      // Measurable means a number, not an adjective.
+      expect(study.impact).toMatch(/\d/);
+    });
+
     it('has metrics with labels and values', () => {
       expect(study.metrics.length).toBeGreaterThanOrEqual(3);
       for (const metric of study.metrics) {

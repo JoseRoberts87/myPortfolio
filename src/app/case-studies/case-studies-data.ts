@@ -35,6 +35,9 @@ export interface CaseStudy {
   // Hero content
   heroImage?: string;
   challenge: string;
+  /** One-line business/operational outcome with context (#199) — shown on
+   *  listing and homepage cards; must align with the study's own metrics. */
+  impact: string;
 
   // Main sections
   problemStatement: CaseStudySection;
@@ -135,6 +138,8 @@ export const caseStudies: CaseStudy[] = [
         'Expanding the agentic pattern to more work streams as approval-gate data identifies the safest candidates.',
       ],
     },
+    impact:
+      'Cut operational errors 30% and workflow bottlenecks 77% for a Fortune 500 client — and grew their analytics platform 72%.',
     problemStatement: {
       title: 'The Problem',
       content: [
@@ -385,6 +390,8 @@ async def instrumented_call(model: str, task_type: str, prompt: str):
         'Tiered storage of historical telemetry to make long-horizon model training cheaper.',
       ],
     },
+    impact:
+      '83% less equipment downtime and ~10% lower backend cost, on a platform holding 99.99% uptime with sub-5-second insight.',
     problemStatement: {
       title: 'The Problem',
       content: [
@@ -623,6 +630,8 @@ class FeatureWindow:
         'Automated retraining triggered by measured drift instead of a fixed calendar.',
       ],
     },
+    impact:
+      '$2M in energy costs saved in one year, built on pipelines that cut data redundancy 80% and project overhead 50%.',
     problemStatement: {
       title: 'The Problem',
       content: [
@@ -839,6 +848,8 @@ def holt_forecast(series: list[float], alpha: float, beta: float, horizon: int):
     },
     metricsNote:
       'FPS and latency figures were measured on development hardware; mAP figures are the published benchmarks of the underlying models (COCO-SSD, YOLOv8n), not re-validated on a custom dataset.',
+    impact:
+      'Real-time detection with zero inference infrastructure — webcam analysis runs entirely in the visitor\'s browser (~30 FPS on development hardware), so the demo scales at no cost.',
     problemStatement: {
       title: 'The Problem',
       content: [
@@ -1158,6 +1169,8 @@ async def detect_objects(file: UploadFile = File(...)):
     },
     metricsNote:
       'Throughput, cache-hit rate, and latency are measurements from this portfolio\'s own dev-scale deployment; F1/accuracy figures are the published benchmarks of the underlying models (spaCy en_core_web_lg, DistilBERT SST-2).',
+    impact:
+      'Automates what manual tagging could never keep up with: sentiment, entities, and keywords for every ingested article — caching cuts repeat-processing latency from ~230ms to under 10ms on this site\'s deployment.',
     problemStatement: {
       title: 'The Problem',
       content: [
@@ -1540,6 +1553,8 @@ export const useSentimentAnalysis = () => {
         'Incremental checkpointing so an interrupted run resumes instead of restarting.',
       ],
     },
+    impact:
+      'Keeps the live analytics pages fresh with no manual work — 50K+ records a day at 99.8% pipeline uptime on this site\'s deployment, with every run recorded for observability.',
     problemStatement: {
       title: 'The Problem',
       content: [
