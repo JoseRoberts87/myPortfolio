@@ -35,6 +35,9 @@ export interface CaseStudy {
   // Hero content
   heroImage?: string;
   challenge: string;
+  /** One-line business/operational outcome with context (#199) — shown on
+   *  listing and homepage cards; must align with the study's own metrics. */
+  impact: string;
 
   // Main sections
   problemStatement: CaseStudySection;
@@ -135,6 +138,8 @@ export const caseStudies: CaseStudy[] = [
         'Expanding the agentic pattern to more work streams as approval-gate data identifies the safest candidates.',
       ],
     },
+    impact:
+      'Cut operational errors 30% and workflow bottlenecks 77% for a Fortune 500 client — and grew their analytics platform 72%.',
     problemStatement: {
       title: 'The Problem',
       content: [
@@ -311,7 +316,7 @@ async def instrumented_call(model: str, task_type: str, prompt: str):
     },
 
     liveDemo: '/ai-agents',
-    relatedCaseStudies: ['realtime-iot-platform', 'nlp-pipeline-architecture'],
+    relatedCaseStudies: ['realtime-iot-platform', 'production-llm-guardrails'],
   },
 
   {
@@ -385,6 +390,8 @@ async def instrumented_call(model: str, task_type: str, prompt: str):
         'Tiered storage of historical telemetry to make long-horizon model training cheaper.',
       ],
     },
+    impact:
+      '83% less equipment downtime and ~10% lower backend cost, on a platform holding 99.99% uptime with sub-5-second insight.',
     problemStatement: {
       title: 'The Problem',
       content: [
@@ -623,6 +630,8 @@ class FeatureWindow:
         'Automated retraining triggered by measured drift instead of a fixed calendar.',
       ],
     },
+    impact:
+      '$2M in energy costs saved in one year, built on pipelines that cut data redundancy 80% and project overhead 50%.',
     problemStatement: {
       title: 'The Problem',
       content: [
@@ -839,6 +848,8 @@ def holt_forecast(series: list[float], alpha: float, beta: float, horizon: int):
     },
     metricsNote:
       'FPS and latency figures were measured on development hardware; mAP figures are the published benchmarks of the underlying models (COCO-SSD, YOLOv8n), not re-validated on a custom dataset.',
+    impact:
+      'Real-time detection with zero inference infrastructure — webcam analysis runs entirely in the visitor\'s browser (~30 FPS on development hardware), so the demo scales at no cost.',
     problemStatement: {
       title: 'The Problem',
       content: [
@@ -1158,6 +1169,8 @@ async def detect_objects(file: UploadFile = File(...)):
     },
     metricsNote:
       'Throughput, cache-hit rate, and latency are measurements from this portfolio\'s own dev-scale deployment; F1/accuracy figures are the published benchmarks of the underlying models (spaCy en_core_web_lg, DistilBERT SST-2).',
+    impact:
+      'Automates what manual tagging could never keep up with: sentiment, entities, and keywords for every ingested article — caching cuts repeat-processing latency from ~230ms to under 10ms on this site\'s deployment.',
     problemStatement: {
       title: 'The Problem',
       content: [
@@ -1540,6 +1553,8 @@ export const useSentimentAnalysis = () => {
         'Incremental checkpointing so an interrupted run resumes instead of restarting.',
       ],
     },
+    impact:
+      'Keeps the live analytics pages fresh with no manual work — 50K+ records a day at 99.8% pipeline uptime on this site\'s deployment, with every run recorded for observability.',
     problemStatement: {
       title: 'The Problem',
       content: [
@@ -1898,6 +1913,273 @@ class PipelineOrchestrator:
 
     liveDemo: '/data-pipelines',
     relatedCaseStudies: ['nlp-pipeline-architecture', 'computer-vision-object-detection'],
+  },
+
+  {
+    slug: 'production-llm-guardrails',
+    title: 'Production LLM Platform',
+    subtitle: 'Shipping a Public AI Chat with Enterprise-Grade Guardrails',
+    description: 'How I put an LLM-powered assistant on the open internet safely: layered rate limits, a hard daily token budget, prompt-injection hardening, a runtime kill switch, and graceful degradation — every guardrail verifiable in this repository\'s code and tests.',
+    icon: '🛡️',
+    category: 'AI & Agents',
+    technologies: ['FastAPI', 'OpenAI API', 'Redis', 'SSE Streaming', 'Next.js', 'TypeScript', 'Prompt Engineering', 'GitHub Actions'],
+    metrics: [
+      { label: 'Daily Ceiling', value: '200K', description: 'Hard site-wide token budget per day' },
+      { label: 'Rate Backstop', value: '20/hr', description: 'Per-visitor question limit, plus a global cap' },
+      { label: 'Live Demos', value: '3', description: 'Chat, agents, and brief generator on one guard stack' },
+      { label: 'GPUs Owned', value: '0', description: 'Serverless LLM APIs — no model hosting' },
+    ],
+    metricsNote:
+      'These figures are the platform\'s configured safety limits, not usage statistics — each one is verifiable in this repository\'s backend code, tests, and environment configuration.',
+    readTime: '9 min read',
+    publishedDate: '2026-08',
+    challenge: 'A public portfolio is the worst-case environment for an LLM feature: anonymous traffic, no logins, and a personal credit card behind the API key. The goal was to ship a genuinely useful AI assistant about my work — streaming, tool-using, grounded in real data — while making runaway cost, prompt injection, and ungraceful failure structurally impossible rather than merely unlikely.',
+    impact:
+      'Caps worst-case daily LLM spend at a fixed 200K-token ceiling across three public demos — with per-IP and global rate limits, bounded concurrency, and a runtime kill switch, all verifiable in this repo.',
+
+    problemStatement: {
+      title: 'The Problem',
+      content: [
+        'I wanted this portfolio to demonstrate LLM engineering with a live, public AI assistant — not screenshots of one. But a public LLM endpoint is an open invitation: anyone on the internet can call it, there is no login to rate-limit against, and every token it generates is billed to me personally.',
+        'The failure modes are well known from enterprise LLM work, and they all apply harder here: unbounded spend from abuse or a viral link, prompt injection trying to repurpose the assistant, resource exhaustion from concurrent long-running streams, and the reputational failure mode — a broken chat widget on the very site meant to demonstrate production judgment.',
+        'The interesting engineering problem was not calling an LLM API. It was designing the guard stack around it so that the worst day — a scripted abuser, a Redis outage, a dead backend — degrades into a bounded cost and a polite message instead of a bill or a broken page.',
+      ],
+      highlights: [
+        'Public, anonymous endpoint — no accounts to rate-limit against',
+        'Personal API budget: worst-case spend must be a fixed, known number',
+        'Prompt injection is a certainty, not a possibility, on a public LLM',
+        'Failures must degrade gracefully — the chat is a portfolio exhibit',
+        'Every claimed guardrail must be verifiable in this public repo',
+      ],
+    },
+
+    stakeholders: {
+      title: 'Users & Stakeholders',
+      content: [
+        'Visitors — recruiters and engineers — who ask the assistant about my experience and expect fast, grounded, streaming answers.',
+        'Hiring managers reading this repo, for whom the guard stack itself is the exhibit: the code demonstrates the judgment the site claims.',
+        'Me as the operator: the sole payer of the API bill, who needs worst-case spend bounded by configuration, not by hope.',
+        'The frontend, as a downstream consumer: it must present every backend failure — offline, rate-limited, budget-exhausted, mid-stream drop — as a designed state, not a stack trace.',
+      ],
+    },
+    constraints: {
+      title: 'Constraints',
+      content: [
+        'No authentication: the assistant is open to anonymous traffic by design, so abuse controls had to work per-IP and site-wide rather than per-account.',
+        'Personal budget: unlike enterprise work with monthly cloud commitments, the spend ceiling here is a hard requirement — the system must enforce it, not just alert on it.',
+        'Single small container: the backend runs on one Railway instance (2 GB), so a handful of concurrent LLM streams can exhaust it without explicit concurrency bounds.',
+        'Redis is a dependency that can be down: every guard that reads Redis needed an explicit, documented fail-open or fail-closed decision.',
+        'The repository is public: system prompts and guard logic are visible to any attacker, so security had to survive full source disclosure — no security through obscurity.',
+      ],
+    },
+
+    technicalChallenges: {
+      title: 'Technical Challenges',
+      content: [
+        '**1. Unbounded Cost**: Rate limits bound request counts, but tokens are the billable unit. A limiter alone still allows maximal-length requests at the maximum rate, every hour, all day. Spend needed its own independent ceiling.',
+        '**2. Prompt Injection on a Public Endpoint**: Visitors type directly into the model\'s context, and the assistant also ingests tool results and user-supplied briefs. Every one of those is an injection channel — and the prompts defending against them are public.',
+        '**3. Abuse Control Without Accounts**: With no logins, identity is an IP address behind proxies. Per-IP limits had to be X-Forwarded-For-aware, and a global cap had to backstop distributed abuse that per-IP limits cannot see.',
+        '**4. Resource Exhaustion**: LLM calls are slow (streams can run for a minute), so a small number of concurrent requests can pin the container. Concurrency needed a hard slot limit with instant rejection, not queuing.',
+        '**5. Failing Gracefully**: The chat lives on a static frontend that outlives any backend outage. Every failure — DNS, timeout, 429, 503, mid-stream disconnect — needed a designed user experience and a detection path.',
+      ],
+      codeExample: {
+        language: 'python',
+        code: `# backend/app/api/ai.py — the actual guard order on every AI endpoint
+async def chat(payload: ChatRequest, request: Request) -> ChatResponse:
+    await _ensure_available()        # env master switch + provider config
+                                     # + runtime kill switch (Redis key)
+    question = payload.question.strip()
+    if len(question) > settings.AI_MAX_QUESTION_CHARS:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Question too long...")
+
+    await _enforce_rate_limit(request)   # per-IP (XFF-aware) + global hourly caps
+    await _enforce_budget()              # hard daily token ceiling -> 429
+
+    _acquire_llm_slot()                  # bounded concurrency -> 503 when full
+    try:
+        result = await rag_service.answer(question)
+    finally:
+        _release_llm_slot()
+
+    await _record_tokens(result["tokens_used"])   # best-effort accounting
+    _log_conversation(...)                        # hashed IP, never raw
+    return ChatResponse(**result)`,
+        caption: 'The layered guard funnel every AI request passes through — availability, identity-based limits, spend ceiling, then bounded concurrency',
+      },
+    },
+
+    solutionArchitecture: {
+      title: 'Solution Architecture',
+      content: [
+        '**Defense in Depth: a Guard Funnel, Not a Single Gate**: Every AI request passes through independent layers, each bounding a different failure mode. No single layer is trusted to be sufficient.',
+        '',
+        '**1. Availability Gate**',
+        '• An environment master switch plus a runtime kill switch: setting one Redis key takes every AI endpoint offline instantly — no deploy, no restart.',
+        '',
+        '**2. Identity-Based Rate Limits**',
+        '• Per-IP hourly caps (X-Forwarded-For-aware, so proxies don\'t collapse all visitors into one bucket) backstopped by a global site-wide cap that bounds distributed abuse.',
+        '',
+        '**3. Hard Daily Token Budget**',
+        '• Rate limits bound request counts; the budget bounds total tokens. Once the site-wide daily ceiling is spent, every request gets a friendly 429 until tomorrow — worst-case daily spend is a configuration value, not a probability.',
+        '',
+        '**4. Bounded Concurrency + Timeouts**',
+        '• A fixed number of LLM slots with instant 503 rejection when full, and a hard timeout on every provider call, so slow streams cannot pin the container.',
+        '',
+        '**5. Graceful Degradation on the Frontend**',
+        '• A cached health probe decides between the chat UI and a designed offline card; a 20-second fetch timeout, friendly error mapping, and a mid-stream disconnect notice cover every failure the probe cannot predict.',
+        '',
+        '**6. Detection**',
+        '• An hourly GitHub Actions uptime probe, client-side error beacons, and a build guard that fails deploys pointing at localhost — outages surface in CI, not in visitor screenshots.',
+      ],
+      highlights: [
+        'Independent layers: each guard bounds a failure mode the others miss',
+        'Spend is capped by configuration, not by monitoring and hope',
+        'Kill switch: one Redis key takes the whole AI surface offline',
+        'Every Redis-dependent guard has an explicit fail-open/closed decision',
+        'The frontend treats backend absence as a designed state',
+      ],
+    },
+
+    tradeoffsAndDecisions: {
+      title: 'Trade-offs & Architecture Decisions',
+      content: [
+        '**Decision 1: Fail-Open vs. Fail-Closed When Redis Is Down**',
+        '✅ *Chose*: Rate limiter and budget check fail open; the kill switch and env gate still apply',
+        '• *Rationale*: A Redis blip should not take the demo down. The guards are defense in depth — losing one layer temporarily still leaves timeouts, concurrency slots, and provider-side limits bounding abuse',
+        '• *Trade-off*: A well-timed attacker during a Redis outage faces fewer limits — accepted, documented in the code, and bounded by the remaining layers',
+        '',
+        '**Decision 2: Hard Budget Ceiling vs. Alerting Only**',
+        '✅ *Chose*: A hard 429 once the daily token budget is spent, with an alert fired at a warning threshold on the way up',
+        '• *Rationale*: Alerts require a human to be awake; a ceiling does not. Worst-case spend becomes a number you can read in the config',
+        '• *Trade-off*: A traffic spike of genuine visitors can take the demo offline for the rest of the day — acceptable for a portfolio, and the 429 message says exactly that',
+        '',
+        '**Decision 3: IP-Based Limits vs. Requiring Sign-In**',
+        '✅ *Chose*: Anonymous access with XFF-aware per-IP limits plus a global backstop',
+        '• *Rationale*: A portfolio demo that demands a login before answering questions defeats its own purpose — friction would cost more than abuse',
+        '• *Trade-off*: Visitors sharing an IP (offices, campuses) share a bucket, and determined abusers can rotate IPs — which is exactly what the global cap and token budget exist to bound',
+        '',
+        '**Decision 4: Prompt-Injection Defenses Pinned by Tests vs. Documented in Prose**',
+        '✅ *Chose*: A dedicated safety test suite asserting the delimiters, scope refusal, and data-not-instructions framing survive every prompt edit',
+        '• *Rationale*: Prompt hardening silently rots — any rewording can drop a defense. Tests make the security properties regression-checked like any other invariant',
+        '• *Trade-off*: Prompt iteration requires updating tests — deliberate friction on exactly the strings that must not change casually',
+      ],
+    },
+
+    implementation: {
+      title: 'Key Implementation Details',
+      content: [
+        '**Untrusted Input Framing**: Every visitor message is wrapped in explicit delimiters and framed as data to answer about, not instructions to follow. The system prompt scopes the assistant to my professional background, instructs it to answer questions ABOUT Jose and never speak AS him, and treats tool results and user-supplied briefs as data with the same rule.',
+        '**Token Accounting That Never Hurts a Request**: Budget recording is best-effort — it increments a daily Redis counter with a bounded TTL and fires a one-time alert when crossing the warning threshold, but a failure to record never fails the visitor\'s request.',
+        '**Concurrency Slots, Not Queues**: A simple in-process counter rejects the N+1th concurrent LLM call with an immediate 503 and a friendly message. Queuing would hide overload and stack timeouts; rejection keeps latency honest.',
+        '**One Error Envelope End to End**: The backend\'s error middleware wraps every failure as a single JSON shape, and one frontend helper maps any response — either envelope, or no response at all — to a human-readable message. The friendly budget and rate-limit messages actually reach the visitor.',
+        '**Privacy in the Logs**: Conversation logging stores a hash of the visitor\'s IP, never the raw address — enough to correlate abuse, nothing to leak.',
+      ],
+      codeExample: {
+        language: 'python',
+        code: `# backend/app/api/ai.py — the hard spend ceiling (verbatim)
+async def _enforce_budget() -> None:
+    """Site-wide daily token budget — the hard ceiling on LLM spend.
+
+    The hourly rate limits bound request *counts*; this bounds total
+    *tokens*, so even maximal-length questions against the global limit
+    can't exceed a known daily spend. Fails open if Redis is down
+    (matching the rate limiter): a Redis blip shouldn't take the demo
+    down, and the rate limits still bound abuse.
+    """
+    if settings.AI_DAILY_TOKEN_BUDGET <= 0:
+        return
+    try:
+        spent = int(await _get_redis().get(_budget_key()) or 0)
+    except Exception as exc:
+        logger.warning(f"AI budget check unavailable, allowing request: {exc}")
+        return
+    if spent >= settings.AI_DAILY_TOKEN_BUDGET:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="The assistant has reached today's usage limit and is "
+            "resting. Please come back tomorrow — or reach out via the "
+            "contact form.",
+        )`,
+        caption: 'The actual budget guard from this repository — worst-case daily spend is a config value, and the fail-open decision is documented where it lives',
+      },
+    },
+
+    reliability: {
+      title: 'Reliability & Error Handling',
+      content: [
+        'A module-cached health probe on the frontend checks the AI service once per page load and renders a designed offline card — with a link to the contact form — instead of a dead chat box when the backend is unreachable.',
+        'Every chat fetch carries a 20-second timeout so a hung backend becomes a friendly retryable error, not an infinite spinner; interrupted SSE streams append a visible "connection lost" notice instead of silently truncating the answer mid-sentence.',
+        'Guards fail predictably: rate limiter and budget fail open on Redis outage (documented in code), concurrency rejection and provider timeouts still apply, and token recording can never fail a request.',
+        'Detection is layered ahead of visitors: an hourly GitHub Actions probe hits the production endpoint, client-side error beacons report real browser failures, and a build-time guard fails any production deploy whose API URL is unset or points at localhost — the class of misconfiguration that caused a real outage here once.',
+      ],
+    },
+    security: {
+      title: 'Security & Privacy',
+      content: [
+        'Prompt-injection hardening: visitor input is delimiter-wrapped and framed as data; the system prompt enforces topic scope, refuses out-of-scope instructions, and never role-plays as me. Tool outputs and user-supplied briefs get the same data-not-instructions treatment.',
+        'The defenses are pinned by a dedicated backend test suite, so a prompt rewording that drops a guard fails CI rather than silently shipping.',
+        'A runtime kill switch (a single Redis key) takes every AI endpoint offline immediately if something goes wrong — faster than any deploy.',
+        'Logs store hashed IPs only; the public repo contains no secrets, and the guard stack is designed to survive its own source code being public.',
+      ],
+    },
+    testingStrategy: {
+      title: 'Testing Strategy',
+      content: [
+        'A dedicated safety suite pins the injection defenses: delimiter wrapping, scope refusal, about-not-as framing, and tool-results-as-data are all asserted against the live prompt templates.',
+        'Guard behavior is unit-tested with Redis faked both ways — present (limits enforce) and down (documented fail-open paths hold).',
+        'The frontend error layer has its own Jest suites: envelope mapping, timeout behavior, health-probe caching, offline-state rendering, and the retry path — enforced by a coverage ratchet that only moves up.',
+        'CI treats configuration as testable: the deploy workflow smoke-checks the API URL before building, and the hourly uptime probe keeps testing production after every deploy ends.',
+      ],
+    },
+
+    resultsAndImpact: {
+      title: 'Results & Impact',
+      content: [
+        '**Cost**:',
+        '• **Worst-case daily spend is a constant**, not a distribution: the 200K-token site-wide ceiling makes the maximum possible bill a number I chose in configuration.',
+        '• **20 questions/hour per visitor** plus a global hourly cap bound abuse above the budget layer, so the ceiling is rarely even approached.',
+        '',
+        '**Leverage**:',
+        '• **Three public demos — chat, agents, and a brief generator — share the one guard stack**, so every new AI feature inherits rate limiting, budgeting, hardening, and graceful failure for free.',
+        '• **Zero GPUs and zero idle cost**: serverless LLM APIs behind the guards mean the platform costs nothing when nobody is using it.',
+        '',
+        '**Operations**:',
+        '• A real production outage (a dead API hostname baked into the frontend) now has three independent tripwires: the build guard that rejects the bad config, the hourly probe that catches drift, and client beacons that report what real browsers see.',
+        '• The failure a visitor actually experiences is a designed offline card with a contact-form fallback — the difference between an outage and an embarrassment.',
+      ],
+    },
+
+    lessonsLearned: {
+      title: 'Lessons Learned',
+      content: [
+        '**1. Bound Tokens, Not Just Requests**',
+        'Rate limits feel like cost control but bound the wrong unit — tokens are what the invoice counts. *Lesson: put an independent hard ceiling on the billable unit itself.*',
+        '',
+        '**2. Decide Every Fail-Open Explicitly**',
+        'Each Redis-dependent guard forced a choice: fail open (availability) or closed (safety). Choosing per-guard and writing the decision into the code beats discovering the default during an outage. *Lesson: an undocumented failure mode is a decision someone else makes for you later.*',
+        '',
+        '**3. Pin Prompt Security with Tests**',
+        'Prompt defenses rot silently — one helpful rewording can drop a guard. Asserting them in CI made the security properties as durable as any other invariant. *Lesson: if a prompt property matters, a test should fail when it disappears.*',
+        '',
+        '**4. Design the Failure States First**',
+        'The offline card, the timeout message, and the stream-loss notice were designed as deliberately as the happy path — because a public demo is judged hardest on its worst day. *Lesson: graceful degradation is product design, not exception handling.*',
+        '',
+        '**5. A Kill Switch Buys Calm**',
+        'Knowing one Redis key can take the whole AI surface offline made every other risk decision easier — the blast radius of any mistake is one command wide. *Lesson: build the off switch before you need it.*',
+      ],
+    },
+    futureImprovements: {
+      title: 'Future Improvements',
+      content: [
+        'Per-IP daily token accounting alongside the site-wide ceiling, so one heavy user throttles before the whole demo does.',
+        'An LLM-based injection classifier in front of the model as an additional layer — kept honest by the same pin-it-with-tests discipline.',
+        'Budget and rate-limit metrics exported to the observability dashboard, turning the guard stack\'s behavior into a visible exhibit of its own.',
+      ],
+    },
+
+    liveDemo: '/ai-agents',
+    githubRepo: 'https://github.com/JoseRoberts87/myPortfolio',
+    relatedCaseStudies: ['agentic-ai-workforce', 'nlp-pipeline-architecture'],
   },
 ];
 

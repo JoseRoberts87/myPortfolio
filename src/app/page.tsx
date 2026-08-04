@@ -6,6 +6,19 @@ import Certifications from '@/components/Certifications';
 import ImpactMetrics from '@/components/ImpactMetrics';
 import VisitStats from '@/components/VisitStats';
 import Image from 'next/image';
+import { caseStudies } from './case-studies/case-studies-data';
+
+// Featured on the homepage (#199): the three studies with the strongest
+// documented business outcomes. Cards derive from the case-study data itself,
+// so homepage claims can never drift from the studies they link to.
+const FEATURED_SLUGS = [
+  'agentic-ai-workforce',
+  'realtime-iot-platform',
+  'energy-forecasting-ml',
+];
+const featuredStudies = FEATURED_SLUGS.map(
+  (slug) => caseStudies.find((cs) => cs.slug === slug)!,
+);
 
 export default function Home() {
   const expertiseAreas = [
@@ -193,67 +206,44 @@ export default function Home() {
               Deep-Dive Case Studies
             </h2>
             <p className="text-xl text-slate-600 dark:text-gray-400 max-w-3xl mx-auto">
-              Explore detailed case studies showcasing my problem-solving approach, technical decisions, and lessons learned
+              The work behind the numbers — what each system replaced, the decisions that shaped it, and the measurable outcome it produced
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            <a
-              href="/case-studies/computer-vision-object-detection"
-              className="block bg-surface border border-subtle p-8 rounded-lg hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/20 transition-all group"
-            >
-              <div className="text-5xl mb-4">👁️</div>
-              <h3 className="text-2xl font-semibold text-foreground mb-3 group-hover:text-purple-400 transition-colors">
-                Real-Time Object Detection
-              </h3>
-              <p className="text-slate-600 dark:text-gray-400 mb-4">
-                Building a multi-model computer vision system with YOLOv8 and TensorFlow.js
-              </p>
-              <div className="flex items-center gap-2 text-accent text-sm font-medium group-hover:gap-3 transition-all">
-                <span>Read Case Study</span>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-            </a>
-
-            <a
-              href="/case-studies/nlp-pipeline-architecture"
-              className="block bg-surface border border-subtle p-8 rounded-lg hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/20 transition-all group"
-            >
-              <div className="text-5xl mb-4">🤖</div>
-              <h3 className="text-2xl font-semibold text-foreground mb-3 group-hover:text-purple-400 transition-colors">
-                Multi-Model NLP Pipeline
-              </h3>
-              <p className="text-slate-600 dark:text-gray-400 mb-4">
-                Sentiment analysis, NER, and keyword extraction with production-grade error handling
-              </p>
-              <div className="flex items-center gap-2 text-accent text-sm font-medium group-hover:gap-3 transition-all">
-                <span>Read Case Study</span>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-            </a>
-
-            <a
-              href="/case-studies/data-pipeline-orchestration"
-              className="block bg-surface border border-subtle p-8 rounded-lg hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/20 transition-all group"
-            >
-              <div className="text-5xl mb-4">⚙️</div>
-              <h3 className="text-2xl font-semibold text-foreground mb-3 group-hover:text-purple-400 transition-colors">
-                Multi-Source Data Pipeline
-              </h3>
-              <p className="text-slate-600 dark:text-gray-400 mb-4">
-                Automated ingestion from multiple APIs with robust error handling and observability
-              </p>
-              <div className="flex items-center gap-2 text-accent text-sm font-medium group-hover:gap-3 transition-all">
-                <span>Read Case Study</span>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-            </a>
+            {featuredStudies.map((study) => (
+              <a
+                key={study.slug}
+                href={`/case-studies/${study.slug}`}
+                className="block bg-surface border border-subtle p-8 rounded-lg hover:border-purple-500 hover:shadow-lg hover:shadow-purple-500/20 transition-all group"
+              >
+                <div className="text-5xl mb-4">{study.icon}</div>
+                <h3 className="text-2xl font-semibold text-foreground mb-3 group-hover:text-purple-400 transition-colors">
+                  {study.title}
+                </h3>
+                {/* Impact first (#199): the outcome, not the tech list */}
+                <p className="text-sm mb-4">
+                  <span className="font-semibold text-accent">Impact: </span>
+                  <span className="text-body">{study.impact}</span>
+                </p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {study.metrics.slice(0, 2).map((metric) => (
+                    <span
+                      key={metric.label}
+                      className="text-xs font-semibold text-accent bg-purple-500/10 border border-purple-500/20 rounded px-2 py-1"
+                    >
+                      {metric.value} {metric.label}
+                    </span>
+                  ))}
+                </div>
+                <div className="flex items-center gap-2 text-accent text-sm font-medium group-hover:gap-3 transition-all">
+                  <span>Read Case Study</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </a>
+            ))}
           </div>
 
           <div className="text-center">

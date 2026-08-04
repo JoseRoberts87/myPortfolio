@@ -39,7 +39,8 @@ describe('Case Studies Index Page', () => {
   it('should render marquee categories and headline metrics', () => {
     render(<CaseStudiesPage />);
 
-    expect(screen.getByText('AI & Agents')).toBeInTheDocument();
+    // Two studies share this category (agentic workforce + LLM guardrails)
+    expect(screen.getAllByText('AI & Agents').length).toBeGreaterThanOrEqual(2);
     expect(screen.getByText('Real-Time Systems')).toBeInTheDocument();
     expect(screen.getByText('Predictive Analytics')).toBeInTheDocument();
 
@@ -75,7 +76,8 @@ describe('Case Studies Index Page', () => {
     render(<CaseStudiesPage />);
 
     expect(screen.getByText('Computer Vision')).toBeInTheDocument();
-    expect(screen.getByText('Machine Learning')).toBeInTheDocument();
+    // Appears as both a category and a technology badge with the shared data.
+    expect(screen.getAllByText('Machine Learning').length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('Data Engineering')).toBeInTheDocument();
   });
 
@@ -109,7 +111,7 @@ describe('Case Studies Index Page', () => {
 
     // Some read times are shared across cards (two 8-min reads, two 9-min reads)
     expect(screen.getAllByText('8 min read')).toHaveLength(2);
-    expect(screen.getAllByText('9 min read')).toHaveLength(2);
+    expect(screen.getAllByText('9 min read')).toHaveLength(3);
     expect(screen.getByText('10 min read')).toBeInTheDocument();
     expect(screen.getByText('7 min read')).toBeInTheDocument();
   });
@@ -118,7 +120,7 @@ describe('Case Studies Index Page', () => {
     render(<CaseStudiesPage />);
 
     const ctaButtons = screen.getAllByText('Read Case Study');
-    expect(ctaButtons).toHaveLength(6);
+    expect(ctaButtons).toHaveLength(7);
   });
 
   it('should render links to individual case studies', () => {

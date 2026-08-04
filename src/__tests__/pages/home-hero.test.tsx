@@ -63,4 +63,21 @@ describe('homepage hero (#190)', () => {
     expect(resume).toHaveAttribute('href', '/Jose-Roberts-Resume.pdf');
     expect(resume).toHaveAttribute('download');
   });
+
+  describe('featured case studies (#199)', () => {
+    it('features the three studies with the strongest documented outcomes', () => {
+      render(<Home />);
+      expect(screen.getByText('Agentic AI Workforce')).toBeInTheDocument();
+      expect(screen.getByText('Real-Time IoT Data Platform')).toBeInTheDocument();
+      expect(screen.getByText('ML Energy Forecasting')).toBeInTheDocument();
+    });
+
+    it('leads every featured card with an Impact line', () => {
+      render(<Home />);
+      expect(screen.getAllByText('Impact:')).toHaveLength(3);
+      // Outcome claims come straight from the case-study data (single source
+      // of truth), e.g. the IoT study's downtime reduction.
+      expect(screen.getByText(/83% less equipment downtime/i)).toBeInTheDocument();
+    });
+  });
 });
