@@ -277,6 +277,7 @@ describe('Case Study Detail Page', () => {
         { slug: 'computer-vision-object-detection' },
         { slug: 'nlp-pipeline-architecture' },
         { slug: 'data-pipeline-orchestration' },
+        { slug: 'production-llm-guardrails' },
       ]);
     });
   });
